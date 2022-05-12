@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>File Managements</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+
+    <style>
+        .fa,
+        .fas {
+            color: #858585;
+        }
+
+        .fa-folder {
+            color: rgb(74, 158, 255);
+        }
+
+        i.fa,
+        table i.fas {
+            font-size: 16px;
+            margin-right: 6px;
+        }
+
+        i.action {
+            cursor: pointer;
+        }
+
+        a {
+            color: black;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row align-items-center py-5">
+            <div class="col-6">
+                <h3>
+                    File Manager</h2>
+            </div>
+            <div class="col-6">
+                <div class="dropdown show text-right">
+                    Xin chào <a class="dropdown-toggle text-primary" data-toggle="dropdown">{{user}}</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#">
+                            <i class="fas fa-info-circle"></i>  
+                            &nbsp;&nbsp;Cập nhật thông tin
+                        </a>
+                        <a class="dropdown-item" href="/logout">
+                            <i class="fas fa-sign-out-alt"></i>&nbsp;&nbsp; Đăng xuất</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Products</a></li>
+            <li class="breadcrumb-item active">Accessories</li>
+        </ol>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">
+                    <span class="fa fa-search"></span>
+                </span>
+            </div>
+            <input type="text" class="form-control" placeholder="Search">
+        </div>
+        <div class="btn-group my-3">
+            <button type="button" class="btn btn-light border" data-toggle="modal" data-target="#new-folder-dialog">
+                <i class="fas fa-folder-plus"></i> New folder
+            </button>
+            <button type="button" class="btn btn-light border" data-toggle="modal" data-target="#new-file-dialog">
+                <i class="fas fa-file"></i> Create text file
+            </button>
+        </div>
+        <table class="table table-hover border">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Size</th>
+                    <th>Last modified</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each files}}
+                    <tr>
+                        <td>
+                            {{{icon}}}
+                            <a href="{{subPath}}">{{name}}</a>
+                        </td>
+                        <td>{{type}}</td>
+                        <td>{{size}}</td>
+                        <td>{{lastModified}}</td>
+                        <td>
+                            <span><a href="{{subPath}}" download target="_blank"><i class="fa fa-download action"></i></a>
+                            <span><i data-toggle="modal" data-target="#confirm-rename"  onclick="handleEdit('{{name}}')" class="fa fa-edit action"></i>
+                            <span><i data-toggle="modal" data-target="#confirm-delete"  onclick="handleDelete('{{name}}')" class="fa fa-trash action"></i>
+                        </td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        <div class="border rounded mb-3 mt-5 p-3">
+            <h4>File upload</h4>
+            <form id="uploadForm">
+                <div class="form-group">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="customFile">
+                        <label class="custom-file-label" for="customFile">Choose file</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div  id="progress-bar" class="progress" style="height:5px">
+                        <div class="progress-bar bg-success" id="progress-bar-success"  id="progress-bar" style="width:0%;height:10px"></div>
+                    </div>
+                </div>
+                <button id="uploadBtn" type="submit" class="btn btn-success px-5">Upload</button>
+            </form>
+
+        </div>
+
+        <div class="modal-example my-5">
+            <h4>Một số dialog mẫu</h4>
+            <p>Sử dụng các dialog này cho các chức năng trong bài tập.</p>
+            <ul>
+                <li><a href="#" data-toggle="modal" data-target="#confirm-delete">Confirm delete</a></li>
+                <li><a href="#" data-toggle="modal" data-target="#confirm-rename">Confirm rename</a></li>
+                <li><a href="#" data-toggle="modal" data-target="#new-file-dialog">New file dialog</a></li>
+                <li><a href="#" data-toggle="modal" data-target="#message-dialog">Message Dialog</a></li>
+            </ul>
+        </div>
+
+    </div>
+
+
+    <!-- Delete dialog -->
+    <div class="modal fade" id="confirm-delete">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Xóa tập tin</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    Bạn có chắc rằng muốn xóa tập tin <strong id="file-delete-name">image.jpg</strong>
+                    <input type="hidden" id="file-delete-name-input">
+                </div>
+
+                <div class="modal-footer">
+                    <button id="delete-btn" type="button" class="btn btn-danger" data-dismiss="modal">Xóa</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Không</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Rename dialog -->
+    <div class="modal fade" id="confirm-rename">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Đổi tên</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <p>Nhập tên mới cho tập tin <strong id="file-edit-name">Document.txt</strong></p>
+                    <input type="text" placeholder="Nhập tên mới" value="Document.txt" id="file-edit-name-value" class="form-control" />
+                </div>
+
+                <div class="modal-footer">
+                    <button id="edit-btn" type="button" class="btn btn-primary" data-dismiss="modal">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New file dialog -->
+    <div class="modal fade" id="new-file-dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Tạo tập tin mới</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="name">File Name</label>
+                        <input type="text" placeholder="File name" class="form-control" id="file-name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="content">Nội dung</label>
+                        <textarea rows="10" class="form-control" placeholder="Nội dung" id="file-content"></textarea>
+
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button id="create-file-btn" type="button" class="btn btn-success" data-dismiss="modal">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- New folder dialog -->
+    <div class="modal fade" id="new-folder-dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Create new folder</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="name">Folder Name</label>
+                        <input type="text" placeholder="File name" class="form-control" id="folderName" name="folderName"/>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button id="create-folder-btn" type="submit" class="btn btn-success" data-dismiss="modal">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- message dialog -->
+    <div class="modal fade" id="message-dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Delete</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <p>Are you sure want to delete <span id="file-delete-name"></span></p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add the following code if you want the name of the file appear on select
+        $(".custom-file-input").on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+
+        const params = new Proxy(new URLSearchParams(window.location.search), {
+        get: (searchParams, prop) => searchParams.get(prop),
+        });
+        // Get the value of "some_key" in eg "https://example.com/?some_key=some_value"
+        let value = params.dir===null?'':params.dir;
+        const myURL = 'http://localhost:1234/'
+        const uploadForm = document.querySelector('#uploadForm')
+        const uploadBtn = document.querySelector('#uploadBtn')
+        const uploadFile = document.querySelector('#customFile')
+        const progressBar = document.querySelector('#progress-bar')
+        const progressBarSuccess = document.querySelector('#progress-bar-success')
+        const createFolderBtn = document.querySelector('#create-folder-btn')
+        const createFileBtn = document.querySelector('#create-file-btn')
+        const fileDelete = document.querySelector('#file-delete-name')
+        const fileEdit = document.querySelector('#file-edit-name')
+        const editValue = document.querySelector('#file-edit-name-value')
+        const deleteValue = document.querySelector('#file-delete-name-input')
+        const deleteBtn = document.querySelector('#delete-btn')
+        const renameBtn = document.querySelector('#rename-btn')
+
+        progressBar.style.display = "none"
+
+        uploadForm.addEventListener('submit',(e)=>{
+            e.preventDefault()
+            console.log(uploadFile.files)
+            if(uploadFile.files.length===0){
+                return alert('Please choose your file first!')
+            }
+
+            const file = uploadFile.files[0]
+            const type = uploadFile['name'].split('.').pop();
+            const not_allow_list = ['exe','msi','sh']
+            const size = file['size']
+
+            if(not_allow_list.includes(type)){
+                return alert('This type of file is not allowed')
+            }else if(size>20*Math.pow(1024,2)){
+                return alert('This file is larger than 20M')
+            }
+            console.log(value)
+            const form = new FormData()
+            form.set('path',value)
+            form.set('attachment', file)
+
+            const xhr = new XMLHttpRequest()
+            xhr.open("POST",myURL+`upload`, true)
+            xhr.addEventListener('load',e=>{
+                if(xhr.readyState===4 && xhr.status===200){
+                    const json = JSON.parse(xhr.responseText)
+                }
+            })
+
+            xhr.upload.addEventListener('progress',e=>{
+                progressBar.style.display = ''
+                uploadBtn.style.disabled = true
+                const loaded = e.loaded
+                const total = e.total
+                const progress = Math.round(loaded*100/total)
+                console.log(progress+"%")
+                progressBarSuccess.style.width = progress+"%"
+                if(progress===100) {
+                    progressBar.style.display = 'none'
+                    uploadBtn.style.disabled = false
+                }
+            })
+
+            xhr.send(form)
+            location.reload();
+        })
+
+        createFolderBtn.addEventListener('click',()=>{
+            const folderName = document.querySelector('#folderName').value
+            if(!folderName) return alert('Folder name can not be empty')
+            fetch(myURL+'createFolder', {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    folderName,path: value
+                })
+                
+            })
+            location.reload();
+
+        })
+
+        createFileBtn.addEventListener('click',()=>{
+            const fileNameEnter = document.querySelector('#file-name').value
+            const fileContent = document.querySelector('#file-content').value
+
+            if(!fileNameEnter) return alert('File name can not be empty')
+            if(!fileContent) return alert('File content can not be empty')
+            fetch(myURL+'createFile', {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    fileName: fileNameEnter,path: value,fileContent
+                })
+            })
+            location.reload();
+
+        })
+
+
+        function handleDelete(name){
+            fileDelete.innerHTML = name
+            deleteValue.value = name
+        }
+
+        function handleEdit(name){
+            fileEdit.innerHTML = name
+            editValue.value = name
+        }
+
+        deleteBtn.addEventListener('click',()=>{
+            const deleteFileName = deleteValue.value
+            console.log(deleteFileName)
+            fetch(myURL+'delete', {
+                method: "DELETE",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    fileName: deleteFileName,path: value
+                })
+            })
+
+            location.reload();
+        })
+    </script>
+
+</body>
+
+</html>
