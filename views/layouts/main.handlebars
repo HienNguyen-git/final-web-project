@@ -12,6 +12,23 @@
     <title>{{title}}</title>
   </head>
   <body>
+    <div class="header-container">
+		<div class="navbar-brand">
+			<a href="/">
+				<h1 class="navbar-heading">Web Final Project</h1>
+			</a>
+		</div>
+		<div class="navbar-container">
+			<nav class="navbar">
+				<ul class="navbar-menu nav">
+					<li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+					<li class="nav-item"><a href="/" class="nav-link">Schedule</a></li>
+					<li class="nav-item"><a href="/" class="nav-link">Logout</a></li>
+
+				</ul>
+			</nav>
+		</div>
+	</div>
     {{#if flash}}
       <div class="text-center fade show alert alert-dismissible alert-{{flash.type}}">
         <button
