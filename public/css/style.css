@@ -337,8 +337,6 @@ nav {
   color: #fff;
   width: 100%;
   background-color: #3a3a3a;
-  /* display: grid;
-    grid-template-columns: 1fr 5fr; */
   display: flex;
   justify-content: center;
 }
@@ -422,7 +420,7 @@ nav {
 }
 
 .admin-logo {
-  padding: 20px 500px;
+  padding: 20px;
   background-color: #a6ceda;
   flex: 1;
   font-size: 2rem;
@@ -430,13 +428,17 @@ nav {
 
 .admin-container {
   display: grid;
-  grid-template-columns: 1fr 5fr;
+  grid-template-columns: 1.5fr 5fr;
   height: 100vh;
 }
 
 .admin-section1 {
   background-color: #a6ceda;
   height: 100%;
+}
+
+.admin-section1 ul{
+  padding: 0;
 }
 
 .admin-section1 ul li {
@@ -619,13 +621,6 @@ nav {
 
 .admin-panel-section-booking-info > div .fa-circle {
   font-size: 8px;
-}
-
-.admin-section-panel2 form {
-  /* display: flex; */
-  /* justify-content: space-evenly; */
-  /* flex-wrap: wrap; */
-  /* align-items: center; */
 }
 
 .admin-section-panel2 form input {
