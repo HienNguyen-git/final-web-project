@@ -1,8 +1,3 @@
-
-
-
-
-
 /* Error page */
 
 .error-content h4 {
@@ -221,4 +216,106 @@
 }
 .row div {
   margin-top: 16px;
+}
+
+/* Header Styling */
+#home-section-2,
+#home-section-3 {
+  margin: 100px 0;
+}
+
+header {
+  z-index: 1000;
+}
+
+.header-container {
+  display: flex;
+  height: 10rem;
+  overflow: hidden;
+  background-color: lightblue;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 2rem;
+}
+
+.navbar-brand .navbar-heading {
+  flex: 1;
+  top: 4vmax;
+  left: 2vmax;
+  padding: 0;
+  margin: 0;
+  color: #fff;
+  display: block;
+  font-size: 3em;
+  font-family: "Lobster", cursive;
+  text-shadow: 2px 2px 0px rgb(80, 135, 153);
+}
+
+.navbar-brand .navbar-heading:hover {
+  color: #fff;
+}
+
+.navbar-brand .navbar-container {
+  flex: 1;
+}
+nav {
+  display: flex;
+  align-items: center;
+}
+
+.navbar {
+  display: flex;
+  justify-content: center;
+}
+
+.navbar-menu {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  font-family: "Lobster", cursive;
+  text-shadow: 2px 2px 0px rgb(80, 135, 153);
+  overflow: hidden;
+}
+
+.navbar ul li {
+  float: left;
+  display: block;
+  transition-duration: 0.5s;
+  border-radius: 50px;
+}
+
+.navbar ul li:hover {
+  cursor: pointer;
+  background-color: lightblue;
+}
+
+.navbar ul li:hover > a {
+  color: #000;
+  /* color: #b6b6b6; */
+}
+
+.navbar-menu li ul {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  transition: all 0.5s ease;
+  background-color: #b6b6b6;
+}
+
+.navbar-menu li a {
+  display: block;
+  color: #fff;
+  text-align: center;
+  padding: 12px 36px;
+  font-size: 24px;
+  text-decoration: none;
+}
+
+.navbar-container {
+  top: 8em;
+  right: 1%;
+}
+
+.nav-active {
+  color: #3a3a3a !important;
 }
