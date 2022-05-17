@@ -12,6 +12,8 @@ const expressHandlebars = require('express-handlebars');
 
 var indexRouter = require('./routes/index.route');
 var usersRouter = require('./routes/users.route');
+const adminRouter = require('./routes/admin.route')
+
 
 var app = express();
 
@@ -22,7 +24,15 @@ app.set('view engine', 'handlebars');
 
 
 app.engine('handlebars', expressHandlebars.engine({
-  defaultLayout: 'main'
+  defaultLayout: 'main',
+  helpers: {
+    checkPath(routerPath, navPath, options) {
+      const fnTrue = options.fn,
+        fnFalse = options.inverse;
+      // console.log(routerPath, navPath)
+      return routerPath === navPath ? fnTrue(this) : fnFalse(this)
+    }
+  }
 }))
 
 app.use(require('cookie-parser')("This is code secret code"))
@@ -40,8 +50,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// routing
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/admin', adminRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
