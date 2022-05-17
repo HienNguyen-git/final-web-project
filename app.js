@@ -5,14 +5,34 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+
+const expressHandlebars = require('express-handlebars');
+
+
+
 var indexRouter = require('./routes/index.route');
 var usersRouter = require('./routes/users.route');
 
 var app = express();
 
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'handlebars');
+
+
+app.engine('handlebars', expressHandlebars.engine({
+  defaultLayout: 'main'
+}))
+
+app.use(require('cookie-parser')("This is code secret code"))
+app.use(require('express-session')({
+  secret: "This is some secret code",
+  resave: true,
+  saveUninitialized: true,
+  cookie: { secure: !true }
+}))
+
 
 app.use(logger('dev'));
 app.use(express.json());
