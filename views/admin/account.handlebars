@@ -1,261 +1,70 @@
 <div class="admin-section admin-section2">
   <div class="admin-section-panel admin-section-panel4">
     <div class="admin-panel-section-header">
-      <h2>List News</h2>
-      <a class="addbtn" data-toggle="modal" data-target="#add-news">Add News</a>
+      <h2>List Account</h2>
 
+      <select name="type" id="account-type" style="margin-left: 1rem; padding: 10px">
+        <option value="0" selected>Waiting for verification</option>
+        <option value="1">Complete</option>
+        <option value="2">Disable</option>
+        <option value="3">Pending</option>
+        <option value="4">Block</option>
+      </select>
     </div>
-    <table cellpadding="10" cellspacing="10" border="1" style="width: 100%;">
+    <table cellpadding="10" cellspacing="10" border="1" style="width: 100%">
       <tr class="header">
         <td>ID</td>
-        <td>Title</td>
-        <td>Day</td>
-        <td>Content</td>
-        <td>Picture</td>
+        <td>Username</td>
+        <td>Last modified</td>
       </tr>
       <tbody id="tbody" class="p-3">
-        {{#each context}}
+        {{#each data}}
           <tr class="item">
-            <td>{{idtin}}</td>
-            <td>{{title}}</td>
-            <td>{{day}}</td>
-            <td>{{content}}</td>
-            <td>
-              <img
-                style="max-width: 50px;"
-                src="/images/news/{{picture_path}}"
-                alt="{{name}}"
-              />
-            </td>
-            <td>
-              <button
-                onclick="handleModalEdit('{{idtin}}','{{title}}','{{day}}','{{content}}','{{picture_path}}')"
-                class="btn btn-primary"
-                data-toggle="modal"
-                data-target="#edit-news"
-              >Edit</button>
-              |
-              <button
-                onclick="handleModalDel('{{idtin}}','{{title}}')"
-                class="btn btn-danger"
-                data-toggle="modal"
-                data-target="#modalDel"
-              >Delete</button>
-            </td>
+            <td>{{id}}</td>
+            <td><a href="account?username={{username}}">{{username}}</a></td>
+            <td>{{last_modified}}</td>
           </tr>
         {{/each}}
       </tbody>
     </table>
   </div>
 </div>
-
-<div id="add-news" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <hp class="modal-title">News</hp>
-        <button
-          type="button"
-          class="close"
-          data-dismiss="modal"
-        >&times;</button>
-      </div>
-      <form method="post" action="/admin/news" enctype="multipart/form-data">
-        <div class="modal-body">
-          <div class="form-group">
-
-            <label for="newsTitle">Title: </label>
-            <input
-              class="form-control"
-              id="newsTitle"
-              placeholder="Title"
-              type="text"
-              name="title"
-            />
-          </div>
-          <div class="form-group">
-
-            <label for="newsDay">Day: </label>
-            <input
-              class="form-control"
-              id="newsDay"
-              placeholder="Day"
-              type="date"
-              name="day"
-            />
-          </div>
-          <div class="form-group">
-
-            <label for="newsContent">Content: </label>
-            <input
-              class="form-control"
-              id="newsContent"
-              placeholder="Content"
-              type="text"
-              name="content"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="customFile">Picture:</label>
-            <div class="custom-file">
-              <input
-                type="file"
-                class="custom-file-input"
-                id="customFile"
-                name="image"
-              />
-              <label class="custom-file-label" for="customFile">Choose file</label>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-sm-12">
-              <div class="preview-images"></div>
-            </div>
-          </div>
-          <div class="form-group">
-
-            <button type="submit" class="form-btn btn btn-primary px-5 mr-2">Add
-              News</button>
-          </div>
-        </div>
-      </form>
-
-    </div>
-  </div>
-</div>
-
-<!-- Delete Confirm Modal -->
-<div id="modalDel" class="modal fade">
-  <div class="modal-dialog">
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <hp class="modal-title">Delete news</hp>
-        <button
-          type="button"
-          class="close"
-          data-dismiss="modal"
-        >&times;</button>
-      </div>
-
-      <div class="modal-body">
-        <p>Are you sure want to delete news:
-          <strong class="news-delete-name">Nên đi đâu 2022</strong>
-          ?</p>
-      </div>
-      <div class="modal-footer">
-        <form action="/admin/news/delete" method="post">
-          <input type="hidden" name="inputIdDel" id="inputIdDel" />
-          <button
-            type="button"
-            class="btn btn-default"
-            data-dismiss="modal"
-          >Close</button>
-          <button
-            id="btn-del-news"
-            type="submit"
-            class="btn btn-danger"
-          >Delete</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Edit Confirm Modal -->
-<div id="edit-news" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <hp class="modal-title">Edit infomation news</hp>
-        <button
-          type="button"
-          class="close"
-          data-dismiss="modal"
-        >&times;</button>
-      </div>
-      <form
-        method="post"
-        action="/admin/news/edit"
-        enctype="multipart/form-data"
-      >
-        <input type="hidden" id="inputIdEdit" name="inputIdEdit" />
-        <div class="modal-body">
-          <div class="form-group">
-            <label for="newsTitleEdit">Title: </label>
-            <input
-              class="form-control"
-              id="newsTitleEdit"
-              placeholder="Title"
-              type="text"
-              name="title"
-            />
-          </div>
-          <div class="form-group">
-            <label for="newsDayEdit">Day: </label>
-            <input
-              class="form-control"
-              id="newsDayEdit"
-              placeholder="Day"
-              type="date"
-              name="day"
-            />
-          </div>
-          <div class="form-group">
-            <label for="newsContentEdit">Content: </label>
-            <input
-              class="form-control"
-              id="newsContentEdit"
-              placeholder="Content"
-              type="text"
-              name="content"
-            />
-          </div>
-          <div class="form-group">
-            <label for="customFile">Picture:</label>
-            <div class="custom-file">
-              <input
-                type="file"
-                class="custom-file-input"
-                id="customFile"
-                name="image"
-              />
-              <label class="custom-file-label" for="customFile">Choose file</label>
-            </div>
-          </div>
-          <div class="form-group">
-
-            <button
-              id="btn-edit-news"
-              type="submit"
-              class="btn btn-primary px-5 mr-2"
-            >Edit now</button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
 <script>
+  
+  const accountStatus = document.getElementById('account-type');
+  const myTbody = document.getElementById('tbody')
+  if(accountStatus&&myTbody){
+    accountStatus.addEventListener('change',async (e)=>{
 
-  // Add the following code if you want the name of the file appear on select
-  $(".custom-file-input").on("change", function () { var fileName =
-  $(this).val().split("\\").pop();
-  $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
-  });
-</script>
-<script>
-
-  //xóa function handleModalDel(id, name) { console.log(id);
-  $('.news-delete-name').html(name); $('#inputIdDel').val(id); } //sửa(update)
-  function handleModalEdit(id, title, day, content, picture_path) {
-  //console.log(id,title,day,content,picture_path); var newdate =
-  day.split("-").reverse().join("-"); $('#newsTitleEdit').val(title);
-  $('#newsDayEdit').val(newdate); $('#newsContentEdit').val(content);
-  $('#inputIdEdit').val(id); }
+      try{
+        const myURL = location.href+"/api?status="+e.target.value
+        console.log(myURL)
+        const fetchURL = await fetch(myURL)
+        const res = await fetchURL.json()
+        if(res.code){
+          throw new Error(res.message)
+        }
+        const data = res.data
+        let context = data.map(e=>`
+            <tr class="item">
+              <td>${e.id}</td>
+              <td><a href="account?username=${e.username}">${e.username}</a></td>
+              <td>${e.last_modified}</td>
+            </tr>
+        `).join("")
+        console.log(data.length)
+        if(!data.length){
+          context = `
+          <td colspan="4" class="text-center">Data is empty</td>
+          `
+        }
+        myTbody.innerHTML = ""
+        myTbody.insertAdjacentHTML('beforeend', context)
+      }catch(err){
+        console.error(err.message)
+      }
+      
+    })
+  }
 
 </script>

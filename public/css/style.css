@@ -656,3 +656,61 @@ nav {
 .admin-section-panel2 form button:hover {
   background-color: #b6b6b6;
 }
+
+
+/* Account info  */
+
+
+.account-info-container {
+  margin-top: 0;
+  padding: 0 10%;
+  height: 50vh;
+}
+
+.user-booking-container {
+  margin-top: 0;
+  padding: 0 10%;
+  height: 50vh;
+}
+
+.account-info-container > h1,
+.user-booking-container > h1 {
+  color: rgb(53, 92, 105);
+  text-align: left;
+  padding: 0 0 10px 0;
+}
+
+.account-info-container > h3,
+.user-booking-container > h3 {
+  color: rgb(53, 92, 105);
+  opacity: 0.8;
+  text-align: left;
+  padding: 0 0 10px 0;
+}
+
+.account-info-container > h3:after,
+.user-booking-container > h3:after {
+  content: "";
+  display: block;
+  height: 3px;
+  width: 7%;
+  background: rgb(53, 92, 105);
+  position: relative;
+  bottom: -10px;
+}
+
+/* .account-info-container .account-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+} */
+
+
+.account-info-container .account-container table td{
+  padding: 1rem;
+}
+
+
+.account-info-container .account-container img{
+  max-width: 100px;
+}
