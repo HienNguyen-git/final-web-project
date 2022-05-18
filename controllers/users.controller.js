@@ -1,15 +1,16 @@
-const {handlePostOTP} = require('../models/user.model');
+const { handlePostOTP } = require('../models/user.model');
+const { formatDateTime } = require('../config/helper');
 
-const resetPasswordGet = (req,res) =>{
-    res.render('account/resetpassword',{title: 'Reset Password'});
+const resetPasswordGet = (req, res) => {
+    res.render('account/resetpassword', { title: 'Reset Password' });
 }
 
-var nodemailer =  require('nodemailer'); // khai báo sử dụng module nodemailer
-const requestOtpToMail = (req,res) =>{
-    let {email} = req.body;
+var nodemailer = require('nodemailer'); // khai báo sử dụng module nodemailer
+const requestOtpToMail = (req, res) => {
+    let { email } = req.body;
     // console.log(email)
-    const otp = Math.floor(100000 + Math.random()*900000);
-    var transporter =  nodemailer.createTransport({ // config mail server
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    var transporter = nodemailer.createTransport({ // config mail server
         service: 'Gmail',
         auth: {
             user: 'nchdang16012001@gmail.com',
@@ -24,11 +25,11 @@ const requestOtpToMail = (req,res) =>{
     }
 
     //lưu vào db
-    console.log(Date.now());
+    console.log(formatDateTime(Date.now()));
     let expiredDay = Date.now() + 60000;
-    handlePostOTP(otp,expiredDay);
+    handlePostOTP(otp, expiredDay);
 
-    transporter.sendMail(mainOptions, function(err, info){
+    transporter.sendMail(mainOptions, function (err, info) {
         if (err) {
             console.log(err);
             // res.redirect('/users/account/resetpassword/sendOtp');
@@ -44,12 +45,12 @@ const requestOtpToMail = (req,res) =>{
     });
 };
 
-const sendOtp = (req,res) =>{
-    res.render('account/sendOtp',{title: 'sendOtp'});
+const sendOtp = (req, res) => {
+    res.render('account/sendOtp', { title: 'sendOtp' });
 }
 
 
-module.exports ={
+module.exports = {
     resetPasswordGet,
     requestOtpToMail,
     sendOtp

@@ -1,4 +1,4 @@
-const connect = require('../database/db');
+const connect = require('../config/db');
 
 const handlePostOTP = (otp,expired) => new Promise((resolve, reject) => {
     const sql = "insert into otp(otp,expired) values(?,?)"
