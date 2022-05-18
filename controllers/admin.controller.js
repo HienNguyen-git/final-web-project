@@ -22,7 +22,7 @@ const handleAdminUserAccount = async (req, res) => {
         const data = raw.map(e => ({
             id: e.id,
             username: e.username,
-            status: encodeStatusCode(+e.status),
+            status: encodeStatusCode(e.status),
             phone: e.phone,
             email: e.email,
             name: e.name,
@@ -32,6 +32,7 @@ const handleAdminUserAccount = async (req, res) => {
             back_cmnd: e.back_cmnd,
             total_value: e.total_value
         }))
+        console.log(data)
         return res.render('admin/account-info', { title: "Account", isAdmin: true, data })
     }
 }

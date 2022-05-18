@@ -10,18 +10,18 @@ const dataProcess = (data) => Object.values(JSON.parse(JSON.stringify(data)))
 const formatDate = (dateTime) => moment(dateTime).format("MMMM Do YYYY")
 
 const encodeStatusCode = (status) => {
-    switch (status) {
+    console.log(status)
+    switch (+status) {
         case 0:
-            return `<i class="fa fa-exclamation text-warning"> ${statusEncode[status]}</i>`
-            break
+            return `<td class="text-warning font-weight-bold"><i class="fa fa-exclamation"></i> ${statusEncode[+status]}</td>`
         case 1:
-            break
+            return `<td class="text-success font-weight-bold"><i class="fa fa-check "></i> ${statusEncode[+status]}</td>`
         case 2:
-            break
+            return `<td class="text-muted font-weight-bold"><i class="fa fa-ban "></i> ${statusEncode[+status]}</td>`
         case 3:
-            break
-        case 4:
-            break
+            return `<td class="text-secondary font-weight-bold"><i class="fas fa-circle-notch fa-spin"></i> ${statusEncode[+status]}</td>`
+        default:
+            return `<td class="text-danger font-weight-bold"><i class="fas fa-clock"></i> ${statusEncode[+status]}</td>`
     }
 }
 
