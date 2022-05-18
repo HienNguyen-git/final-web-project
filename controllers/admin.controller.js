@@ -1,4 +1,4 @@
-const { formatDateTime, dataProcess, formatDate, encodeStatusCode } = require("../config/helper");
+const { formatDateTime, dataProcess, formatDate, encodeStatusCode, formatDateTime2 } = require("../config/helper");
 const { getUserAccountByStatus, getUserDetailByUsername, updateUserStatus } = require("../models/admin.model");
 
 const getAdminHome = (req, res) => {
@@ -77,8 +77,8 @@ const handleAccountStatus = async (req,res)=>{
         try {
             const actions = ['verify','cancel','request']
             const actionIndex = actions.indexOf(action)+1
-            
-            if(await updateUserStatus(username,actionIndex)){
+            const currentDateTime = formatDateTime2();
+            if(await updateUserStatus(username,actionIndex,currentDateTime)){
                 return res.json({
                     code: 0,
                     message: `Update username=${username} successful!`,
