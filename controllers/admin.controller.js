@@ -22,7 +22,7 @@ const handleAdminUserAccount = async (req, res) => {
         const data = raw.map(e => ({
             id: e.id,
             username: e.username,
-            status: encodeStatusCode(e.status),
+            status: encodeStatusCode(+e.status),
             phone: e.phone,
             email: e.email,
             name: e.name,
