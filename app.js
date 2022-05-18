@@ -42,7 +42,12 @@ app.use(require('express-session')({
   saveUninitialized: true,
   cookie: { secure: !true }
 }))
-
+// Flash message
+app.use((req, res, next) => {
+  res.locals.flash = req.session.flash;
+  delete req.session.flash
+  next()
+})
 
 app.use(logger('dev'));
 app.use(express.json());
