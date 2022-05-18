@@ -1,5 +1,5 @@
 const { formatDateTime, dataProcess, formatDate, encodeStatusCode } = require("../config/helper");
-const { getUserAccountByStatus, getUserDetailByUsername } = require("../models/admin.model");
+const { getUserAccountByStatus, getUserDetailByUsername, updateUserStatus } = require("../models/admin.model");
 
 const getAdminHome = (req, res) => {
     res.render('admin/home', { title: "Admin", isAdmin: true });
@@ -23,6 +23,7 @@ const handleAdminUserAccount = async (req, res) => {
             id: e.id,
             username: e.username,
             status: encodeStatusCode(e.status),
+            statusCode: e.status,
             phone: e.phone,
             email: e.email,
             name: e.name,
@@ -64,10 +65,43 @@ const handleAccountApi = async (req, res) => {
     }
 }
 
+const handleAccountStatus = async (req,res)=>{
+    const {username, action} = req.body
+    
+    if(username===undefined||action===undefined){
+        return res.json({
+            code:1,
+            message:"Missing input value!"
+        })
+    }else{
+        try {
+            const actions = ['verify','cancel','request']
+            const actionIndex = actions.indexOf(action)+1
+            
+            if(await updateUserStatus(username,actionIndex)){
+                return res.json({
+                    code: 0,
+                    message: `Update username=${username} successful!`,
+                })
+            }else{
+                res.json({
+                    code:1,
+                    message:"Something went wrong!"
+                })
+            }
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
+
+
+}
+
 
 
 module.exports = {
     getAdminHome,
     handleAdminUserAccount,
-    handleAccountApi
+    handleAccountApi,
+    handleAccountStatus
 }

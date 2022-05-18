@@ -1,6 +1,7 @@
 <div class="admin-section admin-section2">
   <div class="admin-section-panel admin-section-panel4">
     {{#each data}}
+
   <section class="account-info-container">
         <h1>Account Detail </h1>
         <h3>{{username}}</h3>
@@ -35,10 +36,54 @@
                 <td>{{total_value}}</td>
             </tr>
         </table>
-        <a href="forgot.php">Change your password</a> 
+        {{#checkStatus statusCode}}
+        <div id="handle-box">
+            <button class="btn btn-primary mr-2 mb-2" id="verify">Verify</button> 
+            <button class="btn btn-danger mr-2 mb-2" id="cancel">Cancel</button> 
+            <button class="btn btn-info mr-2 mb-2" id="request">Request additional information</button> 
+        </div>
+        {{/checkStatus}}
         </div>
     </section>
     {{/each}}
 
     </div>  
 </div>
+
+<script>
+    const handleBox = document.getElementById('handle-box')
+    if(handleBox){
+        // Get origin and pathname
+        const myURL = location.origin+location.pathname
+        const actionList = ['verify','cancel','request']
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username');
+        console.log(username)
+        handleBox.addEventListener('click',async (e)=>{
+            const myID = e.target.id
+            if(actionList.includes(myID)){
+                console.log(myID)
+                if (confirm(`Are you sure want to ${myID} ${username}`)==true){
+                    const myFetch = await fetch(myURL,{
+                        method: "PUT",
+                        body: JSON.stringify({
+                            username,
+                            action: myID
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+
+                    })
+                    const res = await myFetch.json()
+                    if(!res.code){
+                        alert("Update successful!")
+                        window.location.reload();
+                    }
+                }
+                
+
+            }
+        })
+    }
+</script>
