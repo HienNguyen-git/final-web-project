@@ -215,7 +215,7 @@
   background: rgba(0, 0, 0, 0.2);
 }
 .row div {
-  margin-top: 16px;
+  /* margin-top: 16px; */
 }
 
 /* Header Styling */

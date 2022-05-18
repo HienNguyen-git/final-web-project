@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "nodemon ./bin/www"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -23,6 +23,7 @@
     "multer": "^1.4.4",
     "multiparty": "^4.2.3",
     "mysql": "^2.18.1",
+    "nodemailer": "^6.7.5",
     "throttle": "^1.0.3"
   }
 }
