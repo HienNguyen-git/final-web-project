@@ -2,45 +2,83 @@
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css    ">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css    "
+    />
+    <script
+      src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+    ></script>
     <title>{{title}}</title>
   </head>
   <body>
-    <div class="header-container">
-		<div class="navbar-brand">
-			<a href="/">
-				<h1 class="navbar-heading">Web Final Project</h1>
-			</a>
+  {{#if flash}}
+    <div
+      class="text-center fade show alert alert-dismissible alert-{{flash.type}}"
+    >
+      <button
+        type="button"
+        class="close"
+        data-dismiss="alert"
+        aria-hidden="true"
+      >&times;</button>
+      <strong>{{flash.intro}}</strong>
+      {{flash.message}}
+    </div>
+  {{/if}}
+  {{#if isAdmin}}
+		<div class="admin-section-header">
+			<div class="admin-logo">
+				Web final project
+				<i class="fas fa-video"></i>
+			</div>
+			<div class="admin-login-info">
+				<a href="/admin">Welcome, Admin</a>
+				<img class="admin-user-avatar" src="/images/avatar.png" alt="">
+			</div>
 		</div>
-		<div class="navbar-container">
-			<nav class="navbar">
-				<ul class="navbar-menu nav">
-					<li class="nav-item"><a href="/" class="nav-link">Home</a></li>
-					<li class="nav-item"><a href="/" class="nav-link">Schedule</a></li>
-					<li class="nav-item"><a href="/" class="nav-link">Logout</a></li>
-
+		<div class="admin-container">
+			<div class="admin-section admin-section1 ">
+				<ul>
+					<a href="/admin"><li class="{{#checkPath routerPath ""}}active-menu{{/checkPath}}" ><i class="fas fa-sliders-h"></i>Dashboard</li></a>
+					<a href="/admin/account"><li class="{{#checkPath routerPath "admin/employee"}}active-menu{{/checkPath}}"><i class="fas fa-user-tie"></i>Account</li></a>
 				</ul>
-			</nav>
+			</div>
+			{{{body}}}
 		</div>
-	</div>
-    {{#if flash}}
-      <div class="text-center fade show alert alert-dismissible alert-{{flash.type}}">
-        <button
-          type="button"
-          class="close"
-          data-dismiss="alert"
-          aria-hidden="true"
-        >&times;</button>
-        <strong>{{flash.intro}}</strong>
-        {{flash.message}}
+  {{else}}
+   <div class="header-container">
+        <div class="navbar-brand">
+          <a href="/">
+            <h1 class="navbar-heading">Web Final Project</h1>
+          </a>
+        </div>
+        <div class="navbar-container">
+          <nav class="navbar">
+            <ul class="navbar-menu nav">
+              <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+              <li class="nav-item"><a
+                  href="/"
+                  class="nav-link"
+                >Schedule</a></li>
+              <li class="nav-item"><a href="/" class="nav-link">Logout</a></li>
+            </ul>
+          </nav>
+        </div>
       </div>
-    {{/if}}
     {{{body}}}
+	{{/if}}
   </body>
 </html>
