@@ -437,7 +437,7 @@ nav {
   height: 100%;
 }
 
-.admin-section1 ul{
+.admin-section1 ul {
   padding: 0;
 }
 
@@ -657,9 +657,7 @@ nav {
   background-color: #b6b6b6;
 }
 
-
 /* Account info  */
-
 
 .account-info-container {
   margin-top: 0;
@@ -705,12 +703,20 @@ nav {
   align-items: center;
 } */
 
+.account-info-container .account-container table:after {
+  margin-bottom: 1rem;
+  content: "";
+  display: block;
+  height: 3px;
+  width: 190%;
+  background: rgb(53, 92, 105);
+  position: relative;
+}
 
-.account-info-container .account-container table td{
+.account-info-container .account-container table td {
   padding: 1rem;
 }
 
-
-.account-info-container .account-container img{
+.account-info-container .account-container img {
   max-width: 100px;
 }

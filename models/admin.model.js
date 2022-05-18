@@ -18,8 +18,18 @@ const getUserDetailByUsername = (username) => new Promise((resolve,reject)=>{
     })
 })
 
+const updateUserStatus = (username,status) => new Promise((resolve,reject)=>{
+    connect.query('update user set status=? where username=?',[status,username], (err) => {
+        if (err) reject(false)
+        else {
+            resolve(true)
+        }
+    })
+})
+
 
 module.exports = {
     getUserAccountByStatus,
-    getUserDetailByUsername
+    getUserDetailByUsername,
+    updateUserStatus
 }
