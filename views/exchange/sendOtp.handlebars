@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
       <div class="col-md-10 col-lg-8 col-xl-5">
         <div class="border p-3 rounded bg-light">
-          <form method="post" action="/users/account/resetpassword/sendOtpPost">
+          <form method="post">
             <div class="form-group">
               <label for="pass">OTP</label>
               <div class="input-group mb-3">
@@ -24,38 +24,9 @@
             
             
           </form>
-          <form method="post" action="/users/account/resetpassword/resendOtpPost">
-              <div class="form-group">
-                <button class="btn btn-primary px-5 w-100" id="btnResendOTP" type="submit" >Resend OTP</button>
-
-              </div>
-            </form>
+         
         </div>
       </div>
     </div>
   </div>
-<script>
-  let btnResendOTP = document.getElementById('btnResendOTP');
-  btnResendOTP.addEventListener('submit', function(){
-    
-    intervalResend();
-  })
 
-  function intervalResend(){
-    btnResendOTP.disabled = true;
-    let count = 60;
-    let resendtime = setInterval(() =>{
-      btnResendOTP.innerHTML = "Resend OTP in: "+ count + " seconds";
-      //console.log(count)
-      count--;
-      if(count < 0){
-        clearInterval(resendtime);
-        btnResendOTP.disabled = false;
-        btnResendOTP.innerHTML = "Resend OTP" ;
-
-      }
-    },1000)
-  }
-  intervalResend()
-  
-</script>
