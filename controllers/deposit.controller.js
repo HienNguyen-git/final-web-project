@@ -45,8 +45,29 @@ const sendOtp = (req, res) => {
     res.render('exchange/sendOtp', { title: 'sendOtp' });
 }
 
+const getUserInfo = async(req,res)=>{
+    // const username = req.session.username
+    const username = 'user1'
+    let data = await getUserDepositInfo(username)
+    data = ({
+        username: data.username,
+        phone: data.phone,
+        email: data.email,
+        name: data.name,
+        date_of_birth: data.date_of_birth,
+        address: data.address,
+        total_value: data.total_value,
+    })
+    res.json({
+        code: 0,
+        message: "Get data successful!",
+        data
+    })
+}
+
 module.exports = {
     PostDeposit,
     sendOtp,
-    getDeposit
+    getDeposit,
+    getUserInfo
 }
