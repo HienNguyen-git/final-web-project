@@ -19,11 +19,52 @@
             </div>
 
             <div class="form-group">
-              <button class="btn btn-success px-5" type="submit">Confirm</button>
+              <button class="btn btn-success px-5 w-100" type="submit">Confirm</button>
             </div>
             
+            
           </form>
+          <form method="post" action="/users/account/resetpassword/resendOtpPost">
+              <div class="form-group">
+                <button class="btn btn-primary px-5 w-100" id="btnResendOTP" type="submit" >Resend OTP</button>
+
+              </div>
+            </form>
         </div>
       </div>
     </div>
   </div>
+<script>
+  let btnResendOTP = document.getElementById('btnResendOTP');
+  btnResendOTP.addEventListener('submit', function(){
+    
+    intervalResend();
+  })
+  let dem = false;
+    console.log("dem: "+dem)
+
+  if(dem == false){
+    dem=true;
+
+    console.log("dem ne " + dem)
+  intervalResend()
+
+  }
+  function intervalResend(){
+    dem++;
+    btnResendOTP.disabled = true;
+    let count = 10;
+    let resendtime = setInterval(() =>{
+      btnResendOTP.innerHTML = "Resend OTP in: "+ count + " seconds";
+      //console.log(count)
+      count--;
+      if(count < 0){
+        clearInterval(resendtime);
+        btnResendOTP.disabled = false;
+        btnResendOTP.innerHTML = "Resend OTP" ;
+
+      }
+    },1000)
+  }
+  
+</script>

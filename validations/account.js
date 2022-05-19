@@ -1,6 +1,6 @@
 
 const { check } = require('express-validator')
-const connect = require('../database/db')
+const connect = require('../config/db')
 const bcrypt = require('bcrypt')
 // Validator
 // ***************
@@ -82,10 +82,10 @@ const loginAdminValidator = [
 const changePassValidator = [
     check('password').exists().withMessage("Please enter your old password").notEmpty().withMessage("Old Password can not be empty").custom((value, { req }) =>
         new Promise((resolve, reject) => { // Check password is match 
-            connect.query('select * from customer where email=?', [req.session.user], (err, result) => {
+            connect.query('select * from user where username=?', [req.session.user], (err, result) => {
                 // console.log(result);
                 if (err) reject(new Error("Something went wrong! here"))
-                else if (!result.length) reject(new Error("Something went wrong here1!"))
+                else if (!result.length) reject(new Error("Something went wrong here!"))
                 else {
                     const accPass = result[0].password
 
@@ -97,9 +97,22 @@ const changePassValidator = [
         })),
 ]
 
+const requestOtpToMailValidator = [
+    check('email')
+    .exists().withMessage("Please enter email")
+    .notEmpty().withMessage("Email can not be empty")
+    ,
+
+    check('phone')
+    .exists().withMessage("Please enter phone number")
+    .notEmpty().withMessage("Phone number can not be empty")
+    ,
+]
+
 module.exports = {
     registerValidator,
     loginValidator,
     loginAdminValidator,
     changePassValidator,
+    requestOtpToMailValidator,
 }

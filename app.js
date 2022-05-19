@@ -57,6 +57,7 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
   res.locals.user = req.session.user;
+  res.locals.email = req.session.email;
   next()
 })
 
