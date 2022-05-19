@@ -12,6 +12,7 @@ const expressHandlebars = require('express-handlebars');
 
 var indexRouter = require('./routes/index.route');
 var usersRouter = require('./routes/users.route');
+var usersDepositRouter = require('./routes/deposit.route');
 const adminRouter = require('./routes/admin.route')
 
 
@@ -58,6 +59,8 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   res.locals.user = req.session.user;
   res.locals.email = req.session.email;
+  res.locals.phone = req.session.phone;
+  res.locals.total_value = req.session.total_value;
   next()
 })
 
@@ -69,9 +72,9 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // routing
-
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/deposit', usersDepositRouter);
 app.use('/admin', adminRouter)
 
 // catch 404 and forward to error handler
