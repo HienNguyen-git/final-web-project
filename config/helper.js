@@ -26,10 +26,27 @@ const encodeStatusCode = (status) => {
     }
 }
 
+const generateCode = (provider_number)=>{
+    let result = [provider_number];
+    let characters = '0123456789';
+    for ( let i = 0; i < 5; i++ ) {
+      result.push(characters.charAt(Math.floor(Math.random() * characters.length)));
+   }
+   return result.join('');
+}
+
+function sleep(ms) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
+}
+
 module.exports = {
     formatDateTime,
     formatDateTime2,
     dataProcess,
     formatDate,
-    encodeStatusCode
+    encodeStatusCode,
+    generateCode,
+    sleep
 }
