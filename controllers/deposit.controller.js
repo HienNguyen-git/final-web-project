@@ -1,6 +1,7 @@
-const { handlePostDeposit } = require('../models/deposit.model');
+const { handlePostDeposit, getUserDepositInfo } = require('../models/deposit.model');
 const { validationResult } = require('express-validator');
 var nodemailer = require('nodemailer'); // khai báo sử dụng module nodemailer
+const { dataProcess } = require('../config/helper');
 
 const PostDeposit = async (req,res) =>{
     let {phone_receiver,money,feeperson,note} = req.body;
@@ -31,14 +32,42 @@ const PostDeposit = async (req,res) =>{
     
 }
 
+const getDeposit = async (req,res)=>{
+    // const username = req.session.username
+    const username = 'user1'
+    const data = await getUserDepositInfo(username)
+    console.log(data)
+    res.render('exchange/deposit',{title: 'Deposit', data});
+}
+
 
 const sendOtp = (req, res) => {
     res.render('exchange/sendOtp', { title: 'sendOtp' });
 }
 
+const getUserInfo = async(req,res)=>{
+    // const username = req.session.username
+    const username = 'user1'
+    let data = await getUserDepositInfo(username)
+    data = ({
+        username: data.username,
+        phone: data.phone,
+        email: data.email,
+        name: data.name,
+        date_of_birth: data.date_of_birth,
+        address: data.address,
+        total_value: data.total_value,
+    })
+    res.json({
+        code: 0,
+        message: "Get data successful!",
+        data
+    })
+}
+
 module.exports = {
     PostDeposit,
     sendOtp,
-
-
+    getDeposit,
+    getUserInfo
 }

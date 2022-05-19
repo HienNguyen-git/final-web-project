@@ -22,7 +22,16 @@ const selectReceiverValue = (phone_receiver) => new Promise((resolve,reject) =>{
     })
 })
 
+const getUserDepositInfo = (username)=> new Promise((resolve,reject)=>{
+    connect.query("select * from user_detail where username=?",[username],(err,result)=>{
+        if(err) reject(err)
+        resolve(result[0])
+    })
+})
+
+
 module.exports ={
     handlePostDeposit,
     selectReceiverValue,
+    getUserDepositInfo
 }

@@ -27,7 +27,6 @@
           <form method="post" action="/users/account/resetpassword/resendOtpPost">
               <div class="form-group">
                 <button class="btn btn-primary px-5 w-100" id="btnResendOTP" type="submit" >Resend OTP</button>
-
               </div>
             </form>
         </div>
@@ -37,8 +36,7 @@
 <script>
   let btnResendOTP = document.getElementById('btnResendOTP');
   btnResendOTP.addEventListener('submit', function(){
-    
-    intervalResend();
+      intervalResend();
   })
 
   function intervalResend(){
