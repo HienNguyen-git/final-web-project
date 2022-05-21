@@ -1,0 +1,58 @@
+<div class="admin-section admin-section2">
+  <div class="admin-section-panel admin-section-panel4">
+    <div class="admin-panel-section-header">
+      <h2>List Deposit money bigger than 5m</h2>
+    </div>
+    <table cellpadding="10" cellspacing="10" border="1" style="width: 100%">
+      <tr class="header">
+        <td>ID</td>
+        <td>Phone Sender</td>
+        <td>Phone Receiver</td>
+        <td>Value</td>
+        <td>Fee</td>
+        <td>Person pay Fee</td>
+        <td>Note</td>
+        {{!-- <td>Status</td> --}}
+        <td>Date Deposit</td>
+        <td>Action</td>
+      </tr>
+      <tbody id="tbody" class="p-3">
+        {{#each data}}
+          <tr class="item">
+            <td>{{id}}</td>
+            <td>{{phone_sender}}</td>
+            <td>{{phone_receiver}}</td>
+            <td>{{value}}</td>
+            <td>{{fee}}</td>
+            <td>{{feeperson}}</td>
+            <td>{{note}}</td>
+            {{!-- {{#if status}}
+            <td class="text-secondary font-weight-bold"><i class="fas fa-circle-notch fa-spin"></i></td>
+            {{else}}
+            <td class="text-success font-weight-bold"><i class="fa fa-check "></i></td>
+            {{/if}} --}}
+            <td>{{date}}</td>
+            <td>
+              <button class="btn btn-primary" onclick="checkClick('{{id}}','{{phone_sender}}','{{phone_receiver}}','{{value}}','{{fee}}','{{feeperson}}')" id="checkbtn" type="submit" >Check</button>
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+
+  
+  async function checkClick(id,phone_sender,phone_receiver,value,fee,feeperson){
+    const myURL = location.origin+location.pathname
+    //console.log(myURL)
+    const myFetch = await fetch(myURL,{
+      method:'POST',
+      body: JSON.stringify({id,phone_sender,phone_receiver,value,fee,feeperson}),
+      headers: {'Content-Type': 'application/json'},
+
+    })
+     window.location.reload();
+  }
+</script>

@@ -33,9 +33,35 @@ const updateUserStatus = (username, status, currentDateTime) => new Promise((res
     })
 })
 
+const handleSelectDepositMore5m = (status) => new Promise((resolve,reject) =>{
+    connect.query('select * from deposit where status = ?',[status],(err,result)=>{
+        if(err) reject(false);
+        else{
+            resolve(result);
+        }
+    })
+})
+
+const updateStatusToCheck = (status,id) => new Promise((resolve, reject) => {
+    // console.log(status,id)
+    connect.query('update deposit set status=? where id=?', [status,id], (err, result) => {
+        if (err) reject(false)
+        else {
+            if(result.changedRows!=0){
+                // console.log(result)
+                resolve(true)
+            }else{
+                reject(false)
+            }
+        }
+    })
+})
+
 
 module.exports = {
     getUserAccountByStatus,
     getUserDetailByUsername,
-    updateUserStatus
+    updateUserStatus,
+    handleSelectDepositMore5m,
+    updateStatusToCheck,
 }

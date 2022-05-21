@@ -93,6 +93,9 @@ const sendOtpPost = async (req, res) => {
                     moneyDepositFeeReceiver = depositByPhone.value - depositByPhone.fee;
                     // console.log(moneyDepositFeeReceiver)
                 }
+                else{
+                    depositByPhone.value = +depositByPhone.value + +depositByPhone.fee;
+                }
                 await handleUpdateTotalValueOfSender(depositByPhone.value,depositByPhone.phone_sender);
                 await handleUpdateTotalValueOfReceiver(moneyDepositFeeReceiver,depositByPhone.phone_receiver);
                 req.session.flash = {
