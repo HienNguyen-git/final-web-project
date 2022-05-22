@@ -146,8 +146,6 @@ const changePassPost = async (req, res) => {
         }
         res.redirect('/users/account/resetpassword/changepassword')
     }
-
-
 }
 
 const resendOtpPost = (req, res) => {

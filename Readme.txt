@@ -4,3 +4,4 @@ user:
         1: da xac minh
         2: da vo hieu hoa
         3: cho cap nhat
+        4: block
