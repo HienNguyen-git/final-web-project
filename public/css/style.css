@@ -217,7 +217,9 @@
 .row div {
   /* margin-top: 16px; */
 }
-
+.active-menu {
+  background-color: lightblue !important;
+}
 /* Header Styling */
 #home-section-2,
 #home-section-3 {

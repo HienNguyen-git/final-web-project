@@ -2,6 +2,7 @@ const { handlePostDeposit, getUserDepositInfo,handleSelectDepositByPhone,handleU
 const { handlePostOTP,handleSelectOTP } = require('../models/user.model');
 const { validationResult } = require('express-validator');
 var nodemailer = require('nodemailer'); // khai báo sử dụng module nodemailer
+var smtpTransport = require('nodemailer-smtp-transport');
 const { dataProcess } = require('../config/helper');
 
 const PostDeposit = async (req,res) =>{
@@ -17,15 +18,30 @@ const PostDeposit = async (req,res) =>{
     const email = 'tdtnguyendang@gmail.com';
     const otp = Math.floor(100000 + Math.random() * 900000);
 
-    var transporter = nodemailer.createTransport({ // config mail server
-        service: 'Gmail',
+    // var transporter = nodemailer.createTransport({ // config mail server
+    //     service: 'Gmail',
+    //     auth: {
+    //         user: 'nchdang16012001@gmail.com',
+    //         pass: 'mlrafbeyqtvtqloe'
+    //     }
+    // });
+
+    var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
+        tls: {
+            rejectUnauthorized: false
+        },
+        // service: 'Gmail',
+        host: 'mail.phongdaotao.com',
+        port: 25,
+        secureConnection: false,
         auth: {
-            user: 'nchdang16012001@gmail.com',
-            pass: 'mlrafbeyqtvtqloe'
+            user: 'sinhvien@phongdaotao.com',
+            pass: 'svtdtu'
         }
-    });
+    }));
+
     var mainOptions = { // thiết lập đối tượng, nội dung gửi mail
-        from: 'nchdang16012001@gmail.com',
+        from: 'sinhvien@phongdaotao.com',
         to: email,
         subject: 'OTP code',
         html: '<p>You have got a code: ' + otp + '<br></br> Code will expired in 1 minute </p>'
@@ -92,6 +108,9 @@ const sendOtpPost = async (req, res) => {
                 if(depositByPhone.feeperson == 'receiver'){
                     moneyDepositFeeReceiver = depositByPhone.value - depositByPhone.fee;
                     // console.log(moneyDepositFeeReceiver)
+                }
+                else{
+                    depositByPhone.value = +depositByPhone.value + +depositByPhone.fee;
                 }
                 await handleUpdateTotalValueOfSender(depositByPhone.value,depositByPhone.phone_sender);
                 await handleUpdateTotalValueOfReceiver(moneyDepositFeeReceiver,depositByPhone.phone_receiver);
