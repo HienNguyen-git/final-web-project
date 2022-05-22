@@ -15,7 +15,6 @@ var usersRouter = require('./routes/users.route');
 var usersDepositRouter = require('./routes/deposit.route');
 const adminRouter = require('./routes/admin.route')
 
-
 var app = express();
 
 
