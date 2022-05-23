@@ -55,9 +55,44 @@ async function getUserByUsername(username) {
   });
 }
 
+async function getUserById(id) {
+  /* Lấy account bằng id
+    Input: id, String
+    Output: found user
+    */
+  const sql = "SELECT * FROM user WHERE username = ?";
+  const value = [id];
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, value, async (err, result) => {
+      if (err) throw err;
+      resolve(result[0]);
+    });
+  });
+}
+
+async function updatePasswordById(id, newPass) {
+  /**
+   * Cập nhật password của một tài khoản bằng id
+   * Input: id - String, newPass - String
+   * Output: true nếu thành công, false ngược lại
+   */
+  const sql = "UPDATE user SET password = ? WHERE id = ?";
+  const value = [newPass, id];
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, value, (err) => {
+      if (err) reject(false);
+    });
+    resolve(true);
+  });
+}
+
 module.exports = {
   handlePostOTP,
   handleSelectOTP,
   handleChangePass,
   getUserByUsername,
+  getUserById,
+  updatePasswordById,
 };

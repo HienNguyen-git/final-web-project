@@ -6,6 +6,7 @@ const {
   handleSelectOTP,
   handleChangePass,
   getUserByUsername,
+  updatePasswordById,
 } = require("../models/user.model");
 const { validationResult } = require("express-validator");
 var nodemailer = require("nodemailer"); // khai báo sử dụng module nodemailer
@@ -226,6 +227,12 @@ const resendOtpPost = (req, res) => {
   });
 };
 
+// GET '/logout'
+function logoutGet(req, res) {
+  res.clearCookie("accessToken");
+  res.redirect("/users/login");
+}
+
 // todo POST /users/login
 async function handleLogin(req, res, next) {
   let accessToken = req.cookies.accessToken;
@@ -248,17 +255,18 @@ async function handleLogin(req, res, next) {
       var token = jwt.sign(
         {
           id: acc.id,
+          username: acc.username,
         },
-        process.env.TOKEN_KEY
-        // {
-        //   expiresIn: "1h",
-        // }
+        process.env.TOKEN_KEY,
+        {
+          expiresIn: "1h",
+        }
       );
 
       // ? Sử dụng cookie hay refreshToken
-      //   res.cookie("accessToken", token, {
-      //     expires: new Date(Date.now() + 60 * 1000 * 60),
-      //   });
+      res.cookie("accessToken", token, {
+        expires: new Date(Date.now() + 60 * 1000 * 60),
+      });
 
       return res.json({
         success: true,
@@ -271,6 +279,57 @@ async function handleLogin(req, res, next) {
   }
 }
 
+// todo POST /users/change-password
+async function handleChangePassword(req, res, next) {
+  // todo validation for changing password
+  let userData = await getDataFromToken(req);
+
+  if (!userData) {
+    return res.json({
+      success: false,
+      message: "Please sign in to change your password",
+    });
+  }
+  let acc = await getUserByUsername(userData.username);
+
+  if (!acc) {
+    return res.json({ success: false, message: "Account not exist!" });
+  } else {
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(req.body.newPass, salt);
+
+    let changeResult = updatePasswordById(acc.id, hashPassword);
+
+    if (!changeResult) {
+      return res.json({
+        success: false,
+        message: "There's error while changing your password",
+      });
+    } else {
+      return res.json({
+        success: true,
+        message: "You have changed your password successfully",
+      });
+    }
+  }
+}
+
+function getDataFromToken(req) {
+  /**
+   * Function này sẽ lấy giải mã token và trả về data token
+   * Input: Request request
+   * Output: data lấy được từ token, null nếu không lấy được
+   */
+  try {
+    let token = req.cookies.accessToken;
+    let data = jwt.verify(token, process.env.TOKEN_KEY);
+
+    return data;
+  } catch {
+    return null;
+  }
+}
+
 module.exports = {
   resetPasswordGet,
   requestOtpToMail,
@@ -279,5 +338,7 @@ module.exports = {
   changePassGet,
   changePassPost,
   resendOtpPost,
+  logoutGet,
   handleLogin,
+  handleChangePassword,
 };

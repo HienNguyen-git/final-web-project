@@ -10,6 +10,8 @@ const {
   changePassPost,
   resendOtpPost,
   handleLogin,
+  handleChangePassword,
+  logoutGet,
 } = require("../controllers/users.controller");
 const {
   changePassValidator,
@@ -27,7 +29,14 @@ router.get("/login", function (req, res, next) {
 });
 
 // todo POST /login
-router.post("/login", loginValidator, handleLogin);
+router.post("/login", /* loginValidator ,*/ handleLogin);
+
+router.get("/logout", logoutGet);
+// todo GET /change-password
+router.get("/change-password", changePassGet);
+
+// todo POST /change-password
+router.post("/change-password", handleChangePassword);
 
 router.get("/account/resetpassword", resetPasswordGet);
 router.post(
