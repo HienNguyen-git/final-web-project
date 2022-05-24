@@ -6,7 +6,9 @@ const {
   handleWithdraw,
 } = require("../controllers/withdraw.controller");
 
+const { withdrawValidator } = require("../validations/account");
+
 router.get("/", renderWithdraw);
-router.post("/", handleWithdraw);
+router.post("/", withdrawValidator, handleWithdraw);
 
 module.exports = router;

@@ -1,3 +1,5 @@
+const connect = require("../config/db");
+
 async function createWithdraw(withdraw) {
   /* Tạo một giao dịch rút tiền trên bảng withdraw
     Input: withdraw object {username, date, status, fee}
@@ -9,7 +11,8 @@ async function createWithdraw(withdraw) {
   return new Promise((resolve, reject) => {
     connect.query(sql, value, (err, result) => {
       if (err) throw err;
-      resolve(result);
+      if (result[0]) return true;
+      return false;
     });
   });
 }

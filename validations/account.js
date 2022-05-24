@@ -168,10 +168,53 @@ const requestOtpToMailValidator = [
     .withMessage("Phone number can not be empty"),
 ];
 
+const withdrawValidator = [
+  check("cardNumber")
+    .exists()
+    .withMessage("Please enter your card number")
+    .bail()
+    .notEmpty()
+    .withMessage("Card number can not be empty"),
+
+  check("expireDate")
+    .exists()
+    .withMessage("Please enter your credit card's expire date")
+    .bail()
+    .notEmpty()
+    .withMessage("Expire date can not be empty")
+    .bail()
+    .isDate()
+    .withMessage("expireDate must be a Date type"),
+
+  check("cvv")
+    .exists()
+    .withMessage("Please enter your CVV")
+    .notEmpty()
+    .withMessage("CVV can not be empty")
+    .bail()
+    .isNumeric()
+    .withMessage("CVV can only contains numbers"),
+
+  check("amount")
+    .exists()
+    .withMessage("Please enter your amount")
+    .notEmpty()
+    .withMessage("Amount of withdrawal can not be empty")
+    .isNumeric()
+    .withMessage("Amount can only contains numbers"),
+
+  check("note")
+    .exists()
+    .withMessage("Please enter your Note")
+    .notEmpty()
+    .withMessage("User's note can not be empty"),
+];
+
 module.exports = {
   registerValidator,
   loginValidator,
   loginAdminValidator,
   changePassValidator,
   requestOtpToMailValidator,
+  withdrawValidator,
 };
