@@ -121,7 +121,7 @@ const sendOtpPost = async (req, res) => {
 };
 
 const changePassGet = (req, res) => {
-  res.render("account/changepassword", { title: "changepassword" });
+  res.render("account/user-change-pw", { title: "changepassword" });
 };
 
 const changePassPost = async (req, res) => {

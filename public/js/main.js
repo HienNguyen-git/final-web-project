@@ -1,6 +1,6 @@
 $(document).ready(() => {
   // * Javascript for GET users/change-password
-  if (document.getElementById("view-account-changepassword")) {
+  if (document.getElementById("view-account-user-change-pw")) {
     let form = document.getElementById("acc-change-password");
     form.onsubmit = (e) => {
       e.preventDefault();
@@ -18,7 +18,7 @@ $(document).ready(() => {
       // Ajax
       $.post("/users/change-password", data, (response) => {
         // show Message to user
-        console.log(response);
+        alert(response.message);
       });
     };
   }
