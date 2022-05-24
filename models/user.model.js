@@ -39,6 +39,22 @@ const handleChangePass = (newpass, email) =>
     resolve(true);
   });
 
+async function updateTotalValue(totalValue, username) {
+  /**
+   * Cập nhật lại số dư trong tài khoản bằng username
+   * Input: total_value - Integer, username - String (Lấy từ accessToken)
+   * Output: Value have been updated
+   */
+  const sql = "UPDATE user_detail SET total_value = ? WHERE username = ?";
+  const value = [totalValue, username];
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, value, async (err, result) => {
+      if (err) throw err;
+      resolve(result);
+    });
+  });
+}
 async function getUserByUsername(username) {
   /* Lấy account bằng username
     Input: username, String
@@ -55,13 +71,13 @@ async function getUserByUsername(username) {
   });
 }
 
-async function getUserById(id) {
-  /* Lấy account bằng id
-    Input: id, String
-    Output: found user
+async function getUserDetailByUserName(username) {
+  /* Lấy account detail bằng username
+    Input: username, String
+    Output: found user detail
     */
-  const sql = "SELECT * FROM user WHERE username = ?";
-  const value = [id];
+  const sql = "SELECT * FROM user_detail WHERE username = ?";
+  const value = [username];
 
   return new Promise((resolve, reject) => {
     connect.query(sql, value, async (err, result) => {
@@ -93,6 +109,7 @@ module.exports = {
   handleSelectOTP,
   handleChangePass,
   getUserByUsername,
-  getUserById,
+  getUserDetailByUserName,
   updatePasswordById,
+  updateTotalValue,
 };

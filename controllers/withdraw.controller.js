@@ -1,6 +1,14 @@
 const { validationResult } = require("express-validator");
-const { createWithdraw } = require("../models/withdraw.model");
+const {
+  createWithdraw,
+  getTodayWithdraw,
+} = require("../models/withdraw.model");
 const { getCardByAll } = require("../models/credit_card.model");
+const {
+  getUserByUsername,
+  getUserDetailByUserName,
+  updateTotalValue,
+} = require("../models/user.model");
 
 // GET /withdraw
 function renderWithdraw(req, res) {
@@ -20,9 +28,9 @@ async function handleWithdraw(req, res) {
     });
   }
 
-  let { cardNumber, expireDate, cvv } = req.body;
+  let { cardNumber, expireDate, cvv, amount, note } = req.body;
 
-  // let userData = await getDataFromToken(req);
+  let userData = await getDataFromToken(req);
 
   // if (!userData) {
   //   return res.json({
@@ -30,11 +38,73 @@ async function handleWithdraw(req, res) {
   //     message: "Vui lòng đăng nhập để thực hiện việc rút tiền",
   //   });
   // }
+
+  // * Credit card exist validation
   let creditCard = await getCardByAll({ cardNumber, expireDate, cvv });
+
   if (!creditCard) {
     return res.json({
       succes: false,
       message: "Thẻ không hợp lệ",
+    });
+  }
+
+  // * Maximum 2 transactions a day validation
+  const result = await getTodayWithdraw();
+
+  if (result.length >= 2) {
+    return res.json({
+      succes: false,
+      message: "Một ngày chỉ được tạo tối đa 2 giao dịch rút tiền!",
+    });
+  }
+
+  let fee = amount * 0.05;
+  let totalWithdraw = parseInt(amount) + fee;
+
+  // * Multiplicity of 50000 validation
+  if (amount % 50000 !== 0) {
+    return res.json({
+      succes: false,
+      message: "Số tiền phải là bội số của 50,000 đồng!",
+    });
+  }
+
+  // let currentUser = await getUserByUsername(userData.username);
+  let currentUserDetail = await getUserDetailByUserName("1234");
+  let total = currentUserDetail["total_value"];
+
+  if (total < totalWithdraw) {
+    return res.json({
+      succes: false,
+      message: "Số dư hiện tại không đủ!",
+    });
+  }
+
+  // Main
+  let status = total > 5000000 ? 0 : 1;
+  let withdraw = {
+    username: "1234",
+    date: new Date(Date.now()),
+    value: parseInt(amount),
+    status: status,
+    fee: parseInt(fee),
+  };
+
+  await createWithdraw(withdraw);
+  if (status) {
+    // Thành công
+    await updateTotalValue(total - totalWithdraw, "1234");
+
+    return res.json({
+      success: true,
+      message: "Tiền đã được rút về thẻ thành công",
+    });
+  } else {
+    // Chờ duyệt
+    return res.json({
+      success: true,
+      message: "Số tiền vượt quá 5tr đang chờ duyệt",
     });
   }
 }

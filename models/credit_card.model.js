@@ -6,7 +6,6 @@ async function getCardByAll({ cardNumber, expireDate, cvv }) {
    * Input: cardNumber - String, expireDate - Date, cvv - Number
    */
 
-  console.log(cardNumber, expireDate, cvv);
   const sql =
     "SELECT * FROM credit_card WHERE card_number = ? AND expire_date = ? AND cvv = ?";
   const value = [cardNumber, expireDate, cvv];

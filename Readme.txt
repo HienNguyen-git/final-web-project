@@ -5,3 +5,10 @@ user:
         2: da vo hieu hoa
         3: cho cap nhat
         4: block
+
+withdraw:
+	status:
+		-1: tu choi
+		0: dang cho
+		1: admin da duyet
+		2: thanh cong
