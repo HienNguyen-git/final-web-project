@@ -28,15 +28,19 @@ router.get("/login", function (req, res, next) {
   res.render("account/login", { title: "Login" });
 });
 
-// todo POST /login
-router.post("/login", /* loginValidator ,*/ handleLogin);
-
 router.get("/logout", logoutGet);
-// todo GET /change-password
+
+// * POST /login
+router.post("/login", /* loginValidator, */ handleLogin);
+
+// * GET /change-password
 router.get("/change-password", changePassGet);
 
-// todo POST /change-password
-router.post("/change-password", handleChangePassword);
+// * POST /change-password
+router.post(
+  "/change-password",
+  /* changePassValidator, */ handleChangePassword
+);
 
 router.get("/account/resetpassword", resetPasswordGet);
 router.post(

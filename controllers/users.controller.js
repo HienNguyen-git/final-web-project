@@ -235,6 +235,17 @@ function logoutGet(req, res) {
 
 // todo POST /users/login
 async function handleLogin(req, res, next) {
+  // Validation from loginValidator
+  let errors = validationResult(req).errors;
+  let error = errors[0];
+
+  if (error) {
+    return res.json({
+      success: false,
+      message: error.msg,
+    });
+  }
+
   let accessToken = req.cookies.accessToken;
 
   if (accessToken) {
@@ -243,7 +254,8 @@ async function handleLogin(req, res, next) {
       message: "Already login!",
     });
   }
-  let acc = await getUserByUsername(req.body.email);
+
+  let acc = await getUserByUsername(req.body.username);
 
   if (!acc) {
     return res.json({ success: false, message: "Account not exist!" });
@@ -281,7 +293,15 @@ async function handleLogin(req, res, next) {
 
 // todo POST /users/change-password
 async function handleChangePassword(req, res, next) {
-  // todo validation for changing password
+  let errors = validationResult(req).errors;
+  let error = errors[0];
+
+  if (error) {
+    return res.json({
+      success: false,
+      message: error.msg,
+    });
+  }
   let userData = await getDataFromToken(req);
 
   if (!userData) {
@@ -294,6 +314,11 @@ async function handleChangePassword(req, res, next) {
 
   if (!acc) {
     return res.json({ success: false, message: "Account not exist!" });
+  } else if (bcrypt.compareSync(req.body.currentPass, acc.password)) {
+    return res.json({
+      success: false,
+      message: "Current password is incorrect!",
+    });
   } else {
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(req.body.newPass, salt);
@@ -316,7 +341,7 @@ async function handleChangePassword(req, res, next) {
 
 function getDataFromToken(req) {
   /**
-   * Function này sẽ lấy giải mã token và trả về data token
+   * Function này sẽ giải mã token và trả về data lấy được từ token
    * Input: Request request
    * Output: data lấy được từ token, null nếu không lấy được
    */

@@ -53,56 +53,21 @@ const registerValidator = [
 ];
 
 const loginValidator = [
-  check("email")
+  check("username")
     .exists()
-    .withMessage("Please enter your email")
+    .withMessage("Please enter your username")
     .notEmpty()
-    .withMessage("Email can not be empty")
-    .isEmail()
-    .withMessage("This email is not valid")
-    .custom((value) => {
-      // Check email already exists in database
-      return new Promise((resolve, reject) => {
-        connect.query(
-          "select * from customer where email=?",
-          [value],
-          (err, result) => {
-            if (err) reject(new Error(err.message));
-            else if (result.length === 0)
-              reject(new Error("This email has not been registered yet."));
-            resolve(true);
-          }
-        );
-      });
-    }),
+    .withMessage("Username can not be empty"),
+
   check("password")
     .exists()
     .withMessage("Please enter your password")
+    .bail()
     .notEmpty()
     .withMessage("Password can not be empty")
-    .custom(
-      (value, { req }) =>
-        new Promise((resolve, reject) => {
-          // Check password is match
-          connect.query(
-            "select * from customer where email=?",
-            [req.body.email],
-            (err, result) => {
-              if (err) reject(new Error("Something went wrong!"));
-              else if (!result.length)
-                reject(new Error("Something went wrong!"));
-              else {
-                const accPass = result[0].password;
-                userSession = result[0].name;
-                const isMatch = bcrypt.compareSync(value, accPass);
-                if (!isMatch)
-                  reject("Your email address or password are not match");
-                resolve(isMatch);
-              }
-            }
-          );
-        })
-    ),
+    .bail()
+    .isLength((min = 6))
+    .withMessage("Password can not be less than 6 characters"),
 ];
 
 const loginAdminValidator = [
@@ -159,34 +124,35 @@ const loginAdminValidator = [
 ];
 
 const changePassValidator = [
-  check("password")
+  check("currentPass")
     .exists()
-    .withMessage("Please enter your old password")
+    .withMessage("Please enter your current password")
+    .bail()
     .notEmpty()
-    .withMessage("Old Password can not be empty")
-    .custom(
-      (value, { req }) =>
-        new Promise((resolve, reject) => {
-          // Check password is match
-          connect.query(
-            "select * from user where username=?",
-            [req.session.user],
-            (err, result) => {
-              // console.log(result);
-              if (err) reject(new Error("Something went wrong! here"));
-              else if (!result.length)
-                reject(new Error("Something went wrong here!"));
-              else {
-                const accPass = result[0].password;
+    .withMessage("Current password can not be empty")
+    .bail()
+    .isLength((min = 6))
+    .withMessage("Password can not be less than 6 characters"),
 
-                const isMatch = bcrypt.compareSync(value, accPass);
-                if (!isMatch) reject("Old password not match");
-                resolve(isMatch);
-              }
-            }
-          );
-        })
-    ),
+  check("newPass")
+    .exists()
+    .withMessage("Please enter your new password")
+    .bail()
+    .notEmpty()
+    .withMessage("New password can not be empty")
+    .bail()
+    .isLength((min = 6))
+    .withMessage("Password can not be less than 6 characters"),
+
+  check("renewPass")
+    .exists()
+    .withMessage("Please enter your confirm password")
+    .bail()
+    .notEmpty()
+    .withMessage("Your confirm password can not be empty")
+    .bail()
+    .isLength((min = 6))
+    .withMessage("Password can not be less than 6 characters"),
 ];
 
 const requestOtpToMailValidator = [
