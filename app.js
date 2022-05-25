@@ -7,6 +7,8 @@ var logger = require("morgan");
 
 const expressHandlebars = require("express-handlebars");
 
+var authController = require("./controllers/authentication.controller");
+
 var indexRouter = require("./routes/index.route");
 var usersRouter = require("./routes/users.route");
 var usersDepositRouter = require("./routes/deposit.route");
@@ -70,6 +72,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+// authentication
+app.use(authController.authenticateUser);
 // routing
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
