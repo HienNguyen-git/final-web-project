@@ -210,6 +210,25 @@ const withdrawValidator = [
     .withMessage("User's note can not be empty"),
 ];
 
+const adminWithdrawValidator = [
+  check("id")
+    .exists()
+    .withMessage("Please enter withdraw's id")
+    .bail()
+    .notEmpty()
+    .withMessage("withdraw's id can not be empty")
+    .bail()
+    .isNumeric()
+    .withMessage("withdraw's id must be of Integer type"),
+
+  check("isApproved")
+    .exists()
+    .withMessage("Please enter isApproved")
+    .bail()
+    .notEmpty()
+    .withMessage("isApproved can't be emtpy")
+    .bail(),
+];
 module.exports = {
   registerValidator,
   loginValidator,
@@ -217,4 +236,5 @@ module.exports = {
   changePassValidator,
   requestOtpToMailValidator,
   withdrawValidator,
+  adminWithdrawValidator,
 };

@@ -45,8 +45,76 @@ $(document).ready(() => {
       };
 
       $.post("/withdraw", data, (response) => {
-        console.log(response);
+        if (response.success) {
+          // ? Redirect về đâu
+        }
+        alert(response.message);
       });
     };
+  }
+
+  // * Javascript for GET /admin/withdraw
+  if (document.getElementById("view-admin-withdraw")) {
+    loadData();
+    function loadData() {
+      $("#tbody tr").remove();
+      $.get("/admin/withdraw/api", (response) => {
+        if (response.success) {
+          let withdraws = response.data;
+          withdraws.forEach((currVal) => {
+            renderData(currVal);
+          });
+
+          $(".btn.btn-sm").click(onClickButton);
+        }
+      });
+    }
+    function renderData(withdraw) {
+      /**
+       * Render a row of data to table body
+       * Input: withdraw Object
+       * Output: Data has been append to the table
+       */
+      let tableBody = $("#tbody");
+      let tableContent = `
+      <tr>
+          <th scope="row">${withdraw.id}</th>
+          <td>${withdraw.username}</td>
+          <td>${withdraw.value}</td>
+          <td>${withdraw.fee}</td>
+          <td>${withdraw.date}</td>
+          <td>${withdraw.note}</td>
+          <td>
+            <button class="btn btn-sm btn-success" data-approve="true"  data-id="${withdraw.id}" >
+              <i class="fa-solid fa-check"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" data-approve="false" data-id="${withdraw.id}">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </td>
+        </tr>
+      `;
+
+      tableBody.append(tableContent);
+    }
+
+    function onClickButton(e) {
+      /**
+       * Xử lý click event của approve/disapprove
+       * Input: e Event
+       * Output: lấy dữ liệu và POST lên /admin/withdraw
+       */
+      let isApproved = this.getAttribute("data-approve");
+      let id = this.getAttribute("data-id");
+
+      let data = { id, isApproved };
+
+      $.post("/admin/withdraw", data, (response) => {
+        if (response.success) {
+          loadData();
+        }
+        alert(response.message);
+      });
+    }
   }
 });

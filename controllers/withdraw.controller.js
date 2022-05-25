@@ -1,13 +1,17 @@
+const jwt = require("jsonwebtoken");
+
 const { validationResult } = require("express-validator");
 const {
   createWithdraw,
   getTodayWithdraw,
+  getWithdrawAdmin,
 } = require("../models/withdraw.model");
 const { getCardByAll } = require("../models/credit_card.model");
 const {
   getUserByUsername,
   getUserDetailByUserName,
   updateTotalValue,
+  updateTotalValueByDifference,
 } = require("../models/user.model");
 
 // GET /withdraw
@@ -18,9 +22,10 @@ function renderWithdraw(req, res) {
 // POST /withdraw
 // todo xử lý logic rút tiền
 async function handleWithdraw(req, res) {
-  let errors = validationResult(req);
+  let errors = validationResult(req).errors;
   let error = errors[0];
 
+  console.log(error);
   if (error) {
     return res.json({
       succes: false,
@@ -32,12 +37,15 @@ async function handleWithdraw(req, res) {
 
   let userData = await getDataFromToken(req);
 
-  // if (!userData) {
-  //   return res.json({
-  //     succes: false,
-  //     message: "Vui lòng đăng nhập để thực hiện việc rút tiền",
-  //   });
-  // }
+  console.log(req.cookies.accessToken);
+
+  console.log(userData);
+  if (!userData) {
+    return res.json({
+      succes: false,
+      message: "Vui lòng đăng nhập để thực hiện việc rút tiền",
+    });
+  }
 
   // * Credit card exist validation
   let creditCard = await getCardByAll({ cardNumber, expireDate, cvv });
@@ -46,6 +54,14 @@ async function handleWithdraw(req, res) {
     return res.json({
       succes: false,
       message: "Thẻ không hợp lệ",
+    });
+  }
+
+  // * Multiplicity of 50000 validation
+  if (amount % 50000 !== 0) {
+    return res.json({
+      succes: false,
+      message: "Số tiền phải là bội số của 50,000 đồng!",
     });
   }
 
@@ -60,18 +76,10 @@ async function handleWithdraw(req, res) {
   }
 
   let fee = amount * 0.05;
-  let totalWithdraw = parseInt(amount) + fee;
-
-  // * Multiplicity of 50000 validation
-  if (amount % 50000 !== 0) {
-    return res.json({
-      succes: false,
-      message: "Số tiền phải là bội số của 50,000 đồng!",
-    });
-  }
+  let totalWithdraw = parseInt(amount) + parseInt(fee);
 
   // let currentUser = await getUserByUsername(userData.username);
-  let currentUserDetail = await getUserDetailByUserName("1234");
+  let currentUserDetail = await getUserDetailByUserName(userData.username);
   let total = currentUserDetail["total_value"];
 
   if (total < totalWithdraw) {
@@ -84,17 +92,18 @@ async function handleWithdraw(req, res) {
   // Main
   let status = total > 5000000 ? 0 : 1;
   let withdraw = {
-    username: "1234",
+    username: userData.username,
     date: new Date(Date.now()),
     value: parseInt(amount),
     status: status,
     fee: parseInt(fee),
+    note: note,
   };
 
   await createWithdraw(withdraw);
   if (status) {
     // Thành công
-    await updateTotalValue(total - totalWithdraw, "1234");
+    await updateTotalValueByDifference(totalWithdraw, userData.username);
 
     return res.json({
       success: true,
@@ -104,7 +113,7 @@ async function handleWithdraw(req, res) {
     // Chờ duyệt
     return res.json({
       success: true,
-      message: "Số tiền vượt quá 5tr đang chờ duyệt",
+      message: "Số tiền vượt quá 5tr sẽ phải chờ admin duyệt",
     });
   }
 }

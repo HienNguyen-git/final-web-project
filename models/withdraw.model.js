@@ -1,5 +1,20 @@
 const connect = require("../config/db");
 
+async function getWithdrawById(id) {
+  /**
+   * Lấy giao dịch bằng id
+   * Input: id
+   * Output: giao dịch cần tìm bằng id
+   */
+  const sql = "SELECT * FROM withdraw WHERE id = ?";
+  const value = [id];
+  return new Promise((resolve, reject) => {
+    connect.query(sql, value, (err, result) => {
+      if (err) throw err;
+      resolve(result[0]);
+    });
+  });
+}
 async function getTodayWithdraw() {
   /**
    * Lấy các giao dịch trong ngày (dùng check dk tối đa 2 gdich 1 ngày)
@@ -15,13 +30,30 @@ async function getTodayWithdraw() {
     });
   });
 }
+
+async function getWithdrawAdmin() {
+  /**
+   * Lấy các giao dịch mà admin cần phải duyệt
+   * Input: None
+   * Output: list of giao dịch
+   */
+  const sql = "SELECT * FROM withdraw WHERE status = 0";
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, (err, result) => {
+      if (err) throw err;
+      resolve(result);
+    });
+  });
+}
+
 async function createWithdraw(withdraw) {
   /* Tạo một giao dịch rút tiền trên bảng withdraw
     Input: withdraw object {username, date, status, fee}
     Output: Đã tạo thành công
     */
   const sql =
-    "INSERT INTO withdraw(username,date,value,status,fee) values(?,?,?,?,?)";
+    "INSERT INTO withdraw(username,date,value,status,fee,note) values(?,?,?,?,?,?)";
   const value = [...Object.values(withdraw)];
 
   return new Promise((resolve, reject) => {
@@ -32,4 +64,26 @@ async function createWithdraw(withdraw) {
   });
 }
 
-module.exports = { createWithdraw, getTodayWithdraw };
+async function updateStatusById(id, status) {
+  /**
+   * Cập nhật status của một giao dịch bằng id
+   * Input: id - String, status - Integer
+   * Output: true nếu thành công, false ngược lại
+   */
+  const sql = "UPDATE withdraw SET status = ? WHERE id = ?";
+  const value = [status, id];
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, value, (err) => {
+      if (err) reject(false);
+    });
+    resolve(true);
+  });
+}
+module.exports = {
+  createWithdraw,
+  getTodayWithdraw,
+  getWithdrawAdmin,
+  updateStatusById,
+  getWithdrawById,
+};

@@ -55,6 +55,25 @@ async function updateTotalValue(totalValue, username) {
     });
   });
 }
+
+async function updateTotalValueByDifference(totalWithdraw, username) {
+  /**
+   * Cập nhật lại số dư trong tài khoản bằng username
+   * Input: total_value - Integer, username - String (Lấy từ accessToken)
+   * Output: Value have been updated
+   */
+  const sql =
+    "UPDATE user_detail SET total_value = total_value - ? WHERE username = ?";
+  const value = [totalWithdraw, username];
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, value, async (err, result) => {
+      if (err) throw err;
+      resolve(result);
+    });
+  });
+}
+
 async function getUserByUsername(username) {
   /* Lấy account bằng username
     Input: username, String
@@ -112,4 +131,5 @@ module.exports = {
   getUserDetailByUserName,
   updatePasswordById,
   updateTotalValue,
+  updateTotalValueByDifference,
 };
