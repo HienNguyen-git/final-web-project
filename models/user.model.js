@@ -27,6 +27,24 @@ const handleSelectOTP = (email) =>
     });
   });
 
+  const createAnAccount = (username, phone, email, name, date_of_birth, address)=> new Promise((resolve, reject)=>{
+    const sql = 'insert into user_detail(username, phone, email, name, date_of_birth, address) values(?,?,?,?,?,?)';
+    const value = [username, phone, email, name, date_of_birth, address];
+    connect.query(sql, value,(err)=>{
+        if(err) reject(err.message)
+        resolve(true)
+    })
+  })
+  
+  const putAccCreatedIntoUser = (username, password)=> new Promise((resolve, reject)=>{
+    const sql = 'insert into user(username, password) values(?,?)';
+    const value = [username, password];
+    connect.query(sql, value,(err)=>{
+        if(err) reject(err.message)
+        resolve(true)
+    })
+  })
+
 const handleChangePass = (newpass, email) =>
   new Promise((resolve, reject) => {
     const sql = "UPDATE user SET password = ? where username = ?";
@@ -129,6 +147,8 @@ module.exports = {
   handleChangePass,
   getUserByUsername,
   getUserDetailByUserName,
+  createAnAccount,
+  putAccCreatedIntoUser,
   updatePasswordById,
   updateTotalValue,
   updateTotalValueByDifference,

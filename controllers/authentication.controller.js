@@ -4,6 +4,8 @@ const permissionNotNeededRoutes = [
   "GET /",
   "GET /users/login",
   "POST /users/login",
+  "GET /users/register",
+  "POST /users/register",
   "GET /users/logout",
 ];
 

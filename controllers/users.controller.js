@@ -1,5 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const emailvalidator = require("email-validator");
+const multer = require('multer');
 
 const {
   handlePostOTP,
@@ -7,7 +9,12 @@ const {
   handleChangePass,
   getUserByUsername,
   updatePasswordById,
+  createAnAccount,
+  putAccCreatedIntoUser,
 } = require("../models/user.model");
+
+
+const { generateRandomPassword, generateUsername } = require("../config/helper")
 const { validationResult } = require("express-validator");
 var nodemailer = require("nodemailer"); // khai báo sử dụng module nodemailer
 var smtpTransport = require("nodemailer-smtp-transport");
@@ -233,6 +240,99 @@ function logoutGet(req, res) {
   res.redirect("/users/login");
 }
 
+// todo POST /users/register
+const handleRegister = async (req,res) => {
+  const {phone, email, name, date_of_birth, address} = req.body;
+  // console.log(phone)
+  const randomUsername = generateUsername(1000000000, 9000000000);
+  const randomPassword = generateRandomPassword(6);
+  // console.log(randomPassword)
+  const salt = await bcrypt.genSalt(10);
+  const hashPassword = await bcrypt.hash(randomPassword.toString(), salt);
+  if(phone===undefined|| phone===''){
+    return res.json({
+      code: 1,
+      message: "Please enter your phone",
+    })
+  }else if(email === undefined || email === ''){
+    return res.json({
+      code: 1,
+      message: "Please enter your email"
+    })
+  }else if(!(emailvalidator.validate(email))){
+    return res.json({
+      code: 1,
+      message: "Email's format is invalid"
+    })
+  }else if(name === undefined || name === ''){
+    return res.json({
+      code: 1,
+      message: "Please enter your name"
+    })
+  }else if(date_of_birth === undefined || date_of_birth === ''){
+    return res.json({
+      code: 1,
+      message: "Please enter your date of birth"
+    })
+  }else if(address === undefined || address === ''){
+    return res.json({
+      code: 1,
+      message: "Please enter your address"
+    })
+  }else{
+    // await createAnAccount(randomUsername, phone, email, name, date_of_birth, address)
+    // await putAccCreatedIntoUser(randomUsername, hashPassword)
+    // res.json({
+    //   code: 0,
+    //   message: "Create account successful. Please check your email to get your account!",
+    // })
+    // const emailUser = 'haoquoctrinh01@gmail.com';
+    var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
+      tls: {
+          rejectUnauthorized: false
+      },
+      // service: 'Gmail',
+      host: 'mail.phongdaotao.com',
+      port: 25,
+      secureConnection: false,
+      auth: {
+          user: 'sinhvien@phongdaotao.com',
+          pass: 'svtdtu'
+      }
+    }));
+
+    var mainOptions = { // thiết lập đối tượng, nội dung gửi mail
+      from: 'sinhvien@phongdaotao.com',
+      to: email,
+      subject: 'Your account',
+      html: '<h2>WELCOME TO OUR BANKING SYSTEM</h2><br></br><p>We send you your account. Now you can log in our system. Do not share this account for someone except you.<br></br></p>Username: '+ randomUsername +' <br></br>Password: '+ randomPassword +'<br></br>To secure you can change your password when you log in successful.</p>'
+    }
+    transporter.sendMail(mainOptions, async function  (err, info) {
+      if (err) {
+        return res.json({
+          code: 1,
+          message: "Some thing went wrong",
+        })
+      }else{
+        await createAnAccount(randomUsername, phone, email, name, date_of_birth, address)
+        await putAccCreatedIntoUser(randomUsername, hashPassword)
+        return res.json({
+          code: 0,
+          message: "Create account successful. Please check your email to get your account!",
+        })
+      }
+      // }else{
+      //   await createAnAccount(randomUsername, phone, email, name, date_of_birth, address)
+      //   await putAccCreatedIntoUser(randomUsername, hashPassword)
+      //   res.json({
+      //     code: 0,
+      //     message: "Create account successful. Please check your email to get your account!",
+      //   })
+      // }
+    });
+  }
+}
+
 // todo POST /users/login
 async function handleLogin(req, res, next) {
   // Validation from loginValidator
@@ -365,6 +465,7 @@ module.exports = {
   changePassPost,
   resendOtpPost,
   logoutGet,
+  handleRegister,
   handleLogin,
   handleChangePassword,
 };

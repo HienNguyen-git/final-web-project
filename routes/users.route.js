@@ -10,6 +10,7 @@ const {
   changePassPost,
   resendOtpPost,
   handleLogin,
+  handleRegister,
   handleChangePassword,
   logoutGet,
 } = require("../controllers/users.controller");
@@ -28,10 +29,17 @@ router.get("/login", function (req, res, next) {
   res.render("account/login", { title: "Login" });
 });
 
+router.get("/register", function (req, res, next) {
+  res.render("account/register", { title: "Register" });
+});
+
 router.get("/logout", logoutGet);
 
 // * POST /login
 router.post("/login", /* loginValidator, */ handleLogin);
+
+// *POST /register
+router.post("/register",  handleRegister);
 
 // * GET /change-password
 router.get("/change-password", changePassGet);
