@@ -281,56 +281,50 @@ const handleRegister = async (req,res) => {
       message: "Please enter your address"
     })
   }else{
-    // await createAnAccount(randomUsername, phone, email, name, date_of_birth, address)
-    // await putAccCreatedIntoUser(randomUsername, hashPassword)
-    // res.json({
-    //   code: 0,
-    //   message: "Create account successful. Please check your email to get your account!",
-    // })
-    // const emailUser = 'haoquoctrinh01@gmail.com';
-    var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
-      tls: {
-          rejectUnauthorized: false
-      },
-      // service: 'Gmail',
-      host: 'mail.phongdaotao.com',
-      port: 25,
-      secureConnection: false,
-      auth: {
-          user: 'sinhvien@phongdaotao.com',
-          pass: 'svtdtu'
-      }
-    }));
+    // Do mail thầy tui nghĩ đang có vấn đề nền gửi k dc, hôm kia tui có thấy mail gửi dc. Nên t để code dòng từ 287 -> 292 ở đây để tạo dc account và lưu trong db trước để thao tác mấy khác trước á
+    // còn nếu muốn chạy đúng (gửi dc accoutn về mail) thì mình đóng code dòng 287 -> 292 lại rồi mở dòng 293 -> 327 để chạy. Thì này nó sẽ báo Something went wrong.
+    // T có test thử bên gửi mã OTP nó cũng bị zậy nên t nghĩ là do mail thầy đang trục trặc
+    await createAnAccount(randomUsername, phone, email, name, date_of_birth, address)
+    await putAccCreatedIntoUser(randomUsername, hashPassword)
+    return res.json({
+      code: 0,
+      message: "Create account successful. Please check your email to get your account!",
+    })
+    // var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
+    //   tls: {
+    //       rejectUnauthorized: false
+    //   },
+    //   // service: 'Gmail',
+    //   host: 'mail.phongdaotao.com',
+    //   port: 25,
+    //   secureConnection: false,
+    //   auth: {
+    //       user: 'sinhvien@phongdaotao.com',
+    //       pass: 'svtdtu'
+    //   }
+    // }));
 
-    var mainOptions = { // thiết lập đối tượng, nội dung gửi mail
-      from: 'sinhvien@phongdaotao.com',
-      to: email,
-      subject: 'Your account',
-      html: '<h2>WELCOME TO OUR BANKING SYSTEM</h2><br></br><p>We send you your account. Now you can log in our system. Do not share this account for someone except you.<br></br></p>Username: '+ randomUsername +' <br></br>Password: '+ randomPassword +'<br></br>To secure you can change your password when you log in successful.</p>'
-    }
-    transporter.sendMail(mainOptions, async function  (err, info) {
-      if (err) {
-        return res.json({
-          code: 1,
-          message: "Some thing went wrong",
-        })
-      }else{
-        await createAnAccount(randomUsername, phone, email, name, date_of_birth, address)
-        await putAccCreatedIntoUser(randomUsername, hashPassword)
-        return res.json({
-          code: 0,
-          message: "Create account successful. Please check your email to get your account!",
-        })
-      }
-      // }else{
-      //   await createAnAccount(randomUsername, phone, email, name, date_of_birth, address)
-      //   await putAccCreatedIntoUser(randomUsername, hashPassword)
-      //   res.json({
-      //     code: 0,
-      //     message: "Create account successful. Please check your email to get your account!",
-      //   })
-      // }
-    });
+    // var mainOptions = { // thiết lập đối tượng, nội dung gửi mail
+    //   from: 'sinhvien@phongdaotao.com',
+    //   to: email,   //Mail của chính mình
+    //   subject: 'Your account',
+    //   html: '<h2>WELCOME TO OUR BANKING SYSTEM</h2><br></br><p>We send you your account. Now you can log in our system. Do not share this account for someone except you.<br></br></p>Username: '+ randomUsername +' <br></br>Password: '+ randomPassword +'<br></br>To secure you can change your password when you log in successful.</p>'
+    // }
+    // transporter.sendMail(mainOptions, async function  (err, info) {
+    //   if (err) {
+    //     return res.json({
+    //       code: 1,
+    //       message: "Some thing went wrong",
+    //     })
+    //   }else{
+    //     await createAnAccount(randomUsername, phone, email, name, date_of_birth, address)
+    //     await putAccCreatedIntoUser(randomUsername, hashPassword)
+    //     return res.json({
+    //       code: 0,
+    //       message: "Create account successful. Please check your email to get your account!",
+    //     })
+    //   }
+    // });
   }
 }
 
@@ -348,6 +342,7 @@ async function handleLogin(req, res, next) {
   }
 
   let accessToken = req.cookies.accessToken;
+  // res.clearCookie("accessToken");
 
   if (accessToken) {
     return res.json({
@@ -391,15 +386,15 @@ async function handleLogin(req, res, next) {
       })) 
       console.log(data)
       // return res.redirect('/')
-      return res.render('/trans-history', { title: "Transaction History", data,routerPath:'/trans-history' })
+      // return res.render('users/trans-history', { title: "Transaction History", data,routerPath:'users/trans-history' })
 
-      // return res.json({
-      //   success: true,
-      //   message: "Login successful",
-      //   token: token,
-      //   name: acc.username,
-      //   id: acc.id,
-      // });
+      return res.json({
+        success: true,
+        message: "Login successful",
+        token: token,
+        name: acc.username,
+        id: acc.id,
+      });
     }
   }
 }
