@@ -268,6 +268,7 @@ async function handleLogin(req, res, next) {
         {
           id: acc.id,
           username: acc.username,
+          status: acc.status,
         },
         process.env.TOKEN_KEY,
         {
@@ -302,7 +303,7 @@ async function handleChangePassword(req, res, next) {
       message: error.msg,
     });
   }
-  let userData = await getDataFromToken(req);
+  let userData = req.userClaims;
 
   if (!userData) {
     return res.json({
@@ -314,7 +315,7 @@ async function handleChangePassword(req, res, next) {
 
   if (!acc) {
     return res.json({ success: false, message: "Account not exist!" });
-  } else if (bcrypt.compareSync(req.body.currentPass, acc.password)) {
+  } else if (!bcrypt.compareSync(req.body.currentPass, acc.password)) {
     return res.json({
       success: false,
       message: "Current password is incorrect!",

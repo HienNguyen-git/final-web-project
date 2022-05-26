@@ -6,6 +6,7 @@ const permissionNotNeededRoutes = [
   "POST /users/login",
   "GET /users/logout",
 ];
+
 class AuthenticationController {
   async authenticateUser(req, res, next) {
     const token = req.cookies.accessToken;
@@ -14,32 +15,27 @@ class AuthenticationController {
     const isAuthNotNeededRoute = permissionNotNeededRoutes.includes(routeKey);
 
     if (token) {
+      // Đã đăng nhập
       req.userClaims = jwt.verify(token, process.env.TOKEN_KEY);
+
+      // // Đăng nhập lần đầu thì chỉ cho vào đổi mật khẩu
+      // if (req.userClaims.status === 0) {
+      //   let permissionFirstLoginRoutes = [
+      //     "GET /users/change-password",
+      //     "POST /users/change-password",
+      //     "GET /users/logout",
+      //   ];
+
+      //   const isFirstLoginRoute = permissionFirstLoginRoutes.includes(routeKey);
+
+      //   isFirstLoginRoute ? next() : res.redirect("/users/change-password");
+      // } else {
+      //   next();
+      // }
+
       next();
     } else {
       isAuthNotNeededRoute ? next() : res.redirect("/users/login");
-    }
-  }
-
-  async authenticateFirstUser(req, res, next) {
-    /**
-     * Giới hạn user đăng nhập lần đầu phải đổi mật khẩu
-     */
-    let userClaims = req.userClaims;
-    const routeKey = getRouteKey(req);
-
-    const permissionNeededRoutes = [
-      "GET /users/change-password",
-      "POST /users/change-password",
-      "GET /users/logout",
-    ];
-
-    const isAuthNeededRoute = permissionNeededRoutes.includes(routeKey);
-
-    if (userClaims.status === 0) {
-      next();
-    } else {
-      !isAuthNeededRoute ? res.redirect("/users/change-password") : next();
     }
   }
 }

@@ -74,6 +74,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // authentication
 app.use(authController.authenticateUser);
+
 // routing
 app.use("/", indexRouter);
 app.use("/users", usersRouter);

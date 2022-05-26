@@ -37,9 +37,6 @@ async function handleWithdraw(req, res) {
 
   let userData = await getDataFromToken(req);
 
-  console.log(req.cookies.accessToken);
-
-  console.log(userData);
   if (!userData) {
     return res.json({
       succes: false,
@@ -78,7 +75,6 @@ async function handleWithdraw(req, res) {
   let fee = amount * 0.05;
   let totalWithdraw = parseInt(amount) + parseInt(fee);
 
-  // let currentUser = await getUserByUsername(userData.username);
   let currentUserDetail = await getUserDetailByUserName(userData.username);
   let total = currentUserDetail["total_value"];
 
