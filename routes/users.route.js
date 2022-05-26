@@ -33,6 +33,10 @@ router.get("/register", function (req, res, next) {
   res.render("account/register", { title: "Register" });
 });
 
+router.get("/trans-history", function (req, res, next) {
+  res.render("account/trans_history", { title: "Transaction History" });
+});
+
 router.get("/logout", logoutGet);
 
 // * POST /login

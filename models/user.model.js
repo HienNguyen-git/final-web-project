@@ -124,6 +124,15 @@ async function getUserDetailByUserName(username) {
   });
 }
 
+const getTranSHistoryByUsername = (username) => new Promise((resolve, reject) => {
+  connect.query('SELECT * FROM bill a, user_detail b, withdraw c where a.username=b.username and a.username=c.username and a.username=?', [username], (err, result) => {
+      if (err) reject(false)
+      else {
+          resolve(result)
+      }
+  })
+})
+
 async function updatePasswordById(id, newPass) {
   /**
    * Cập nhật password của một tài khoản bằng id
@@ -147,6 +156,7 @@ module.exports = {
   handleChangePass,
   getUserByUsername,
   getUserDetailByUserName,
+  getTranSHistoryByUsername,
   createAnAccount,
   putAccCreatedIntoUser,
   updatePasswordById,

@@ -11,6 +11,7 @@ const {
   updatePasswordById,
   createAnAccount,
   putAccCreatedIntoUser,
+  getTranSHistoryByUsername,
 } = require("../models/user.model");
 
 
@@ -380,14 +381,25 @@ async function handleLogin(req, res, next) {
       res.cookie("accessToken", token, {
         expires: new Date(Date.now() + 60 * 1000 * 60),
       });
+      const raw = await getTranSHistoryByUsername(acc.username)
+      // console.log(raw.name)
+      const data = raw.map(e => ({
+        id: e.id,
+        username: e.username,
+        phone: e.phone,
+        email: e.email,
+      })) 
+      console.log(data)
+      // return res.redirect('/')
+      return res.render('/trans-history', { title: "Transaction History", data,routerPath:'/trans-history' })
 
-      return res.json({
-        success: true,
-        message: "Login successful",
-        token: token,
-        name: acc.username,
-        id: acc.id,
-      });
+      // return res.json({
+      //   success: true,
+      //   message: "Login successful",
+      //   token: token,
+      //   name: acc.username,
+      //   id: acc.id,
+      // });
     }
   }
 }
