@@ -24,6 +24,9 @@ const {
   updateStatusById,
   getWithdrawById,
 } = require("../models/withdraw.model");
+const {
+  getTranSHistoryByUsername,
+} = require("../models/trans-history.model");
 const getAdminHome = (req, res) => {
   res.render("admin/home", { title: "Admin", isAdmin: true, routerPath: "" });
 };
@@ -171,6 +174,44 @@ const getWithdrawMore5m = async (req, res) => {
   });
 };
 
+const getTransHistory = async (req, res) => {
+  const username = req.query["username"];
+  if (username === undefined) {
+    const raw = await getUserAccountByStatus(0);
+    const data = raw.map((e) => ({
+      id: e.id,
+      username: e.username,
+      status: e.status,
+      last_modified: formatDateTime(e.last_modified),
+    }));
+
+    return res.render("admin/trans-history", {
+      title: "Transaction History",
+      isAdmin: true,
+      data,
+      routerPath: "admin/trans-history",
+    });
+  } else {
+    const raw = await getTranSHistoryByUsername(username);
+    const data = raw.map((e) => ({
+      id: e.id,
+      phone: e.phone,
+      name: e.name,
+      date: e.date,
+      value: e.value,
+      note: e.note,
+      fee: e.fee,
+      total_value: e.total_value,
+    }));
+    console.log(data);
+    return res.render("admin/trans-history-detail", {
+      title: "Transaction History",
+      isAdmin: true,
+      data,
+    });
+  }
+};
+
 const apiGetWithdrawMore5m = async (req, res) => {
   /**
    * Api dùng để lấy withdraw cần duyệt của admin
@@ -290,4 +331,5 @@ module.exports = {
   getWithdrawMore5m,
   postWithdrawMore5m,
   apiGetWithdrawMore5m,
+  getTransHistory,
 };
