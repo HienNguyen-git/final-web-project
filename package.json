@@ -25,7 +25,7 @@
     "multiparty": "^4.2.3",
     "mysql": "^2.18.1",
     "nodemailer": "^6.7.5",
-    "nodemailer-smtp-transport": "^2.7.4",
+    "nodemailer-smtp-transport": "^2.4.2",
     "throttle": "^1.0.3"
   }
 }
