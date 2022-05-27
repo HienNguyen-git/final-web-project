@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 22, 2022 at 09:07 AM
+-- Generation Time: May 22, 2022 at 09:32 AM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 8.1.1
 
@@ -36,7 +36,7 @@ CREATE TABLE `bill` (
   `code` varchar(1000) NOT NULL,
   `price` int(11) NOT NULL,
   `quantity` int(11) NOT NULL,
-  `date` datetime NOT NULL
+  `date` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -98,7 +98,9 @@ INSERT INTO `deposit` (`id`, `phone_sender`, `phone_receiver`, `value`, `fee`, `
 (23, '0908123456', '0908789456', 1000000, 50000, 'sender', 'qweqwewqe', 1, '2022-05-19 16:42:18'),
 (24, '0908123456', '0908789456', 1000000, 50000, 'receiver', 'qweqwewqe', 1, '2022-05-19 16:42:45'),
 (25, '0908123456', '0908789456', 1000000, 50000, 'receiver', 'qweqwewqe', 1, '2022-05-19 16:43:34'),
-(26, '0908123456', '0908789456', 6000000, 300000, 'sender', 'qweqwewqe', 0, '2022-05-21 10:09:42');
+(26, '0908123456', '0908789456', 6000000, 300000, 'sender', 'qweqwewqe', 0, '2022-05-21 10:09:42'),
+(27, '0908123456', '0908789456', 6000000, 300000, 'sender', 'qweqwewqeqwe', 1, '2022-05-22 07:17:22'),
+(28, '0908123456', '0908789456', 2000000, 100000, 'receiver', 'qweqwewqe', 1, '2022-05-22 07:18:53');
 
 -- --------------------------------------------------------
 
@@ -165,7 +167,11 @@ INSERT INTO `otp` (`id`, `email`, `otpcode`, `expired`) VALUES
 (124, 'tdtnguyendang@gmail.com', '734437', '2022-05-21 10:10:47'),
 (125, 'tdtnguyendang@gmail.com', '401150', '2022-05-21 10:13:07'),
 (126, 'tdtnguyendang@gmail.com', '714476', '2022-05-21 10:13:30'),
-(127, 'tdtnguyendang@gmail.com', '495657', '2022-05-21 10:14:38');
+(127, 'tdtnguyendang@gmail.com', '495657', '2022-05-21 10:14:38'),
+(128, 'tdtnguyendang@gmail.com', '981338', '2022-05-22 07:13:53'),
+(129, 'tdtnguyendang@gmail.com', '427846', '2022-05-22 07:15:13'),
+(130, 'tdtnguyendang@gmail.com', '642549', '2022-05-22 07:17:18'),
+(131, 'tdtnguyendang@gmail.com', '810609', '2022-05-22 07:20:01');
 
 -- --------------------------------------------------------
 
@@ -187,7 +193,10 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`id`, `username`, `password`, `status`, `last_modified`) VALUES
 (1, 'admin', '$2a$12$G0bqH0PVQmBumlSh.8N8PumaxpU0VV95isT/ZtZ.IaMea/kKnJ4Ui', 1, '2022-05-18 12:42:54'),
-(2, 'tdtnguyendang@gmail.com', '$2b$10$zVT5FZZlpLxOsDkJmTvmxOK93maWBxlzk/lvzQZ9d4qNxIT.7y28S', 1, '2022-05-18 20:53:25');
+(2, 'tdtnguyendang@gmail.com', '$2b$10$28Ozj6sPswGEBlF46E/Iv.gwpyJXmwT7Y1JmMiUB5nDTLKiuhY00e', 1, '2022-05-18 20:53:25'),
+(3, 'user1', '123456', 0, '2022-05-22 14:31:00'),
+(4, 'user2', '123456', 2, '2022-05-22 14:31:00'),
+(5, 'user3', '123456', 3, '2022-05-22 14:31:00');
 
 -- --------------------------------------------------------
 
@@ -213,8 +222,8 @@ CREATE TABLE `user_detail` (
 --
 
 INSERT INTO `user_detail` (`id`, `username`, `phone`, `email`, `name`, `date_of_birth`, `address`, `font_cmnd`, `back_cmnd`, `total_value`) VALUES
-(1, 'haidang', '0908123456', 'tdtnguyendang@gmail.com', 'Hải Đăng', '2022-05-03', '18 Trần Phú P18 Q18 TPHCM', 'cmnd ', 'cmnd', 10000000),
-(2, 'tronghien', '0908789456', 'tdtnguyendang@gmail.com', 'Trọng Hiển', '2022-05-04', '22 Dương Bá Trạc P8 Q8 TPHCM', 'cmnd', 'cmnd', 20000000);
+(1, 'haidang', '0908123456', 'tdtnguyendang@gmail.com', 'Hải Đăng', '2022-05-03', '18 Trần Phú P18 Q18 TPHCM', 'cmnd ', 'cmnd', 1700000),
+(2, 'tronghien', '0908789456', 'tdtnguyendang@gmail.com', 'Trọng Hiển', '2022-05-04', '22 Dương Bá Trạc P8 Q8 TPHCM', 'cmnd', 'cmnd', 27900000);
 
 -- --------------------------------------------------------
 
@@ -228,7 +237,8 @@ CREATE TABLE `withdraw` (
   `date` datetime NOT NULL,
   `value` int(11) NOT NULL,
   `status` int(11) NOT NULL,
-  `fee` int(11) NOT NULL
+  `fee` int(11) NOT NULL,
+  `note` varchar(1000) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -303,7 +313,7 @@ ALTER TABLE `credit_card`
 -- AUTO_INCREMENT for table `deposit`
 --
 ALTER TABLE `deposit`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `network_provider`
@@ -315,13 +325,13 @@ ALTER TABLE `network_provider`
 -- AUTO_INCREMENT for table `otp`
 --
 ALTER TABLE `otp`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=128;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=132;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `user_detail`
