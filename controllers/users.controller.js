@@ -379,16 +379,15 @@ async function handleLogin(req, res, next) {
     });
   }
 
-  let accessToken = req.cookies.accessToken;
-
-  if (accessToken) {
+  if (req.userClaims) {
     return res.json({
       success: false,
       message: "Already login!",
     });
   }
 
-  let acc = await getUserByUsername(req.body.username);
+  let { username, password } = req.body;
+  let acc = await getUserByUsername(username);
 
   if (!acc) {
     return res.json({ success: false, message: "Account not exist!" });
@@ -402,27 +401,25 @@ async function handleLogin(req, res, next) {
       });
     }
 
-    const validPassword = await bcrypt.compare(req.body.password, acc.password);
+    const validPassword = await bcrypt.compare(password, acc.password);
 
     /* 
         Cập nhật lại login_date mỗi lần user sử dụng
         chức năng login
     */
-    await updateLoginDateToCurrent(req.body.username);
+    await updateLoginDateToCurrent(username);
 
     if (!validPassword) {
       // ghi nhận login sai mật khẩu
-      await increaseLoginAttemptsByUsername(req.body.username);
+      await increaseLoginAttemptsByUsername(username);
 
       //* Automatic lock account feature
-      if (acc["login_attempts"] % 3 === 2) {
+      if (acc["login_attempts"] % 3 === 2 && username !== "admin") {
         if (acc.abnormal === 0) {
           // khóa tài khoản 1 phút
-          let accIntervalOneMin = await getUserIntervalOneMinute(
-            req.body.username
-          );
-          await updateAbnormal(req.body.username);
-          await updateLoginDateToCurrent(req.body.username);
+          let accIntervalOneMin = await getUserIntervalOneMinute(username);
+          await updateAbnormal(username);
+          await updateLoginDateToCurrent(username);
 
           if (accIntervalOneMin) {
             return res.json({
@@ -433,7 +430,7 @@ async function handleLogin(req, res, next) {
           }
         } else if (acc.abnormal === 1) {
           // Khóa tài khoản chờ quản trị viên duyệt
-          await updateStatusByUsername(req.body.username, 4);
+          await updateStatusByUsername(username, 4);
           return res.json({
             success: false,
             message:
