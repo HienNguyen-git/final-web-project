@@ -13,6 +13,10 @@ const {
   handleRegister,
   handleChangePassword,
   logoutGet,
+  profileGet,
+  profilePost,
+  cardGet,
+  cardPost,
 } = require("../controllers/users.controller");
 const {
   changePassValidator,
@@ -68,5 +72,12 @@ router.get("/account/resetpassword/changepassword", changePassGet);
 router.post("/account/resetpassword/changepassword", changePassPost);
 
 router.post("/account/resetpassword/resendOtpPost", resendOtpPost);
+
+
+router.get("/profile", profileGet)
+router.post("/profile", profilePost);
+
+router.get("/card", cardGet)
+router.post("/card", cardPost)
 
 module.exports = router;
