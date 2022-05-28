@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const emailvalidator = require("email-validator");
+const validatePhoneNumber = require('validate-phone-number-node-js');
 const multer = require('multer');
 
 const {
@@ -262,6 +263,16 @@ const handleRegister = async (req,res) => {
     return res.json({
       code: 1,
       message: "Please enter your phone",
+    })
+  }else if(!(validatePhoneNumber.validate(phone))){
+    return res.json({
+      code: 1,
+      message: "Phone's form is invalid"
+    })
+  }else if(phone.length > 12 || phone.length < 12){
+    return res.json({
+      code: 1,
+      message: "Phone must have 10 or 11 number"
     })
   }else if(email === undefined || email === ''){
     return res.json({
