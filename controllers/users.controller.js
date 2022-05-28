@@ -14,6 +14,13 @@ const {
   getTranSHistoryByUsername,
 } = require("../models/user.model");
 
+const {
+  getCardByAll,
+  getCardByNumber,
+  getCardByUsername,
+  addCardByUsername,
+  getQuantityCardByUsername,
+} = require("../models/credit_card.model")
 
 const { generateRandomPassword, generateUsername } = require("../config/helper")
 const { validationResult } = require("express-validator");
@@ -451,6 +458,124 @@ async function handleChangePassword(req, res, next) {
   }
 }
 
+
+// todo Get /users/profile
+async function profileGet(req, res) {
+
+  let userData = req.userClaims;
+  const raw = await getUserDetailByUserName(userData.username)
+  const account = await getUserByUsername(userData.username)
+
+  if (account.status == 3){
+    return res.json({
+      title: "profile",
+      isUser: true,
+      routerPath: "account/profile",
+      data: raw,
+      massage: "Requires users to re-upload a double-sided photo of their ID card"
+    });
+  }
+  return res.json({
+    title: "profile",
+    isUser: true,
+    routerPath: "account/profile",
+    data: raw,
+  });
+  // console.log(data);
+  
+}
+
+async function profilePost(req, res, next) {
+
+  let [font_cmnd, back_cmnd] = req.body
+  let userData = req.userClaims;
+  let changeResult = updateCMND(userData.username, font_cmnd, back_cmnd)
+
+  if (!changeResult) {
+      return res.json({
+        success: false,
+        message: "There's error while update your cmnd",
+      });
+  } else {
+      return res.json({
+        success: true,
+        message: "You have updated your cmnd successfully",
+      });
+  }
+}
+
+// todo Get /users/card
+async function cardGet(req, res) {
+  let userData = req.userClaims;
+  const raw = await getCardByUsername(userData.username)
+  // console.log(data);
+  return res.json({
+    title: "card",
+    isUser: true,
+    routerPath: "account/card",
+    data: raw,
+  });
+}
+
+// todo Post /users/card
+async function cardPost(req, res, next) {
+
+  var d = new Date();
+  var charge_date = d.getFullYear + "-" + d.getMonth + "-" + d.getDate
+
+  let userData = req.userClaims;
+  let { card_number, expire_date, cvv} = req.body;
+
+  const quantity = getQuantityCardByUsername(userData.username)
+  const raw = await getCardByNumber(card_number)
+
+  if (!raw){
+    return res.json({
+      success: false,
+      message: "Credit card is not supported.",
+    });
+  }
+  if (expire_date > raw.expire_date){
+    return res.json({
+      success: false,
+      message: "Expire date is not correct.",
+    });
+  }
+  if (cvv !== raw.cvv){
+    return res.json({
+      success: false,
+      message: "Cvv is not correct.",
+    });
+  }
+  if (card_number == '222222' && quantity > 1000000 ){
+    return res.json({
+      success: false,
+      message: "The number of recharge cards has run out.",
+    });
+  }
+
+  if (card_number == '333333'){
+    return res.json({
+      success: false,
+      message: "Card is out of money.",
+    });
+  }
+
+  let changeResult = addCardByUsername(userData.username, card_number, expire_date, cvv, charge_date)
+  // console.log(data);
+  if (!changeResult) {
+    return res.json({
+      success: false,
+      message: "There's error while recharge your card",
+    });
+  } else {
+      return res.json({
+        success: true,
+        message: "You have recharged your card successfully",
+      });
+  }
+}
+
 function getDataFromToken(req) {
   /**
    * Function này sẽ giải mã token và trả về data lấy được từ token
@@ -479,4 +604,8 @@ module.exports = {
   handleRegister,
   handleLogin,
   handleChangePassword,
+  profileGet,
+  profilePost,
+  cardGet,
+  cardPost,
 };
