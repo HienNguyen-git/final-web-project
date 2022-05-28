@@ -44,7 +44,7 @@ router.get("/trans-history", function (req, res, next) {
 router.get("/logout", logoutGet);
 
 // * POST /login
-router.post("/login", /* loginValidator, */ handleLogin);
+router.post("/login", loginValidator, handleLogin);
 
 // *POST /register
 router.post("/register", handleRegister);

@@ -17,6 +17,10 @@ const {
   getTranSHistoryByUsername,
   increaseLoginAttemptsByUsername,
   updateStatusById,
+  updateLoginDateToCurrent,
+  getUserIntervalOneMinute,
+  updateStatusByUsername,
+  updateAbnormal,
 } = require("../models/user.model");
 
 const {
@@ -34,6 +38,7 @@ const {
 const { validationResult } = require("express-validator");
 var nodemailer = require("nodemailer"); // khai báo sử dụng module nodemailer
 var smtpTransport = require("nodemailer-smtp-transport");
+const { off } = require("../config/db");
 
 const resetPasswordGet = (req, res) => {
   res.render("account/resetpassword", { title: "Reset Password" });
@@ -375,7 +380,6 @@ async function handleLogin(req, res, next) {
   }
 
   let accessToken = req.cookies.accessToken;
-  // res.clearCookie("accessToken");
 
   if (accessToken) {
     return res.json({
@@ -389,10 +393,54 @@ async function handleLogin(req, res, next) {
   if (!acc) {
     return res.json({ success: false, message: "Account not exist!" });
   } else {
+    if (acc.status === 4) {
+      // Tài khoản bị block
+      return res.json({
+        success: false,
+        message:
+          "Tài khoản đã bị khóa do nhập sai mật khẩu nhiều lần, vui lòng liên hệ quản trị viên để được hỗ trợ",
+      });
+    }
+
     const validPassword = await bcrypt.compare(req.body.password, acc.password);
+
+    /* 
+        Cập nhật lại login_date mỗi lần user sử dụng
+        chức năng login
+    */
+    await updateLoginDateToCurrent(req.body.username);
+
     if (!validPassword) {
       // ghi nhận login sai mật khẩu
-      increaseLoginAttemptsByUsername(req.body.username);
+      await increaseLoginAttemptsByUsername(req.body.username);
+
+      //* Automatic lock account feature
+      if (acc["login_attempts"] % 3 === 2) {
+        if (acc.abnormal === 0) {
+          // khóa tài khoản 1 phút
+          let accIntervalOneMin = await getUserIntervalOneMinute(
+            req.body.username
+          );
+          await updateAbnormal(req.body.username);
+          await updateLoginDateToCurrent(req.body.username);
+
+          if (accIntervalOneMin) {
+            return res.json({
+              success: false,
+              message:
+                "Tài khoản hiện đang tạm khóa, vui lòng thử lại sau 1 phút",
+            });
+          }
+        } else if (acc.abnormal === 1) {
+          // Khóa tài khoản chờ quản trị viên duyệt
+          await updateStatusByUsername(req.body.username, 4);
+          return res.json({
+            success: false,
+            message:
+              "Tài khoản đã bị khóa do nhập sai mật khẩu nhiều lần, vui lòng liên hệ quản trị viên để được hỗ trợ",
+          });
+        }
+      }
       return res.json({ success: false, message: "Incorrect password!" });
     } else {
       let assignData = {
