@@ -262,7 +262,7 @@ const handleRegister = async (req, res) => {
   // console.log(phone)
   const randomUsername = generateUsername(1000000000, 9000000000);
   const randomPassword = generateRandomPassword(6);
-  console.log(randomPassword);
+  // console.log(randomPassword);
   const salt = await bcrypt.genSalt(10);
   const hashPassword = await bcrypt.hash(randomPassword.toString(), salt);
   if (phone === undefined || phone === "") {
@@ -275,7 +275,7 @@ const handleRegister = async (req, res) => {
       code: 1,
       message: "Phone's form is invalid",
     });
-  } else if (phone.length > 12 || phone.length < 12) {
+  } else if (phone.length > 11 || phone.length < 10) {
     return res.json({
       code: 1,
       message: "Phone must have 10 or 11 number",
