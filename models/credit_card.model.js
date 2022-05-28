@@ -17,6 +17,5 @@ async function getCardByAll({ cardNumber, expireDate, cvv }) {
     });
   });
 }
-//fdfdfdfdf
 
 module.exports = { getCardByAll };
