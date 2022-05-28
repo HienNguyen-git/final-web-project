@@ -1,4 +1,29 @@
 $(document).ready(() => {
+  // view-account-login
+  if (document.getElementById("view-account-login")) {
+    let form = document.getElementById("form-login");
+    form.onsubmit = (e) => {
+      e.preventDefault();
+
+      let username = $(`input[name="username"]`).val();
+      let password = $(`input[name="password"]`).val();
+
+      let data = {
+        username,
+        password,
+      };
+
+      // Ajax
+      $.post("/users/login", data, (response) => {
+        // show Message to user
+        if (response.success) {
+          window.location.href = "/";
+        } else {
+          alert(response.message);
+        }
+      });
+    };
+  }
   // * Javascript for GET users/change-password
   if (document.getElementById("view-account-user-change-pw")) {
     let form = document.getElementById("acc-change-password");

@@ -47,16 +47,13 @@ router.get("/logout", logoutGet);
 router.post("/login", /* loginValidator, */ handleLogin);
 
 // *POST /register
-router.post("/register",  handleRegister);
+router.post("/register", handleRegister);
 
 // * GET /change-password
 router.get("/change-password", changePassGet);
 
 // * POST /change-password
-router.post(
-  "/change-password",
-  /* changePassValidator, */ handleChangePassword
-);
+router.post("/change-password", changePassValidator, handleChangePassword);
 
 router.get("/account/resetpassword", resetPasswordGet);
 router.post(
@@ -73,11 +70,10 @@ router.post("/account/resetpassword/changepassword", changePassPost);
 
 router.post("/account/resetpassword/resendOtpPost", resendOtpPost);
 
-
-router.get("/profile", profileGet)
+router.get("/profile", profileGet);
 router.post("/profile", profilePost);
 
-router.get("/card", cardGet)
-router.post("/card", cardPost)
+router.get("/card", cardGet);
+router.post("/card", cardPost);
 
 module.exports = router;

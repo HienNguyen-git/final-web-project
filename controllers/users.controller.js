@@ -16,6 +16,7 @@ const {
   putAccCreatedIntoUser,
   getTranSHistoryByUsername,
   increaseLoginAttemptsByUsername,
+  updateStatusById,
 } = require("../models/user.model");
 
 const {
@@ -394,23 +395,15 @@ async function handleLogin(req, res, next) {
       increaseLoginAttemptsByUsername(req.body.username);
       return res.json({ success: false, message: "Incorrect password!" });
     } else {
-      var token = jwt.sign(
-        {
-          id: acc.id,
-          username: acc.username,
-          status: acc.status,
-          loginAttempts: acc["login_attempts"],
-        },
-        process.env.TOKEN_KEY,
-        {
-          expiresIn: "1h",
-        }
-      );
+      let assignData = {
+        id: acc.id,
+        username: acc.username,
+        status: acc.status,
+        loginAttempts: acc["login_attempts"],
+      };
 
-      // ? Sử dụng cookie hay refreshToken
-      res.cookie("accessToken", token, {
-        expires: new Date(Date.now() + 60 * 1000 * 60),
-      });
+      let token = assignDataToCookie(res, assignData);
+
       const raw = await getTranSHistoryByUsername(acc.username);
       // console.log(raw.name)
       const data = raw.map((e) => ({
@@ -423,7 +416,6 @@ async function handleLogin(req, res, next) {
         fee: e.fee,
         total_value: e.total_value,
       }));
-      console.log(data);
       // return res.redirect('/')
       // return res.render('users/trans-history', { title: "Transaction History", data,routerPath:'users/trans-history' })
 
@@ -449,6 +441,15 @@ async function handleChangePassword(req, res, next) {
       message: error.msg,
     });
   }
+
+  let { currentPass, newPass, password } = req.body;
+
+  if (currentPass === newPass) {
+    return res.json({
+      success: false,
+      message: "Current password can't be the same as the new password",
+    });
+  }
   let userData = req.userClaims;
 
   if (!userData) {
@@ -470,6 +471,7 @@ async function handleChangePassword(req, res, next) {
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(req.body.newPass, salt);
 
+    let isFirstLogin = userData.status === -1;
     let changeResult = updatePasswordById(acc.id, hashPassword);
 
     if (!changeResult) {
@@ -478,6 +480,17 @@ async function handleChangePassword(req, res, next) {
         message: "There's error while changing your password",
       });
     } else {
+      if (isFirstLogin) {
+        // Trường hợp đăng nhập lần đầu
+        updateStatusById(acc.id, 0);
+
+        userData.status = 0;
+        delete userData["iat"];
+        delete userData["exp"];
+
+        assignDataToCookie(res, userData);
+      }
+
       return res.json({
         success: true,
         message: "You have changed your password successfully",
@@ -508,7 +521,6 @@ async function profileGet(req, res) {
     routerPath: "account/profile",
     data: raw,
   });
-  // console.log(data);
 }
 
 async function profilePost(req, res, next) {
@@ -533,7 +545,6 @@ async function profilePost(req, res, next) {
 async function cardGet(req, res) {
   let userData = req.userClaims;
   const raw = await getCardByUsername(userData.username);
-  // console.log(data);
   return res.json({
     title: "card",
     isUser: true,
@@ -603,6 +614,30 @@ async function cardPost(req, res, next) {
       success: true,
       message: "You have recharged your card successfully",
     });
+  }
+}
+
+function assignDataToCookie(res, data) {
+  /**
+   * Tạo token từ data rồi thêm vào cookie
+   * Input: res - Request, data - Object
+   * Output: Assign token được tạo ra vào cookie và trả về token
+   */
+  console.log(data);
+  try {
+    var token = jwt.sign(data, process.env.TOKEN_KEY, {
+      expiresIn: "1h",
+    });
+
+    // ? Sử dụng cookie hay refreshToken
+    res.cookie("accessToken", token, {
+      expires: new Date(Date.now() + 60 * 1000 * 60),
+    });
+
+    return token;
+  } catch (err) {
+    console.log(err);
+    return null;
   }
 }
 

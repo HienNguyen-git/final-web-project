@@ -183,6 +183,23 @@ async function updatePasswordById(id, newPass) {
   });
 }
 
+async function updateStatusById(id, status) {
+  /**
+   * Cập nhật status của một tài khoản bằng id
+   * Input: id - String, status - Integer
+   * Output: true nếu thành công, false ngược lại
+   */
+  const sql = "UPDATE user SET status = ? WHERE id = ?";
+  const value = [status, id];
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, value, (err) => {
+      if (err) reject(false);
+    });
+    resolve(true);
+  });
+}
+
 module.exports = {
   handlePostOTP,
   handleSelectOTP,
@@ -193,6 +210,7 @@ module.exports = {
   createAnAccount,
   putAccCreatedIntoUser,
   updatePasswordById,
+  updateStatusById,
   updateTotalValue,
   updateTotalValueByDifference,
   increaseLoginAttemptsByUsername,
