@@ -8,6 +8,7 @@ const {
   handleSelectOTP,
   handleChangePass,
   getUserByUsername,
+  getUserDetailByUserName,
   updatePasswordById,
   createAnAccount,
   putAccCreatedIntoUser,
@@ -254,7 +255,7 @@ const handleRegister = async (req,res) => {
   // console.log(phone)
   const randomUsername = generateUsername(1000000000, 9000000000);
   const randomPassword = generateRandomPassword(6);
-  // console.log(randomPassword)
+  console.log(randomPassword)
   const salt = await bcrypt.genSalt(10);
   const hashPassword = await bcrypt.hash(randomPassword.toString(), salt);
   if(phone===undefined|| phone===''){
