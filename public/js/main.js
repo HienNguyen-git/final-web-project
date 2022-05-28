@@ -1,5 +1,5 @@
 $(document).ready(() => {
-  // view-account-login
+  // * Javascript for GET users/login
   if (document.getElementById("view-account-login")) {
     let form = document.getElementById("form-login");
     form.onsubmit = (e) => {
@@ -43,7 +43,37 @@ $(document).ready(() => {
       // Ajax
       $.post("/users/change-password", data, (response) => {
         // show Message to user
-        alert(response.message);
+        if (response.success) {
+          window.location.href = "/";
+        } else {
+          alert(response.message);
+        }
+      });
+    };
+  }
+
+  // * Javascript for GET users/first-login
+  if (document.getElementById("view-account-user-change-pw-first-login")) {
+    let form = document.getElementById("acc-change-password");
+    form.onsubmit = (e) => {
+      e.preventDefault();
+
+      let newPass = $(`input[name="newpass"]`).val();
+      let renewPass = $(`input[name="renewpass"]`).val();
+
+      let data = {
+        newPass,
+        renewPass,
+      };
+
+      // Ajax
+      $.post("/users/first-login", data, (response) => {
+        // show Message to user
+        if (response.success) {
+          window.location.href = "/";
+        } else {
+          alert(response.message);
+        }
       });
     };
   }

@@ -17,11 +17,14 @@ const {
   profilePost,
   cardGet,
   cardPost,
+  firstLoginGet,
+  handleFirstLogin,
 } = require("../controllers/users.controller");
 const {
   changePassValidator,
   requestOtpToMailValidator,
   loginValidator,
+  firstLoginValidator,
 } = require("../validations/account");
 
 /* GET users listing. */
@@ -54,6 +57,11 @@ router.get("/change-password", changePassGet);
 
 // * POST /change-password
 router.post("/change-password", changePassValidator, handleChangePassword);
+
+// * GET /first-login
+router.get("/first-login", firstLoginGet);
+
+router.post("/first-login", firstLoginValidator, handleFirstLogin);
 
 router.get("/account/resetpassword", resetPasswordGet);
 router.post(

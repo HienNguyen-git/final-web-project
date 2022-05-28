@@ -152,6 +152,15 @@ const changePassGet = (req, res) => {
   res.render("account/user-change-pw", { title: "changepassword" });
 };
 
+const firstLoginGet = (req, res) => {
+  let userData = req.userClaims;
+  if (userData.status !== -1) {
+    // Không phải login lần đầu thì không cho truy cập
+    res.redirect("/");
+  }
+  res.render("account/user-change-pw-first-login", { title: "First Login" });
+};
+
 const changePassPost = async (req, res) => {
   let result = validationResult(req);
   if (result.errors.length === 0) {
@@ -393,11 +402,18 @@ async function handleLogin(req, res, next) {
     return res.json({ success: false, message: "Account not exist!" });
   } else {
     if (acc.status === 4) {
-      // Tài khoản bị block
+      // Không cho tài khoản bị block login
       return res.json({
         success: false,
         message:
           "Tài khoản đã bị khóa do nhập sai mật khẩu nhiều lần, vui lòng liên hệ quản trị viên để được hỗ trợ",
+      });
+    } else if (acc.status === 2) {
+      // Không cho tài khoản bị vô hiệu hóa login
+      return res.json({
+        success: false,
+        message:
+          "Tài khoản này đã bị vô hiệu hóa, xin vui lòng liên hệ tổng đài 18001008",
       });
     }
 
@@ -475,7 +491,7 @@ async function handleLogin(req, res, next) {
   }
 }
 
-// todo POST /users/change-password
+// * POST /users/change-password
 async function handleChangePassword(req, res, next) {
   let errors = validationResult(req).errors;
   let error = errors[0];
@@ -487,7 +503,7 @@ async function handleChangePassword(req, res, next) {
     });
   }
 
-  let { currentPass, newPass, password } = req.body;
+  let { currentPass, newPass, renewPass } = req.body;
 
   if (currentPass === newPass) {
     return res.json({
@@ -495,6 +511,14 @@ async function handleChangePassword(req, res, next) {
       message: "Current password can't be the same as the new password",
     });
   }
+
+  if (newPass !== renewPass) {
+    return res.json({
+      success: false,
+      message: "re-new password must be the same as the new password",
+    });
+  }
+
   let userData = req.userClaims;
 
   if (!userData) {
@@ -516,31 +540,70 @@ async function handleChangePassword(req, res, next) {
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(req.body.newPass, salt);
 
-    let isFirstLogin = userData.status === -1;
-    let changeResult = updatePasswordById(acc.id, hashPassword);
+    await updatePasswordById(acc.id, hashPassword);
 
-    if (!changeResult) {
-      return res.json({
-        success: false,
-        message: "There's error while changing your password",
-      });
-    } else {
-      if (isFirstLogin) {
-        // Trường hợp đăng nhập lần đầu
-        updateStatusById(acc.id, 0);
+    return res.json({
+      success: true,
+      message: "You have changed your password successfully",
+    });
+  }
+}
 
-        userData.status = 0;
-        delete userData["iat"];
-        delete userData["exp"];
+// * POST /users/first-login
+async function handleFirstLogin(req, res, next) {
+  let userData = req.userClaims;
+  if (userData.status !== -1) {
+    // Không phải login lần đầu thì không cho truy cập
+    res.redirect("/");
+  }
+  let errors = validationResult(req).errors;
+  let error = errors[0];
 
-        assignDataToCookie(res, userData);
-      }
+  if (error) {
+    return res.json({
+      success: false,
+      message: error.msg,
+    });
+  }
 
-      return res.json({
-        success: true,
-        message: "You have changed your password successfully",
-      });
-    }
+  let { newPass, renewPass } = req.body;
+
+  if (newPass !== renewPass) {
+    return res.json({
+      success: false,
+      message: "re-new password must be the same as the new password",
+    });
+  }
+
+  if (!userData) {
+    return res.json({
+      success: false,
+      message: "Please sign in to change your password",
+    });
+  }
+  let acc = await getUserByUsername(userData.username);
+
+  if (!acc) {
+    return res.json({ success: false, message: "Account not exist!" });
+  } else {
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(req.body.newPass, salt);
+
+    await updatePasswordById(acc.id, hashPassword);
+
+    // Trường hợp đăng nhập lần đầu
+    updateStatusById(acc.id, 0);
+
+    userData.status = 0;
+    delete userData["iat"];
+    delete userData["exp"];
+
+    assignDataToCookie(res, userData);
+
+    return res.json({
+      success: true,
+      message: "You have changed your password successfully",
+    });
   }
 }
 
@@ -711,9 +774,11 @@ module.exports = {
   changePassPost,
   resendOtpPost,
   logoutGet,
+  firstLoginGet,
   handleRegister,
   handleLogin,
   handleChangePassword,
+  handleFirstLogin,
   profileGet,
   profilePost,
   cardGet,
