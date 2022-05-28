@@ -380,9 +380,13 @@ async function handleLogin(req, res, next) {
       // console.log(raw.name)
       const data = raw.map(e => ({
         id: e.id,
-        username: e.username,
         phone: e.phone,
-        email: e.email,
+        name: e.name,
+        date: e.date,
+        value: e.value,
+        note: e.note,
+        fee: e.fee,
+        total_value: e.total_value,
       })) 
       console.log(data)
       // return res.redirect('/')
