@@ -32,45 +32,7 @@
     <title>{{title}}</title>
   </head>
   <body>
-    <nav class="main-nav">
-      <a href="#" class="main-nav__logo">Web Final Project</a>
-      <div class="toggle-menu">
-        <button class="toggle-btn"><i class="fa-solid fa-bars"></i></button>
-      </div>
-      <ul class="main-nav__list">
-        <li class="main-nav__item">
-          <a href="/">Dashboard</a>
-        </li>
-        <li class="main-nav__item">
-          <a href="/phone-card">Phone card</a>
-        </li>
-        <li class="main-nav__item">
-          <a href="/deposit">Deposit</a>
-        </li>
-        <li class="main-nav__item">
-          <a href="/withdraw">Withdraw</a>
-        </li>
-        <li class="main-nav__item hidden">
-          <a href="#">Profile</a>
-        </li>
-        <li class="login-menu">
-          <i class="fa-solid fa-gear" id="login-menu-btn"></i>
-          <div class="drop-down">
-            <ul class="drop-down-list">
-              <li class="drop-down-item">
-                <a href="/users/profile"><i class="fa-solid fa-address-card"></i>
-                  Profile</a>
-              </li>
-              <li class="drop-down-item">
-                <a href="/users/logout">
-                  <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                  Đăng xuất</a>
-              </li>
-            </ul>
-          </div>
-        </li>
-      </ul>
-    </nav>
+    
 
   
     {{#if flash}}
@@ -111,6 +73,45 @@
 			{{{body}}}
 		</div>
   {{else}}
+  <nav class="main-nav">
+      <a href="#" class="main-nav__logo">Web Final Project</a>
+      <div class="toggle-menu">
+        <button class="toggle-btn"><i class="fa-solid fa-bars"></i></button>
+      </div>
+      <ul class="main-nav__list">
+        <li class="main-nav__item">
+          <a href="/">Dashboard</a>
+        </li>
+        <li class="main-nav__item">
+          <a href="/phone-card">Phone card</a>
+        </li>
+        <li class="main-nav__item">
+          <a href="/deposit">Deposit</a>
+        </li>
+        <li class="main-nav__item">
+          <a href="/withdraw">Withdraw</a>
+        </li>
+        <li class="main-nav__item hidden">
+          <a href="#">Profile</a>
+        </li>
+        <li class="login-menu">
+          <i class="fa-solid fa-gear" id="login-menu-btn"></i>
+          <div class="drop-down">
+            <ul class="drop-down-list">
+              <li class="drop-down-item">
+                <a href="/users/profile"><i class="fa-solid fa-address-card"></i>
+                  Profile</a>
+              </li>
+              <li class="drop-down-item">
+                <a href="/users/logout">
+                  <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                  Đăng xuất</a>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </nav>
     {{{body}}}
 	{{/if}}
   </body>
