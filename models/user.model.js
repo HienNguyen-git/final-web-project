@@ -14,6 +14,62 @@ const handlePostOTP = (email, otpcode, expired) =>
     });
   });
 
+const handleSelectFrontCMND = (username) =>
+  new Promise((resolve, reject) => {
+    connect.query(
+      "select font_cmnd from user_detail where username = ?",
+      [username],
+      (err, result) => {
+        if (err) reject(err);
+        else {
+          resolve(result);
+        }
+      }
+    );
+  });
+
+const handleSelectBackCMND = (username) =>
+  new Promise((resolve, reject) => {
+    connect.query(
+      "select back_cmnd from user_detail where username = ?",
+      [username],
+      (err, result) => {
+        if (err) reject(err);
+        else {
+          resolve(result);
+        }
+      }
+    );
+  });
+
+const handleUpdateFrontCMND = (font_cmnd, username) =>
+  new Promise((resolve, reject) => {
+    connect.query(
+      "update user_detail set font_cmnd = ? where username = ?",
+      [font_cmnd, username],
+      (err, result) => {
+        if (err) reject(err);
+        else {
+          resolve(true);
+        }
+      }
+    );
+  });
+
+const handleUpdateBackCMND = (back_cmnd, username) =>
+  new Promise((resolve, reject) => {
+    connect.query(
+      "update user_detail set back_cmnd = ? where username = ?",
+      [back_cmnd, username],
+      (err, result) => {
+        if (err) reject(err);
+        else {
+          resolve(true);
+        }
+      }
+    );
+  });
+
 const handleSelectOTP = (email) =>
   new Promise((resolve, reject) => {
     const sql =
@@ -187,6 +243,22 @@ async function getUserByUsername(username) {
   });
 }
 
+async function getUserNameByPhoneNumber(phone) {
+  /* Lấy username bằng số điện thoại
+    Input: username, String
+    Output: found username - String
+    */
+  const sql = "SELECT username FROM user_detail WHERE phone = ?";
+  const value = [phone];
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, value, async (err, result) => {
+      if (err) throw err;
+      resolve(result[0]?.username);
+    });
+  });
+}
+
 async function getUserDetailByUserName(username) {
   /* Lấy account detail bằng username
     Input: username, String
@@ -270,6 +342,10 @@ async function updateStatusByUsername(username, status) {
 
 module.exports = {
   handlePostOTP,
+  handleSelectFrontCMND,
+  handleUpdateFrontCMND,
+  handleSelectBackCMND,
+  handleUpdateBackCMND,
   handleSelectOTP,
   handleChangePass,
   getUserByUsername,
@@ -286,4 +362,5 @@ module.exports = {
   updateTotalValueByDifference,
   increaseLoginAttemptsByUsername,
   updateAbnormal,
+  getUserNameByPhoneNumber,
 };

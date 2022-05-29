@@ -11,8 +11,8 @@ withdraw:
 	status:
 		-1: tu choi
 		0: dang cho
-		1: admin da duyet
-		2: thanh cong
+		1: thanh cong
+		2: admin đã duyệt
 
 Note: đổi status default thành -1
 

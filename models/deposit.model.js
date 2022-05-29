@@ -1,81 +1,188 @@
-const connect = require('../config/db');
+const connect = require("../config/db");
 
-const handlePostDeposit = (phone_sender,phone_receiver,value,fee,feeperson,note,status,date) => new Promise((resolve, reject) => {
-    const sql = "insert into deposit(phone_sender,phone_receiver,value,fee,feeperson,note,status,date) values(?,?,?,?,?,?,?,?)"
-    const values = [phone_sender,phone_receiver,value,fee,feeperson,note,status,date];
+const handlePostDeposit = (
+  phone_sender,
+  phone_receiver,
+  value,
+  fee,
+  feeperson,
+  note,
+  status,
+  date
+) =>
+  new Promise((resolve, reject) => {
+    const sql =
+      "insert into deposit(phone_sender,phone_receiver,value,fee,feeperson,note,status,date) values(?,?,?,?,?,?,?,?)";
+    const values = [
+      phone_sender,
+      phone_receiver,
+      value,
+      fee,
+      feeperson,
+      note,
+      status,
+      date,
+    ];
     connect.query(sql, values, (err) => {
-        if (err) reject(false)
-        else{
-            resolve(true);
-        }
-    })
-})
+      if (err) reject(false);
+      else {
+        resolve(true);
+      }
+    });
+  });
 
-const selectReceiverValue = (phone_receiver) => new Promise((resolve,reject) =>{
-    const sql = "select * from user_detail where phone = ?"
+const selectReceiverValue = (phone_receiver) =>
+  new Promise((resolve, reject) => {
+    const sql = "select * from user_detail where phone = ?";
     const values = [phone_receiver];
-    connect.query(sql, values, (err,result) => {
-        if (err) reject(err)
-        else{
-            resolve(result[0]);
-        }
-    })
-})
+    connect.query(sql, values, (err, result) => {
+      if (err) reject(err);
+      else {
+        resolve(result[0]);
+      }
+    });
+  });
 
-const selectReceiverName = (phone_receiver) => new Promise((resolve,reject) =>{
-    const sql = "select * from user_detail where phone = ?"
+const selectReceiverName = (phone_receiver) =>
+  new Promise((resolve, reject) => {
+    const sql = "select * from user_detail where phone = ?";
     const values = [phone_receiver];
-    connect.query(sql, values, (err,result) => {
-        if (err) reject(false)
-        else{
-            resolve(true);
-        }
-    })
-})
+    connect.query(sql, values, (err, result) => {
+      if (err) reject(false);
+      else {
+        resolve(result[0].email);
+      }
+    });
+  });
 
-const handleSelectDepositByPhone = (phone) => new Promise((resolve,reject) => {
-    connect.query("select * from deposit where phone_sender=? order by date desc limit 1",[phone],(err,result)=>{
-        if(err) reject(err)
-        resolve(result[0])
-    })
-})
+const handleSelectDepositByPhone = (phone) =>
+  new Promise((resolve, reject) => {
+    connect.query(
+      "select * from deposit where phone_sender=? order by date desc limit 1",
+      [phone],
+      (err, result) => {
+        if (err) reject(err);
+        resolve(result[0]);
+      }
+    );
+  });
 
-const handleUpdateStatusDeposit5m = (phone) => new Promise((resolve,reject) => {
-    connect.query("update deposit set status = 0 where phone_sender=? order by date desc limit 1",[phone],(err,result)=>{
-        if(err) reject(err)
-        resolve(true)
-    })
-})
+const handleUpdateStatusDeposit5m = (phone) =>
+  new Promise((resolve, reject) => {
+    connect.query(
+      "update deposit set status = 0 where phone_sender=? order by date desc limit 1",
+      [phone],
+      (err, result) => {
+        if (err) reject(err);
+        resolve(true);
+      }
+    );
+  });
 
-const handleUpdateTotalValueOfSender = (moneyDepositFeeSender,phone) => new Promise((resolve,reject) =>{
+const handleUpdateTotalValueOfSender = (moneyDepositFeeSender, phone) =>
+  new Promise((resolve, reject) => {
     // console.log(moneyDepositFeeSender);
-    const sql = "update user_detail set total_value = total_value - ? where phone = ?"
-    const values = [moneyDepositFeeSender,phone];
+    const sql =
+      "update user_detail set total_value = total_value - ? where phone = ?";
+    const values = [moneyDepositFeeSender, phone];
     connect.query(sql, values, (err) => {
-        if (err) reject(false)
-        else{
-            resolve(true);
-        }
-    })
-})
-const handleUpdateTotalValueOfReceiver = (moneyDepositFeeReceiveer,phone) => new Promise((resolve,reject) =>{
-    const sql = "update user_detail set total_value = total_value + ? where phone = ?"
-    const values = [moneyDepositFeeReceiveer,phone];
+      if (err) reject(false);
+      else {
+        resolve(true);
+      }
+    });
+  });
+const handleUpdateTotalValueOfReceiver = (moneyDepositFeeReceiveer, phone) =>
+  new Promise((resolve, reject) => {
+    const sql =
+      "update user_detail set total_value = total_value + ? where phone = ?";
+    const values = [moneyDepositFeeReceiveer, phone];
     connect.query(sql, values, (err) => {
-        if (err) reject(false)
-        else{
-            resolve(true);
-        }
-    })
-})
+      if (err) reject(false);
+      else {
+        resolve(true);
+      }
+    });
+  });
 
+const getUserDepositInfo = (username) =>
+  new Promise((resolve, reject) => {
+    connect.query(
+      "select * from user_detail where username=?",
+      [username],
+      (err, result) => {
+        if (err) reject(err);
+        resolve(result[0]);
+      }
+    );
+  });
 
-const getUserDepositInfo = (username)=> new Promise((resolve,reject)=>{
-    connect.query("select * from user_detail where username=?",[username],(err,result)=>{
-        if(err) reject(err)
-        resolve(result[0])
-    })
-})
+async function getDepositById(id) {
+  /* Lấy deposit bằng id
+    Input: id, String
+    Output: found user
+    */
+  const sql = "SELECT * FROM deposit WHERE id = ?";
+  const value = [id];
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, value, async (err, result) => {
+      if (err) throw err;
+      resolve(result[0]);
+    });
+  });
+}
+
+async function getAllDepositsSender() {
+  /**
+   * Lấy tất cả giao dịch chuyển tiền
+   * Input: None
+   * Output: list of giao dịch
+   */
+  const sql =
+    "select a.* , b.username from deposit a left join user_detail b on a.phone_sender=b.phone";
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, (err, result) => {
+      if (err) throw err;
+      resolve(result);
+    });
+  });
+}
+
+async function getAllDepositsReceiver() {
+  /**
+   * Lấy tất cả giao dịch nhận tiền
+   * Input: None
+   * Output: list of giao dịch
+   */
+  const sql =
+    "select a.* , b.username from deposit a left join user_detail b on a.phone_receiver=b.phone";
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, (err, result) => {
+      if (err) throw err;
+      resolve(result);
+    });
+  });
+}
+
+async function getAllDeposits() {
+  /**
+   * Lấy tất cả giao dịch chuyển tiền
+   * Input: None
+   * Output: list of giao dịch
+   */
+  const sql = "SELECT * FROM deposit";
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, (err, result) => {
+      if (err) throw err;
+      resolve(result);
+    });
+  });
+}
+
 
 const getDepositListByUser = (username)=> new Promise((resolve,reject)=>{
     connect.query("select * from deposit where phone_sender=?",[username],(err,result)=>{
@@ -85,14 +192,19 @@ const getDepositListByUser = (username)=> new Promise((resolve,reject)=>{
 })
 
 
-module.exports ={
-    handlePostDeposit,
-    selectReceiverValue,
-    getUserDepositInfo,
-    handleSelectDepositByPhone,
-    handleUpdateTotalValueOfSender,
-    handleUpdateTotalValueOfReceiver,
-    selectReceiverName,
-    handleUpdateStatusDeposit5m,
-    getDepositListByUser
-}
+
+module.exports = {
+  handlePostDeposit,
+  selectReceiverValue,
+  getUserDepositInfo,
+  handleSelectDepositByPhone,
+  handleUpdateTotalValueOfSender,
+  handleUpdateTotalValueOfReceiver,
+  selectReceiverName,
+  handleUpdateStatusDeposit5m,
+  getAllDeposits,
+  getAllDepositsSender,
+  getAllDepositsReceiver,
+  getDepositById,
+  getDepositListByUser
+};

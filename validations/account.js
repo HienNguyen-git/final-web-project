@@ -231,6 +231,42 @@ const withdrawValidator = [
     .withMessage("User's note can not be empty"),
 ];
 
+const rechargeValidator = [
+  check("card_number")
+    .exists()
+    .withMessage("Please enter your card number")
+    .bail()
+    .notEmpty()
+    .withMessage("Card number can not be empty"),
+
+  check("expire_date")
+    .exists()
+    .withMessage("Please enter your credit card's expire date")
+    .bail()
+    .notEmpty()
+    .withMessage("Expire date can not be empty")
+    .bail()
+    .isDate()
+    .withMessage("expireDate must be a Date type"),
+
+  check("cvv")
+    .exists()
+    .withMessage("Please enter your CVV")
+    .notEmpty()
+    .withMessage("CVV can not be empty")
+    .bail()
+    .isNumeric()
+    .withMessage("CVV can only contains numbers"),
+
+  check("money")
+    .exists()
+    .withMessage("Please enter your amount")
+    .notEmpty()
+    .withMessage("Amount of withdrawal can not be empty")
+    .isNumeric()
+    .withMessage("Amount can only contains numbers"),
+];
+
 const adminWithdrawValidator = [
   check("id")
     .exists()
@@ -259,4 +295,5 @@ module.exports = {
   requestOtpToMailValidator,
   withdrawValidator,
   adminWithdrawValidator,
+  rechargeValidator,
 };

@@ -16,7 +16,8 @@ var usersWithdrawRouter = require("./routes/withdraw.route");
 const adminRouter = require("./routes/admin.route");
 
 var app = express();
-
+const bodyParser = require('body-parser'); // xử form dữ liệu
+app.use(bodyParser.urlencoded({ extended: false })); //form
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "handlebars");
@@ -42,6 +43,7 @@ app.engine(
           fnFalse = options.inverse;
         return status == 4 ? fnTrue(this) : fnFalse(this);
       },
+      
     },
   })
 );

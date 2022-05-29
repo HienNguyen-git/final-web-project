@@ -1,15 +1,14 @@
 <div class="admin-section admin-section2">
   <div class="admin-section-panel admin-section-panel4">
-    {{#each data}}
 
-  <section class="account-info-container">
-        <h1>Transaction History Detail </h1>
-        <h3>{{username}}</h3>
+    <section class="account-info-container">
+      <h1>Transaction History Detail</h1>
+        <h3>{{data.username}}</h3>
         <div class="account-container">
             <table>
             <tr>
                 <th>Name</th>
-                <td>{{name}}</td>
+                <td>{{data.phone}}</td>
                 <th>Email</th>
                 <td>{{email}}</td>
             </tr>
@@ -26,13 +25,14 @@
                 {{{status}}}
             </tr>
             <tr>
+                <th>Login attempt</th>
+                <td>{{login_attempts}}</td>
+            </tr>
+            <tr>
                 <th>Total value</th>
                 <td>{{total_value}}</td>
             </tr>
         </table>
-        </div>
     </section>
-    {{/each}}
-
-    </div>  
+  </div>
 </div>
