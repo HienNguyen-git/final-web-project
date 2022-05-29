@@ -25,6 +25,7 @@ const {
   handleUpdateFrontCMND,
   handleSelectBackCMND,
   handleUpdateBackCMND,
+  getUserNameByPhoneNumber,
 } = require("../models/user.model");
 
 const {
@@ -35,6 +36,7 @@ const {
   getQuantityCardByUsername,
 } = require("../models/credit_card.model");
 
+const { getAllBills } = require("../models/phone_card.model");
 const {
   generateRandomPassword,
   generateUsername,
@@ -43,70 +45,81 @@ const { validationResult } = require("express-validator");
 var nodemailer = require("nodemailer"); // khai báo sử dụng module nodemailer
 var smtpTransport = require("nodemailer-smtp-transport");
 const { off } = require("../config/db");
+const { getAllWithdraws } = require("../models/withdraw.model");
+const {
+  getAllDeposits,
+  getAllDepositsSender,
+  getAllDepositsReceiver,
+} = require("../models/deposit.model");
+const { getAllRecharges } = require("../models/recharge.model");
 
 const resetPasswordGet = (req, res) => {
   res.render("account/resetpassword", { title: "Reset Password" });
 };
 const requestOtpToMail = (req, res) => {
-    let result = validationResult(req);
-    if(result.errors.length === 0){
+  let result = validationResult(req);
+  if (result.errors.length === 0) {
+    let { email } = req.body;
+    const otp = Math.floor(100000 + Math.random() * 900000);
 
-        let { email } = req.body;
-        const otp = Math.floor(100000 + Math.random() * 900000);
-        
-        var transporter = nodemailer.createTransport({ // config mail server
-            service: 'Gmail',
-            auth: {
-                user: 'nchdang16012001@gmail.com',
-                pass: 'mlrafbeyqtvtqloe'
-            }
-        });
+    var transporter = nodemailer.createTransport({
+      // config mail server
+      service: "Gmail",
+      auth: {
+        user: "nchdang16012001@gmail.com",
+        pass: "mlrafbeyqtvtqloe",
+      },
+    });
 
-        // var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
-        //     tls: {
-        //         rejectUnauthorized: false
-        //     },
-        //     host: 'mail.phongdaotao.com',
-        //     port: 25,
-        //     secureConnection: false,
-        //     auth: {
-        //         user: 'sinhvien@phongdaotao.com',
-        //         pass: 'svtdtu'
-        //     }
-        // }));
+    // var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
+    //     tls: {
+    //         rejectUnauthorized: false
+    //     },
+    //     host: 'mail.phongdaotao.com',
+    //     port: 25,
+    //     secureConnection: false,
+    //     auth: {
+    //         user: 'sinhvien@phongdaotao.com',
+    //         pass: 'svtdtu'
+    //     }
+    // }));
 
-        var mainOptions = { // thiết lập đối tượng, nội dung gửi mail
-            from: 'sinhvien@phongdaotao.com',
-            to: email,
-            subject: 'OTP code',
-            html: '<p>You have got a code: ' + otp + '<br></br> Code will expired in 1 minute </p>'
-        }
-    
-        transporter.sendMail(mainOptions, function (err, info) {
-            if (err) {
-                // console.log(err);
-                req.session.flash = {
-                    type: "danger",
-                    intro: "Oops!",
-                    message: "Some thing went wrong"
-                }
-                
-                res.redirect('/users/account/resetpassword');
-            } else {
-                //lưu vào db
-                let time = Date.now() + 60000;
-                let day = new Date(time);
-                req.session.email = email;
-                handlePostOTP(email,otp, day);
-                req.session.flash = {
-                    type: "success",
-                    intro: "Congratulation!",
-                    message: "OTP has been sent to your email. Please check your email!!!!"
-                }
-                res.redirect('/users/account/resetpassword/sendOtp');
-            }
-        });
-  
+    var mainOptions = {
+      // thiết lập đối tượng, nội dung gửi mail
+      from: "sinhvien@phongdaotao.com",
+      to: email,
+      subject: "OTP code",
+      html:
+        "<p>You have got a code: " +
+        otp +
+        "<br></br> Code will expired in 1 minute </p>",
+    };
+
+    transporter.sendMail(mainOptions, function (err, info) {
+      if (err) {
+        // console.log(err);
+        req.session.flash = {
+          type: "danger",
+          intro: "Oops!",
+          message: "Some thing went wrong",
+        };
+
+        res.redirect("/users/account/resetpassword");
+      } else {
+        //lưu vào db
+        let time = Date.now() + 60000;
+        let day = new Date(time);
+        req.session.email = email;
+        handlePostOTP(email, otp, day);
+        req.session.flash = {
+          type: "success",
+          intro: "Congratulation!",
+          message:
+            "OTP has been sent to your email. Please check your email!!!!",
+        };
+        res.redirect("/users/account/resetpassword/sendOtp");
+      }
+    });
   } else {
     const errors = result.mapped();
     let errorMessage = errors[Object.keys(errors)[0]].msg;
@@ -789,66 +802,72 @@ async function cardGet(req, res) {
 
 // todo Post /users/card
 async function cardPost(req, res, next) {
-  var d = new Date();
-  var charge_date = d.getFullYear + "-" + d.getMonth + "-" + d.getDate;
+  let errors = validationResult(req).errors;
+  let error = errors[0];
+
+  if (error) {
+    return res.json({
+      success: false,
+      message: error.msg,
+    });
+  }
+
+  var recharge_date = formatDateTime(new Date());
 
   let userData = req.userClaims;
-  let { card_number, expire_date, cvv } = req.body;
+  let { money, card_number, expire_date, cvv } = req.body;
 
   const quantity = getQuantityCardByUsername(userData.username);
   const raw = await getCardByNumber(card_number);
 
+  console.log(raw);
   if (!raw) {
     return res.json({
       success: false,
       message: "Credit card is not supported.",
     });
   }
-  if (expire_date > raw.expire_date) {
+
+  let inputDate = formatDateTime(expire_date);
+  let foundDate = formatDateTime(raw.expire_date);
+
+  if (inputDate !== foundDate) {
     return res.json({
       success: false,
       message: "Expire date is not correct.",
     });
   }
-  if (cvv !== raw.cvv) {
+  if (parseInt(cvv) !== raw.cvv) {
     return res.json({
       success: false,
       message: "Cvv is not correct.",
     });
   }
-  if (card_number == "222222" && quantity > 1000000) {
+  if (raw.card_number === "222222" && money > 1000000) {
     return res.json({
       success: false,
-      message: "The number of recharge cards has run out.",
+      message: "Thẻ này chỉ hỗ trợ nạp tiền tối đa là 1 triệu",
     });
   }
 
-  if (card_number == "333333") {
+  if (raw.card_number === "333333") {
     return res.json({
       success: false,
-      message: "Card is out of money.",
+      message: "Thẻ này đã hết tiền",
     });
   }
 
-  let changeResult = addCardByUsername(
-    userData.username,
+  await addCardByUsername({
+    username: userData.username,
     card_number,
-    expire_date,
-    cvv,
-    charge_date
-  );
-  // console.log(data);
-  if (!changeResult) {
-    return res.json({
-      success: false,
-      message: "There's error while recharge your card",
-    });
-  } else {
-    return res.json({
-      success: true,
-      message: "You have recharged your card successfully",
-    });
-  }
+    recharge_date,
+    money,
+  });
+
+  return res.json({
+    success: true,
+    message: "You have recharged your card successfully",
+  });
 }
 
 function assignDataToCookie(res, data) {
@@ -875,6 +894,54 @@ function assignDataToCookie(res, data) {
   }
 }
 
+async function apiGetTransHistory(req, res) {
+  // let userData = req.userClaims;
+
+  // if (userData.username !== "admin") {
+  //   return res.json({
+  //     success: false,
+  //     message: "Phải là admin để sử dụng api này",
+  //   });
+  // }
+  let choice = parseInt(req.params.choice);
+
+  let data = null;
+  switch (choice) {
+    case 1:
+      // Nạp tiền - recharge
+      data = await getAllRecharges();
+
+      break;
+    case 2:
+      // Rút tiền - withdraw
+      data = await getAllWithdraws();
+
+      break;
+    case 3:
+      // Chuyển tiền - deposit
+      data = await getAllDepositsSender();
+      break;
+    case 4:
+      //  Nhận tiền - deposit
+      data = await getAllDepositsReceiver();
+      break;
+    case 5:
+      // Thanh toán dịch vụ - phone_card
+      data = await getAllBills();
+      break;
+    default:
+      return res.json({
+        success: false,
+        message: "Không có option này",
+      });
+  }
+
+  return res.json({
+    success: true,
+    message: "Lấy lịch sử giao dịch thành công",
+    data: data,
+  });
+}
 function getDataFromToken(req) {
   /**
    * Function này sẽ giải mã token và trả về data lấy được từ token
@@ -889,6 +956,12 @@ function getDataFromToken(req) {
   } catch {
     return null;
   }
+}
+
+function formatDateTime(time) {
+  let change = new Date(time);
+
+  return `${change.getFullYear()}-${change.getMonth()}-${change.getDate()}`;
 }
 
 module.exports = {
@@ -911,4 +984,5 @@ module.exports = {
   profilePostCMNDFront,
   cardGet,
   cardPost,
+  apiGetTransHistory,
 };

@@ -1,4 +1,4 @@
-var nodemailer = require('nodemailer'); // khai báo sử dụng module nodemailer
+var nodemailer = require("nodemailer"); // khai báo sử dụng module nodemailer
 
 const jwt = require("jsonwebtoken");
 
@@ -16,27 +16,34 @@ const {
   handleSelectDepositMore5m,
   handleSelectEmailDepositMore5m,
   updateStatusToCheck,
+  getUserAccountBlock,
 } = require("../models/admin.model");
 const {
   handleUpdateTotalValueOfSender,
   handleUpdateTotalValueOfReceiver,
+  getAllDepositsSender,
+  getAllDepositsReceiver,
+  getDepositById,
 } = require("../models/deposit.model");
-const { updateTotalValueByDifference, updateAbnormal } = require("../models/user.model");
+const {
+  updateTotalValueByDifference,
+  updateAbnormal,
+} = require("../models/user.model");
 const {
   getWithdrawAdmin,
   updateStatusById,
   getWithdrawById,
 } = require("../models/withdraw.model");
-const {
-  getTranSHistoryByUsername,
-} = require("../models/trans-history.model");
+const { getTranSHistoryByUsername } = require("../models/trans-history.model");
+const { getRechargeById } = require("../models/recharge.model");
+const { getAllBills, getBillById } = require("../models/phone_card.model");
 const getAdminHome = (req, res) => {
   res.render("admin/home", { title: "Admin", isAdmin: true, routerPath: "" });
 };
 
 const handleAdminUserAccount = async (req, res) => {
   const username = req.query["username"];
-  console.log(username)
+  console.log(username);
   if (username === undefined) {
     const raw = await getUserAccountByStatus(0);
     const data = raw.map((e) => ({
@@ -54,12 +61,13 @@ const handleAdminUserAccount = async (req, res) => {
     });
   } else {
     const raw = await getUserDetailByUsername(username);
-    console.log(raw)
+    console.log(raw);
     const data = raw.map((e) => ({
       id: e.id,
       username: e.username,
-      status: e.abnormal == 2 ? encodeStatusCode(4) : encodeStatusCode(e.status),
-      statusCode: e.abnormal == 2 ? 4:e.status,
+      status:
+        e.abnormal == 2 ? encodeStatusCode(4) : encodeStatusCode(e.status),
+      statusCode: e.abnormal == 2 ? 4 : e.status,
       login_attempts: e.login_attempts,
       phone: e.phone,
       email: e.email,
@@ -82,6 +90,7 @@ const handleAdminUserAccount = async (req, res) => {
 const handleAccountApi = async (req, res) => {
   const statusArr = [0, 1, 2, 3, 4];
   let status = req.query["status"];
+  console.log(status);
   if (status === undefined) {
     status = 0;
   }
@@ -91,17 +100,18 @@ const handleAccountApi = async (req, res) => {
       message: "Status not valid!",
     });
   } else {
-    if(status==4){
-      const raw = await getUserAccountByStatus(status);
-      const data = raw.map((e) => ({
+    let data;
+    if (status == 4) {
+      const raw = await getUserAccountBlock(status);
+      data = raw.map((e) => ({
         id: e.id,
         username: e.username,
-        status: e.status,
+        status: 4,
         last_modified: formatDateTime(e.last_modified),
       }));
-    }else{
+    } else {
       const raw = await getUserAccountByStatus(status);
-      const data = raw.map((e) => ({
+      data = raw.map((e) => ({
         id: e.id,
         username: e.username,
         status: e.status,
@@ -200,130 +210,147 @@ const getWithdrawMore5m = async (req, res) => {
 };
 
 const getTransHistory = async (req, res) => {
-  const username = req.query["username"];
-  if (username === undefined) {
-    const raw = await getUserAccountByStatus(0);
-    const data = raw.map((e) => ({
-      id: e.id,
-      username: e.username,
-      status: e.status,
-      last_modified: formatDateTime(e.last_modified),
-    }));
-
-    return res.render("admin/trans-history", {
-      title: "Transaction History",
-      isAdmin: true,
-      data,
-      routerPath: "admin/trans-history",
-    });
-  } else {
-    const raw = await getTranSHistoryByUsername(username);
-    const data = raw.map((e) => ({
-      id: e.id,
-      phone: e.phone,
-      name: e.name,
-      date: e.date,
-      value: e.value,
-      note: e.note,
-      fee: e.fee,
-      total_value: e.total_value,
-    }));
-    console.log(data);
-    return res.render("admin/trans-history-detail", {
-      title: "Transaction History",
-      isAdmin: true,
-      data,
-    });
-  }
+  return res.render("admin/trans-history", {
+    title: "Transaction History",
+    isAdmin: true,
+    routerPath: "admin/trans-history",
+  });
 };
 
-const postDepositMore5m = async(req,res) =>{
-    let {id,phone_sender,phone_receiver,value,fee,feeperson} = req.body;
-    //console.log(id,phone_sender,phone_receiver,value,fee,feeperson)
-    try {
-        let moneyDepositFeeReceiver = value;
-        if(feeperson == 'receiver'){
-            moneyDepositFeeReceiver = value - fee;
-            // console.log(moneyDepositFeeReceiver)
-        }
-        else{
-            value = +value + +fee;
-        }
-        await handleUpdateTotalValueOfSender(value,phone_sender);
-        await handleUpdateTotalValueOfReceiver(moneyDepositFeeReceiver,phone_receiver);
-        await updateStatusToCheck(1,+id)
-        let email = await handleSelectEmailDepositMore5m(phone_receiver);
-        console.log(email);
+const getTransHistoryDetail = async (req, res) => {
+  let choice = req.params.choice;
+  let id = req.params.id;
 
+  let data = null;
+  switch (choice) {
+    case "1":
+      // Nạp tiền - recharge
+      data = await getRechargeById(id);
+      break;
+    case "2":
+      // Rút tiền - withdraw
+      data = await getWithdrawById(id);
 
-
-        //email to receiver
-        var transporter = nodemailer.createTransport({ // config mail server
-            service: 'Gmail',
-            auth: {
-                user: 'nchdang16012001@gmail.com',
-                pass: 'mlrafbeyqtvtqloe'
-            }
-        });
-    
-        // var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
-        //     tls: {
-        //         rejectUnauthorized: false
-        //     },
-        //     host: 'mail.phongdaotao.com',
-        //     port: 25,
-        //     secureConnection: false,
-        //     auth: {
-        //         user: 'sinhvien@phongdaotao.com',
-        //         pass: 'svtdtu'
-        //     }
-        // }));
-        
-        var mainOptions = { // thiết lập đối tượng, nội dung gửi mail
-            from: 'sinhvien@phongdaotao.com',
-            to: email,
-            subject: 'Confirm Deposit',
-            html: '<p>Sender: ' + phone_sender +
-            '<br></br> Receiver: ' + phone_receiver + 
-            '<br></br> Money:' + moneyDepositFeeReceiver + '</p>'
-        }
-    
-        transporter.sendMail(mainOptions, async function  (err, info) {
-            if (err) {
-                // console.log(err);
-                // req.session.flash = {
-                //     type: "danger",
-                //     intro: "Oops!",
-                //     message: "Some thing went wrong"
-                // }
-                return res.json({
-                    code: 1,
-                    message: `Some thing wrong`,
-                })
-                // return res.redirect('/deposit')
-            } else {
-                // req.session.flash = {
-                //     type: "success",
-                //     intro: "Congratulation!",
-                //     message: "OTP is right. And money is deposit to receiver. Receiver please check mail!"
-                // }
-                return res.json({
-                    code: 0,
-                    message: `Update status successful!`,
-                })
-                // return res.redirect('/deposit/successDeposit')
-
-            }
-        });
-        // return res.json({
-        //                 code: 0,
-        //                 message: `Update status successful!`,
-        //             })
-    } catch (error) {
-        console.log(error)
-    }
+      break;
+    case "3":
+      // Chuyển tiền - deposit
+      data = await getDepositById(id);
+      break;
+    case "4":
+      //  Nhận tiền - deposit
+      data = await getDepositById(id);
+      break;
+    case "5":
+      // Thanh toán dịch vụ - phone_card
+      data = await getBillById(id);
+      break;
+    default:
+      return res.json({
+        success: false,
+        message: "Không có option này",
+      });
   }
 
+  return res.render("admin/trans-history-detail", {
+    title: "Transaction History Detail",
+    isAdmin: true,
+    routerPath: "admin/trans-history-detail",
+    data,
+  });
+};
+
+const postDepositMore5m = async (req, res) => {
+  let { id, phone_sender, phone_receiver, value, fee, feeperson } = req.body;
+  //console.log(id,phone_sender,phone_receiver,value,fee,feeperson)
+  try {
+    let moneyDepositFeeReceiver = value;
+    if (feeperson == "receiver") {
+      moneyDepositFeeReceiver = value - fee;
+      // console.log(moneyDepositFeeReceiver)
+    } else {
+      value = +value + +fee;
+    }
+    await handleUpdateTotalValueOfSender(value, phone_sender);
+    await handleUpdateTotalValueOfReceiver(
+      moneyDepositFeeReceiver,
+      phone_receiver
+    );
+    await updateStatusToCheck(1, +id);
+    let email = await handleSelectEmailDepositMore5m(phone_receiver);
+    console.log(email);
+
+    //email to receiver
+    var transporter = nodemailer.createTransport({
+      // config mail server
+      service: "Gmail",
+      auth: {
+        user: "nchdang16012001@gmail.com",
+        pass: "mlrafbeyqtvtqloe",
+      },
+    });
+
+    // var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
+    //     tls: {
+    //         rejectUnauthorized: false
+    //     },
+    //     host: 'mail.phongdaotao.com',
+    //     port: 25,
+    //     secureConnection: false,
+    //     auth: {
+    //         user: 'sinhvien@phongdaotao.com',
+    //         pass: 'svtdtu'
+    //     }
+    // }));
+
+    var mainOptions = {
+      // thiết lập đối tượng, nội dung gửi mail
+      from: "sinhvien@phongdaotao.com",
+      to: email,
+      subject: "Confirm Deposit",
+      html:
+        "<p>Sender: " +
+        phone_sender +
+        "<br></br> Receiver: " +
+        phone_receiver +
+        "<br></br> Money:" +
+        moneyDepositFeeReceiver +
+        "</p>",
+    };
+
+    transporter.sendMail(mainOptions, async function (err, info) {
+      if (err) {
+        // console.log(err);
+        // req.session.flash = {
+        //     type: "danger",
+        //     intro: "Oops!",
+        //     message: "Some thing went wrong"
+        // }
+        return res.json({
+          code: 1,
+          message: `Some thing wrong`,
+        });
+        // return res.redirect('/deposit')
+      } else {
+        // req.session.flash = {
+        //     type: "success",
+        //     intro: "Congratulation!",
+        //     message: "OTP is right. And money is deposit to receiver. Receiver please check mail!"
+        // }
+        return res.json({
+          code: 0,
+          message: `Update status successful!`,
+        });
+        // return res.redirect('/deposit/successDeposit')
+      }
+    });
+    // return res.json({
+    //                 code: 0,
+    //                 message: `Update status successful!`,
+    //             })
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const apiGetWithdrawMore5m = async (req, res) => {
   /**
@@ -393,7 +420,6 @@ const postWithdrawMore5m = async (req, res) => {
   }
 };
 
-
 function getDataFromToken(req) {
   /**
    * Function này sẽ giải mã token và trả về data lấy được từ token
@@ -420,4 +446,5 @@ module.exports = {
   postWithdrawMore5m,
   apiGetWithdrawMore5m,
   getTransHistory,
+  getTransHistoryDetail,
 };

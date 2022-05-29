@@ -89,6 +89,7 @@ async function handleWithdraw(req, res) {
   let status = total > 5000000 ? 0 : 1;
   let withdraw = {
     username: userData.username,
+    cardNumber: cardNumber,
     date: new Date(Date.now()),
     value: parseInt(amount),
     status: status,
@@ -130,4 +131,18 @@ function getDataFromToken(req) {
   }
 }
 
-module.exports = { renderWithdraw, handleWithdraw };
+const getWithdrawByUser = async(req,res)=>{
+  console.log("Receive")
+  const userData = req.userClaims
+  console.log(userData)
+  res.json({
+    code: 0,
+    data: userData
+  })
+}
+
+module.exports = { 
+  renderWithdraw, 
+  handleWithdraw,
+  getWithdrawByUser
+};

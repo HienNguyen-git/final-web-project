@@ -18,16 +18,13 @@ async function getCardByAll({ cardNumber, expireDate, cvv }) {
   });
 }
 
-
-
-async function getCardByNumber({ cardNumber}) {
+async function getCardByNumber(cardNumber) {
   /**
    * Kiểm tra thông tin một thẻ có hợp lệ hay không bằng number
    * Input: cardNumber - String,
    */
 
-  const sql =
-    "SELECT * FROM credit_card WHERE card_number = ?";
+  const sql = "SELECT * FROM credit_card WHERE card_number = ?";
   const value = [cardNumber];
 
   return new Promise((resolve, reject) => {
@@ -44,8 +41,7 @@ async function getCardByUsername(username) {
    * Input: username - String,
    */
 
-  const sql =
-    "SELECT * FROM recharge WHERE username = ?";
+  const sql = "SELECT * FROM recharge WHERE username = ?";
   const value = [username];
 
   return new Promise((resolve, reject) => {
@@ -56,20 +52,25 @@ async function getCardByUsername(username) {
   });
 }
 
-async function addCardByUsername(username, card_number, expire_date, cvv, recharge_date) {
+async function addCardByUsername({
+  username,
+  card_number,
+  recharge_date,
+  money,
+}) {
   /**
    * Kiểm tra thông tin một thẻ có hợp lệ hay không bằng number
    * Input: username - String,
    */
 
   const sql =
-    "INSERT INTO recharge VALUES (?,?,?,?,?)";
-  const value = [username, card_number, expire_date, cvv, recharge_date];
+    "INSERT INTO recharge (username, card_number, date, value) VALUES (?,?,?,?)";
+  const value = [username, card_number, recharge_date, money];
 
   return new Promise((resolve, reject) => {
     connect.query(sql, value, async (err, result) => {
       if (err) throw err;
-      resolve(result[0]);
+      resolve(result);
     });
   });
 }
@@ -92,10 +93,10 @@ async function getQuantityCardByUsername(username) {
   });
 }
 
-module.exports = { 
+module.exports = {
   getCardByAll,
-  getCardByNumber, 
-  getCardByUsername, 
-  addCardByUsername ,
+  getCardByNumber,
+  getCardByUsername,
+  addCardByUsername,
   getQuantityCardByUsername,
 };

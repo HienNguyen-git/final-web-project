@@ -42,91 +42,133 @@
 <body>
     <div class="container">
         <div class="row align-items-center py-5">
-            <div class="col-6">
-                <h3>
-                    File Manager</h2>
-            </div>
-            <div class="col-6">
-                <div class="dropdown show text-right">
-                    Xin chào <a class="dropdown-toggle text-primary" data-toggle="dropdown">{{user}}</a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#">
-                            <i class="fas fa-info-circle"></i>  
-                            &nbsp;&nbsp;Cập nhật thông tin
-                        </a>
-                        <a class="dropdown-item" href="/logout">
-                            <i class="fas fa-sign-out-alt"></i>&nbsp;&nbsp; Đăng xuất</a>
-                    </div>
-                </div>
-            </div>
+            Welcome back  <a class="font-weight-bold p-2" href="/users/profile">{{username}} sdfafd</a>
         </div>
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#">Home</a></li>
-            <li class="breadcrumb-item"><a href="#">Products</a></li>
-            <li class="breadcrumb-item active">Accessories</li>
-        </ol>
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <span class="input-group-text">
-                    <span class="fa fa-search"></span>
-                </span>
-            </div>
-            <input type="text" class="form-control" placeholder="Search">
-        </div>
-        <div class="btn-group my-3">
-            <button type="button" class="btn btn-light border" data-toggle="modal" data-target="#new-folder-dialog">
-                <i class="fas fa-folder-plus"></i> New folder
-            </button>
-            <button type="button" class="btn btn-light border" data-toggle="modal" data-target="#new-file-dialog">
-                <i class="fas fa-file"></i> Create text file
-            </button>
-        </div>
-        <table class="table table-hover border">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Size</th>
-                    <th>Last modified</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#each files}}
+        <div class="deposit-box">
+            <ol class="breadcrumb" style=" margin-bottom: 0;">
+                <li class="breadcrumb-item">Deposit</li>
+            </ol>
+            <table class="table table-hover border">
+                <thead>
+                    <tr>
+                        <th>Send to</th>
+                        <th>Value</th>
+                        <th>Fee</th>
+                        <th>Status</th>
+                        <th>Cost bearer</th>
+                        <th>Note</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
                     <tr>
                         <td>
-                            {{{icon}}}
-                            <a href="{{subPath}}">{{name}}</a>
+                            <a href="{{subPath}}">name</a>
                         </td>
-                        <td>{{type}}</td>
-                        <td>{{size}}</td>
-                        <td>{{lastModified}}</td>
+                        <td>type</td>
+                        <td>size</td>
+                        <td>lastModified</td>
                         <td>
-                            <span><a href="{{subPath}}" download target="_blank"><i class="fa fa-download action"></i></a>
+                            <span><a><i class="fa fa-download action"></i></a>
                             <span><i data-toggle="modal" data-target="#confirm-rename"  onclick="handleEdit('{{name}}')" class="fa fa-edit action"></i>
                             <span><i data-toggle="modal" data-target="#confirm-delete"  onclick="handleDelete('{{name}}')" class="fa fa-trash action"></i>
                         </td>
                     </tr>
-                {{/each}}
-            </tbody>
-        </table>
-        <div class="border rounded mb-3 mt-5 p-3">
-            <h4>File upload</h4>
-            <form id="uploadForm">
-                <div class="form-group">
-                    <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="customFile">
-                        <label class="custom-file-label" for="customFile">Choose file</label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div  id="progress-bar" class="progress" style="height:5px">
-                        <div class="progress-bar bg-success" id="progress-bar-success"  id="progress-bar" style="width:0%;height:10px"></div>
-                    </div>
-                </div>
-                <button id="uploadBtn" type="submit" class="btn btn-success px-5">Upload</button>
-            </form>
+                </tbody>
+            </table>
+        </div>
+        <div class="withdraw-box">
+            <ol class="breadcrumb" style=" margin-bottom: 0;">
+                <li class="breadcrumb-item">Withdraw</li>
+            </ol>
+            <table class="table table-hover border">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Size</th>
+                        <th>Last modified</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="withdraw-body">
+                    <tr>
+                        <td>
+                            <a href="{{subPath}}">name</a>
+                        </td>
+                        <td>type</td>
+                        <td>size</td>
+                        <td>lastModified</td>
+                        <td>
+                            <span><a><i class="fa fa-download action"></i></a>
+                            <span><i data-toggle="modal" data-target="#confirm-rename"  onclick="handleEdit('{{name}}')" class="fa fa-edit action"></i>
+                            <span><i data-toggle="modal" data-target="#confirm-delete"  onclick="handleDelete('{{name}}')" class="fa fa-trash action"></i>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="phone-card-box" >
+            <ol class="breadcrumb" style=" margin-bottom: 0;">
+                <li class="breadcrumb-item">Phone card</li>
+            </ol>
+            <table class="table table-hover border">
+                <thead>
+                    <tr>
+                        <th>Provider</th>
+                        <th>Code</th>
+                        <th>Type</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <a href="{{subPath}}">name</a>
+                        </td>
+                        <td>type</td>
+                        <td>size</td>
+                        <td>lastModified</td>
+                        <td>
+                            <span><a><i class="fa fa-download action"></i></a>
+                            <span><i data-toggle="modal" data-target="#confirm-rename"  onclick="handleEdit('{{name}}')" class="fa fa-edit action"></i>
+                            <span><i data-toggle="modal" data-target="#confirm-delete"  onclick="handleDelete('{{name}}')" class="fa fa-trash action"></i>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
+        <div class="recharge-box">
+            <ol class="breadcrumb" style=" margin-bottom: 0;" >
+                <li class="breadcrumb-item">Recharge</li>
+            </ol>
+            <table class="table table-hover border">
+                <thead>
+                    <tr>
+                        <th>Card number</th>
+                        <th>Value</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <a href="{{subPath}}">name</a>
+                        </td>
+                        <td>type</td>
+                        <td>size</td>
+                        <td>lastModified</td>
+                        <td>
+                            <span><a><i class="fa fa-download action"></i></a>
+                            <span><i data-toggle="modal" data-target="#confirm-rename"  onclick="handleEdit('{{name}}')" class="fa fa-edit action"></i>
+                            <span><i data-toggle="modal" data-target="#confirm-delete"  onclick="handleDelete('{{name}}')" class="fa fa-trash action"></i>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
         <div class="modal-example my-5">
@@ -139,9 +181,7 @@
                 <li><a href="#" data-toggle="modal" data-target="#message-dialog">Message Dialog</a></li>
             </ul>
         </div>
-
     </div>
-
 
     <!-- Delete dialog -->
     <div class="modal fade" id="confirm-delete">
@@ -266,147 +306,21 @@
     </div>
 
     <script>
-        // Add the following code if you want the name of the file appear on select
-        $(".custom-file-input").on("change", function () {
-            var fileName = $(this).val().split("\\").pop();
-            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
-        });
+        const myUrl = location.href
+        let withdrawData
+        let depositData
+        let phonecardData
+        let rechargeData
+        (async()=>{
+            const myFetch = await fetch(myUrl+"withdraw/api")
+            const res = await myFetch.json()
+            console.log(res)
+        })()
 
-        const params = new Proxy(new URLSearchParams(window.location.search), {
-        get: (searchParams, prop) => searchParams.get(prop),
-        });
-        // Get the value of "some_key" in eg "https://example.com/?some_key=some_value"
-        let value = params.dir===null?'':params.dir;
-        const myURL = 'http://localhost:1234/'
-        const uploadForm = document.querySelector('#uploadForm')
-        const uploadBtn = document.querySelector('#uploadBtn')
-        const uploadFile = document.querySelector('#customFile')
-        const progressBar = document.querySelector('#progress-bar')
-        const progressBarSuccess = document.querySelector('#progress-bar-success')
-        const createFolderBtn = document.querySelector('#create-folder-btn')
-        const createFileBtn = document.querySelector('#create-file-btn')
-        const fileDelete = document.querySelector('#file-delete-name')
-        const fileEdit = document.querySelector('#file-edit-name')
-        const editValue = document.querySelector('#file-edit-name-value')
-        const deleteValue = document.querySelector('#file-delete-name-input')
-        const deleteBtn = document.querySelector('#delete-btn')
-        const renameBtn = document.querySelector('#rename-btn')
-
-        progressBar.style.display = "none"
-
-        uploadForm.addEventListener('submit',(e)=>{
-            e.preventDefault()
-            console.log(uploadFile.files)
-            if(uploadFile.files.length===0){
-                return alert('Please choose your file first!')
-            }
-
-            const file = uploadFile.files[0]
-            const type = uploadFile['name'].split('.').pop();
-            const not_allow_list = ['exe','msi','sh']
-            const size = file['size']
-
-            if(not_allow_list.includes(type)){
-                return alert('This type of file is not allowed')
-            }else if(size>20*Math.pow(1024,2)){
-                return alert('This file is larger than 20M')
-            }
-            console.log(value)
-            const form = new FormData()
-            form.set('path',value)
-            form.set('attachment', file)
-
-            const xhr = new XMLHttpRequest()
-            xhr.open("POST",myURL+`upload`, true)
-            xhr.addEventListener('load',e=>{
-                if(xhr.readyState===4 && xhr.status===200){
-                    const json = JSON.parse(xhr.responseText)
-                }
-            })
-
-            xhr.upload.addEventListener('progress',e=>{
-                progressBar.style.display = ''
-                uploadBtn.style.disabled = true
-                const loaded = e.loaded
-                const total = e.total
-                const progress = Math.round(loaded*100/total)
-                console.log(progress+"%")
-                progressBarSuccess.style.width = progress+"%"
-                if(progress===100) {
-                    progressBar.style.display = 'none'
-                    uploadBtn.style.disabled = false
-                }
-            })
-
-            xhr.send(form)
-            location.reload();
-        })
-
-        createFolderBtn.addEventListener('click',()=>{
-            const folderName = document.querySelector('#folderName').value
-            if(!folderName) return alert('Folder name can not be empty')
-            fetch(myURL+'createFolder', {
-                method: "POST",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    folderName,path: value
-                })
-                
-            })
-            location.reload();
-
-        })
-
-        createFileBtn.addEventListener('click',()=>{
-            const fileNameEnter = document.querySelector('#file-name').value
-            const fileContent = document.querySelector('#file-content').value
-
-            if(!fileNameEnter) return alert('File name can not be empty')
-            if(!fileContent) return alert('File content can not be empty')
-            fetch(myURL+'createFile', {
-                method: "POST",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    fileName: fileNameEnter,path: value,fileContent
-                })
-            })
-            location.reload();
-
-        })
-
-
-        function handleDelete(name){
-            fileDelete.innerHTML = name
-            deleteValue.value = name
-        }
-
-        function handleEdit(name){
-            fileEdit.innerHTML = name
-            editValue.value = name
-        }
-
-        deleteBtn.addEventListener('click',()=>{
-            const deleteFileName = deleteValue.value
-            console.log(deleteFileName)
-            fetch(myURL+'delete', {
-                method: "DELETE",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    fileName: deleteFileName,path: value
-                })
-            })
-
-            location.reload();
-        })
+        const withdrawBody = document.querySelector('#withdraw-body')
+        const depositBody = document.querySelector('#deposit-body')
+        const phonecardBody = document.querySelector('#phonecard-body')
+        const rechargeBody = document.querySelector('#recharge-body')
     </script>
 
 </body>

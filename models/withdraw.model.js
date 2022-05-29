@@ -31,6 +31,21 @@ async function getTodayWithdraw() {
   });
 }
 
+async function getAllWithdraws() {
+  /**
+   * Lấy tất cả giao dịch rút tiền
+   * Input: None
+   * Output: list of giao dịch
+   */
+  const sql = "SELECT * FROM withdraw";
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, (err, result) => {
+      if (err) throw err;
+      resolve(result);
+    });
+  });
+}
 async function getWithdrawAdmin() {
   /**
    * Lấy các giao dịch mà admin cần phải duyệt
@@ -53,7 +68,7 @@ async function createWithdraw(withdraw) {
     Output: Đã tạo thành công
     */
   const sql =
-    "INSERT INTO withdraw(username,date,value,status,fee,note) values(?,?,?,?,?,?)";
+    "INSERT INTO withdraw(username,card_number,date,value,status,fee,note) values(?,?,?,?,?,?,?)";
   const value = [...Object.values(withdraw)];
 
   return new Promise((resolve, reject) => {
@@ -80,10 +95,16 @@ async function updateStatusById(id, status) {
     resolve(true);
   });
 }
+
+const getWithdrawListByUsername = (username)=>{
+  connect.query('select * from withdraw where ')
+}
+
 module.exports = {
   createWithdraw,
   getTodayWithdraw,
   getWithdrawAdmin,
   updateStatusById,
   getWithdrawById,
+  getAllWithdraws,
 };

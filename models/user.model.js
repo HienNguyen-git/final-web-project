@@ -223,6 +223,22 @@ async function getUserByUsername(username) {
   });
 }
 
+async function getUserNameByPhoneNumber(phone) {
+  /* Lấy username bằng số điện thoại
+    Input: username, String
+    Output: found username - String
+    */
+  const sql = "SELECT username FROM user_detail WHERE phone = ?";
+  const value = [phone];
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, value, async (err, result) => {
+      if (err) throw err;
+      resolve(result[0]?.username);
+    });
+  });
+}
+
 async function getUserDetailByUserName(username) {
   /* Lấy account detail bằng username
     Input: username, String
@@ -326,4 +342,5 @@ module.exports = {
   updateTotalValueByDifference,
   increaseLoginAttemptsByUsername,
   updateAbnormal,
+  getUserNameByPhoneNumber,
 };

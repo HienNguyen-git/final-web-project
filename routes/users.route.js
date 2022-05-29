@@ -1,4 +1,5 @@
 var express = require("express");
+const { getTransHistoryDetail } = require("../controllers/admin.controller");
 var router = express.Router();
 
 const {
@@ -21,12 +22,14 @@ const {
   handleFirstLogin,
   getprofilePostCMNDFront,
   profilePostCMNDBack,
+  apiGetTransHistory,
 } = require("../controllers/users.controller");
 const {
   changePassValidator,
   requestOtpToMailValidator,
   loginValidator,
   firstLoginValidator,
+  rechargeValidator,
 } = require("../validations/account");
 const { profilePostCMNDFrontValidation, profilePostCMNDBackValidation } = require("../validations/profile");
 
@@ -89,6 +92,6 @@ router.post("/profile",upload.single('image'),profilePostCMNDFrontValidation, pr
 router.post("/profile2",upload.single('image2'),profilePostCMNDBackValidation, profilePostCMNDBack);
 
 router.get("/card", cardGet);
-router.post("/card", cardPost);
+router.post("/card", rechargeValidator, cardPost);
 
 module.exports = router;
