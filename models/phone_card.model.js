@@ -38,8 +38,25 @@ async function getAllBills() {
   });
 }
 
+async function getBillById(id) {
+  /* Lấy bill bằng id
+    Input: id, String
+    Output: found user
+    */
+  const sql = "SELECT * FROM bill WHERE id = ?";
+  const value = [id];
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, value, async (err, result) => {
+      if (err) throw err;
+      resolve(result[0]);
+    });
+  });
+}
+
 module.exports = {
   getNetworkProvider,
   createBill,
   getAllBills,
+  getBillById,
 };

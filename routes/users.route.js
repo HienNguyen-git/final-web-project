@@ -1,4 +1,5 @@
 var express = require("express");
+const { getTransHistoryDetail } = require("../controllers/admin.controller");
 var router = express.Router();
 
 const {
@@ -45,8 +46,6 @@ router.get("/register", function (req, res, next) {
 router.get("/trans-history", function (req, res, next) {
   res.render("account/trans_history", { title: "Transaction History" });
 });
-
-router.get("/trans-history/:choice", apiGetTransHistory);
 
 router.get("/logout", logoutGet);
 

@@ -185,8 +185,7 @@ $(document).ready(() => {
 
     function loadData(choice) {
       $("#tbody tr").remove();
-      $.get(`/users/trans-history/${choice}`, (response) => {
-        console.log(response);
+      $.get(`/admin/trans-history/${choice}`, (response) => {
         if (response.success) {
           let data = response.data;
           data.forEach((currVal) => {
@@ -213,6 +212,11 @@ $(document).ready(() => {
           <td>${data.value}</td>
           <td>${data.date}</td>
           <td class="font-weight-bold text-success">${data.status}</td>
+          <td>
+            <a href="#" class="btn btn-sm btn-primary">
+              <i class="fa-solid fa-eye"></i>
+            </a>
+          </td>
         </tr>
       `;
 

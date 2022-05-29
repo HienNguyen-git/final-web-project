@@ -117,6 +117,22 @@ const getUserDepositInfo = (username) =>
     );
   });
 
+async function getDepositById(id) {
+  /* Lấy deposit bằng id
+    Input: id, String
+    Output: found user
+    */
+  const sql = "SELECT * FROM deposit WHERE id = ?";
+  const value = [id];
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, value, async (err, result) => {
+      if (err) throw err;
+      resolve(result[0]);
+    });
+  });
+}
+
 async function getAllDepositsSender() {
   /**
    * Lấy tất cả giao dịch chuyển tiền
@@ -179,4 +195,5 @@ module.exports = {
   getAllDeposits,
   getAllDepositsSender,
   getAllDepositsReceiver,
+  getDepositById,
 };

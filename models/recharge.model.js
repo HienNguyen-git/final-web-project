@@ -16,6 +16,23 @@ async function getAllRecharges() {
   });
 }
 
+async function getRechargeById(id) {
+  /* Lấy recharge bằng id
+    Input: username, String
+    Output: found user
+    */
+  const sql = "SELECT * FROM recharge WHERE id = ?";
+  const value = [id];
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, value, async (err, result) => {
+      if (err) throw err;
+      resolve(result[0]);
+    });
+  });
+}
+
 module.exports = {
   getAllRecharges,
+  getRechargeById,
 };
