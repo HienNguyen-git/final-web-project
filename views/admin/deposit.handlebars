@@ -34,6 +34,9 @@
             <td>{{date}}</td>
             <td>
               <button class="btn btn-primary" onclick="checkClick('{{id}}','{{phone_sender}}','{{phone_receiver}}','{{value}}','{{fee}}','{{feeperson}}')" id="checkbtn" type="submit" >Check</button>
+              <button class="btn btn-danger" onclick="rejectClick('{{id}}')" type="submit" >Reject</button>
+              
+              
             </td>
           </tr>
         {{/each}}
@@ -53,6 +56,28 @@
       headers: {'Content-Type': 'application/json'},
 
     })
+    const res = await myFetch.json();
+    if(!res.code ){
+      alert('Approved this deposit succesfully');
      window.location.reload();
+    }
+  }
+
+  
+
+  async function rejectClick(id){
+    console.log(id)
+    const myURL = location.origin + location.pathname + 2;
+    const myFetch = await fetch(myURL,{
+      method: 'POST',
+      body: JSON.stringify({id}),
+      headers: {'Content-Type': 'application/json'}
+    })
+    console.log(myFetch);
+    const res = await myFetch.json();
+    if(!res.code ){
+      alert('Reject this deposit ');
+     window.location.reload();
+    }
   }
 </script>

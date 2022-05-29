@@ -259,6 +259,22 @@ const getTransHistoryDetail = async (req, res) => {
   });
 };
 
+const postRejectDeposit5m = async(req,res) => {
+  let {id} = req.body;
+  try {
+    
+    if(await updateStatusToCheck(-1,+id)){
+  
+      return res.json({
+        code: 0,
+        message: `Reject deposit successful!`,
+      })
+    };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 const postDepositMore5m = async (req, res) => {
   let { id, phone_sender, phone_receiver, value, fee, feeperson } = req.body;
   //console.log(id,phone_sender,phone_receiver,value,fee,feeperson)
@@ -275,7 +291,7 @@ const postDepositMore5m = async (req, res) => {
       moneyDepositFeeReceiver,
       phone_receiver
     );
-    await updateStatusToCheck(1, +id);
+    await updateStatusToCheck(2, +id);
     let email = await handleSelectEmailDepositMore5m(phone_receiver);
     console.log(email);
 
@@ -442,6 +458,7 @@ module.exports = {
   handleAccountStatus,
   getDepositMore5m,
   postDepositMore5m,
+  postRejectDeposit5m,
   getWithdrawMore5m,
   postWithdrawMore5m,
   apiGetWithdrawMore5m,
