@@ -604,7 +604,14 @@ async function handleFirstLogin(req, res, next) {
 
 // todo Get /users/profile
 async function profileGet(req, res) {
-  res.render("account/profile", { title: "Reset Password" });
+  let userData = req.userClaims;
+
+  let userDetail = await getUserDetailByUserName(userData.username);
+
+  res.render("account/profile", {
+    title: "Reset Password",
+    userDetail: userDetail,
+  });
 }
 
 async function profilePost(req, res, next) {
