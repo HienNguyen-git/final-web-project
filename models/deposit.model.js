@@ -50,7 +50,7 @@ const selectReceiverName = (phone_receiver) =>
     connect.query(sql, values, (err, result) => {
       if (err) reject(false);
       else {
-        resolve(true);
+        resolve(result[0].email);
       }
     });
   });

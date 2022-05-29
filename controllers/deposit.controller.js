@@ -1,31 +1,38 @@
-const {
-  handlePostDeposit,
-  getUserDepositInfo,
-  handleSelectDepositByPhone,
-  handleUpdateTotalValueOfSender,
-  handleUpdateTotalValueOfReceiver,
-  selectReceiverValue,
-  selectReceiverName,
-  handleUpdateStatusDeposit5m,
-} = require("../models/deposit.model");
-const { handlePostOTP, handleSelectOTP } = require("../models/user.model");
-const { validationResult } = require("express-validator");
-var nodemailer = require("nodemailer"); // khai báo sử dụng module nodemailer
-var smtpTransport = require("nodemailer-smtp-transport");
-const { dataProcess } = require("../config/helper");
+const { handlePostDeposit, 
+    getUserDepositInfo,
+    handleSelectDepositByPhone,
+    handleUpdateTotalValueOfSender,
+    handleUpdateTotalValueOfReceiver,
+    selectReceiverValue,selectReceiverName,
+    handleUpdateStatusDeposit5m,
+    handleSelectUserDetail } = require('../models/deposit.model');
+const { handlePostOTP,handleSelectOTP } = require('../models/user.model');
+const { validationResult } = require('express-validator');
+var nodemailer = require('nodemailer'); // khai báo sử dụng module nodemailer
+var smtpTransport = require('nodemailer-smtp-transport');
+const { dataProcess } = require('../config/helper');
 
-const PostDeposit = async (req, res) => {
-  let result = validationResult(req);
-  if (result.errors.length === 0) {
-    let { phone_receiver, money, feeperson, note } = req.body;
-    // const phone = req.session.phone;
-    const phone = "0908123456";
-    let status = 1;
-    let fee = money * 0.05;
+// handleSelectUserDetail(req.userClaims);
 
-    let date = new Date();
-    const email = "tdtnguyendang@gmail.com";
-    const otp = Math.floor(100000 + Math.random() * 900000);
+
+const PostDeposit = async (req,res) =>{
+    let result = validationResult(req);
+    if(result.errors.length === 0){
+        let {phone_receiver,money,feeperson,note} = req.body;
+        // const phone = req.session.phone;
+        // const phone = '0908123456';
+        const username = req.userClaims.username
+        const phone = (await getUserDepositInfo(username)).phone
+        
+        let status = 1;
+        let fee = money * 0.05;
+    
+        let date = new Date();
+        // const email = 'tdtnguyendang@gmail.com';
+       
+        const email = (await getUserDepositInfo(username)).email
+        const otp = Math.floor(100000 + Math.random() * 900000);
+
 
     var transporter = nodemailer.createTransport({
       // config mail server
@@ -108,7 +115,7 @@ const PostDeposit = async (req, res) => {
 
 const getDeposit = async (req, res) => {
   // const username = req.session.username
-  const username = "haidang";
+  const username = req.userClaims.username
   const data = await getUserDepositInfo(username);
   //console.log(data)
   res.render("exchange/deposit", { title: "Deposit", data });
@@ -120,15 +127,19 @@ const sendOtp = (req, res) => {
 
 const sendOtpPost = async (req, res) => {
   // let email = req.session.email;
-  const email = "tdtnguyendang@gmail.com";
-  let { otpcode } = req.body;
-  let otpdatabase = await handleSelectOTP(email);
-  const result = Object.values(JSON.parse(JSON.stringify(otpdatabase)));
-  let rightnow = new Date(Date.now()).getTime();
-  let expiredtime = new Date(result[3]).getTime();
+  
+  const username = req.userClaims.username
+    const email = (await getUserDepositInfo(username)).email
+    let { otpcode } = req.body;
+    let otpdatabase = await handleSelectOTP(email);
+    const result = Object.values(JSON.parse(JSON.stringify(otpdatabase)));
+    let rightnow = new Date(Date.now()).getTime();
+    let expiredtime = new Date(result[3]).getTime();
 
-  // const phone = req.session.phone;
-  const phone = "0908123456";
+    // const phone = req.session.phone;
+    // const phone = '0908123456';
+    const phone = (await getUserDepositInfo(username)).phone
+    console.log(phone)
   let depositByPhone = await handleSelectDepositByPhone(phone);
   // console.log(depositByPhone.value);
   if (otpcode === result[2] && expiredtime > rightnow) {
@@ -281,25 +292,26 @@ const getUserInfomation = async (req, res) => {
   }
 };
 
-const getUserInfo = async (req, res) => {
-  // const username = req.session.username
-  const username = "haidang";
-  let data = await getUserDepositInfo(username);
-  data = {
-    username: data.username,
-    phone: data.phone,
-    email: data.email,
-    name: data.name,
-    date_of_birth: data.date_of_birth,
-    address: data.address,
-    total_value: data.total_value,
-  };
-  res.json({
-    code: 0,
-    message: "Get data successful!",
-    data,
-  });
-};
+const getUserInfo = async(req,res)=>{
+    // const username = req.session.username
+    // const username = 'haidang'
+    const username = req.userClaims.username
+    let data = await getUserDepositInfo(username)   
+    data = ({
+        username: data.username,
+        phone: data.phone,
+        email: data.email,
+        name: data.name,
+        date_of_birth: data.date_of_birth,
+        address: data.address,
+        total_value: data.total_value,
+    })
+    res.json({
+        code: 0,
+        message: "Get data successful!",
+        data
+    })
+}
 
 module.exports = {
   PostDeposit,
