@@ -860,6 +860,54 @@ nav {
   opacity: 0.8;
   cursor: pointer;
 }
+
+/* USERS PROFILE CSS */
+
+.profile-list {
+  list-style-type: none;
+  margin: 0;
+}
+
+.profile-item {
+  display: flex;
+  margin-bottom: 24px;
+}
+
+.profile-icon {
+  display: flex;
+  color: #fff;
+  width: 60px;
+  font-size: 20px;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 20px;
+  margin: 0 16px;
+  background-color: var(--primary-color);
+  border-radius: 6px;
+}
+
+.profile-body {
+  padding: 4px;
+}
+
+.profile-body__title {
+  color: orange;
+  font-weight: bold;
+}
+
+.profile-body__content {
+  color: #444;
+}
+
+.profile-image {
+  width: 100%;
+}
+
+.profile-image-container {
+  display: flex;
+  align-items: center;
+}
+
 @media only screen and (max-width: 992px) {
   .main-nav.active {
     position: fixed;
