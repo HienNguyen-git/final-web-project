@@ -23,6 +23,7 @@ const {
   getprofilePostCMNDFront,
   profilePostCMNDBack,
   apiGetTransHistory,
+  getRechargeByUser,
 } = require("../controllers/users.controller");
 const {
   changePassValidator,
@@ -93,5 +94,6 @@ router.post("/profile2",upload.single('image2'),profilePostCMNDBackValidation, p
 
 router.get("/card", cardGet);
 router.post("/card", rechargeValidator, cardPost);
+router.get("/card/api", getRechargeByUser)
 
 module.exports = router;

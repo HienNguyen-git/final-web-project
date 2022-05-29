@@ -32,7 +32,15 @@ async function getRechargeById(id) {
   });
 }
 
+const getRechargeListByUser = (username)=> new Promise((resolve,reject)=>{
+  connect.query("select * from recharge where username=?",[username],(err,result)=>{
+    if(err) reject(err)
+    resolve(result)
+  })
+})
+
 module.exports = {
   getAllRecharges,
   getRechargeById,
+  getRechargeListByUser
 };

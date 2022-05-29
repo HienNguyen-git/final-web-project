@@ -51,7 +51,7 @@ const {
   getAllDepositsSender,
   getAllDepositsReceiver,
 } = require("../models/deposit.model");
-const { getAllRecharges } = require("../models/recharge.model");
+const { getAllRecharges, getRechargeListByUser } = require("../models/recharge.model");
 
 const resetPasswordGet = (req, res) => {
   res.render("account/resetpassword", { title: "Reset Password" });
@@ -966,6 +966,30 @@ function formatDateTime(time) {
   return `${change.getFullYear()}-${change.getMonth()}-${change.getDate()}`;
 }
 
+const getRechargeByUser = async(req,res)=>{
+  const userData = req.userClaims
+    try {
+        const rawData = await getRechargeListByUser(userData.username)
+        console.log(rawData)
+        data = rawData.map(e => ({
+            id: e.id,
+            money: e.money,
+            card_number: e.card_number,
+            recharge_date: formatDateTime(e.recharge_date),
+        }))
+        return res.json({
+            code: 0,
+            message: "Get recharge data successful",
+            data
+        })
+    } catch (error) {
+        return res.json({
+            code: 1,
+            message: error.message,
+        })
+    }
+}
+
 module.exports = {
   resetPasswordGet,
   requestOtpToMail,
@@ -987,4 +1011,5 @@ module.exports = {
   cardGet,
   cardPost,
   apiGetTransHistory,
+  getRechargeByUser
 };
