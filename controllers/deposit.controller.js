@@ -1,21 +1,36 @@
-const { handlePostDeposit, getUserDepositInfo,handleSelectDepositByPhone,handleUpdateTotalValueOfSender,handleUpdateTotalValueOfReceiver,selectReceiverValue,selectReceiverName,handleUpdateStatusDeposit5m } = require('../models/deposit.model');
+const { handlePostDeposit, 
+    getUserDepositInfo,
+    handleSelectDepositByPhone,
+    handleUpdateTotalValueOfSender,
+    handleUpdateTotalValueOfReceiver,
+    selectReceiverValue,selectReceiverName,
+    handleUpdateStatusDeposit5m,
+    handleSelectUserDetail } = require('../models/deposit.model');
 const { handlePostOTP,handleSelectOTP } = require('../models/user.model');
 const { validationResult } = require('express-validator');
 var nodemailer = require('nodemailer'); // khai báo sử dụng module nodemailer
 var smtpTransport = require('nodemailer-smtp-transport');
 const { dataProcess } = require('../config/helper');
 
+// handleSelectUserDetail(req.userClaims);
+
+
 const PostDeposit = async (req,res) =>{
     let result = validationResult(req);
     if(result.errors.length === 0){
         let {phone_receiver,money,feeperson,note} = req.body;
         // const phone = req.session.phone;
-        const phone = '0908123456';
+        // const phone = '0908123456';
+        const username = req.userClaims.username
+        const phone = (await getUserDepositInfo(username)).phone
+        
         let status = 1;
         let fee = money * 0.05;
     
         let date = new Date();
-        const email = 'tdtnguyendang@gmail.com';
+        // const email = 'tdtnguyendang@gmail.com';
+       
+        const email = (await getUserDepositInfo(username)).email
         const otp = Math.floor(100000 + Math.random() * 900000);
 
         var transporter = nodemailer.createTransport({ // config mail server
@@ -85,9 +100,11 @@ const PostDeposit = async (req,res) =>{
 
 const getDeposit = async (req,res)=>{
     // const username = req.session.username
-    const username = 'haidang'
+    // console.log(req.userClaims);
+    // const username = 'haidang'
+    const username = req.userClaims.username
     const data = await getUserDepositInfo(username)
-    //console.log(data)
+    // console.log(data)
     res.render('exchange/deposit',{title: 'Deposit', data});
 }
 
@@ -98,7 +115,9 @@ const sendOtp = (req, res) => {
 
 const sendOtpPost = async (req, res) => {
     // let email = req.session.email;
-    const email = 'tdtnguyendang@gmail.com';
+    // const email = 'tdtnguyendang@gmail.com';
+    const username = req.userClaims.username
+    const email = (await getUserDepositInfo(username)).email
     let { otpcode } = req.body;
     let otpdatabase = await handleSelectOTP(email);
     const result = Object.values(JSON.parse(JSON.stringify(otpdatabase)));
@@ -106,7 +125,9 @@ const sendOtpPost = async (req, res) => {
     let expiredtime = new Date(result[3]).getTime();
 
     // const phone = req.session.phone;
-    const phone = '0908123456';
+    // const phone = '0908123456';
+    const phone = (await getUserDepositInfo(username)).phone
+    console.log(phone)
         let depositByPhone = await handleSelectDepositByPhone(phone)
         // console.log(depositByPhone.value);
         if(otpcode === result[2] && expiredtime > rightnow){
@@ -123,7 +144,7 @@ const sendOtpPost = async (req, res) => {
                 await handleUpdateTotalValueOfSender(depositByPhone.value,depositByPhone.phone_sender);
                 await handleUpdateTotalValueOfReceiver(moneyDepositFeeReceiver,depositByPhone.phone_receiver);
                 let email_receiver = await selectReceiverName(depositByPhone.phone_receiver);
-
+                console.log(email_receiver);
                 //email to receiver
                 var transporter = nodemailer.createTransport({ // config mail server
                     service: 'Gmail',
@@ -161,7 +182,7 @@ const sendOtpPost = async (req, res) => {
                         req.session.flash = {
                             type: "danger",
                             intro: "Oops!",
-                            message: "Some thing went wrong"
+                            message: err.message
                         }
                         
                         return res.redirect('/deposit')
@@ -254,7 +275,8 @@ const getUserInfomation = async(req,res)=>{
 
 const getUserInfo = async(req,res)=>{
     // const username = req.session.username
-    const username = 'haidang'
+    // const username = 'haidang'
+    const username = req.userClaims.username
     let data = await getUserDepositInfo(username)   
     data = ({
         username: data.username,

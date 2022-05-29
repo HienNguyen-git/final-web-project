@@ -21,6 +21,10 @@ const {
   getUserIntervalOneMinute,
   updateStatusByUsername,
   updateAbnormal,
+  handleSelectFrontCMND,
+  handleUpdateFrontCMND,
+  handleSelectBackCMND,
+  handleUpdateBackCMND,
 } = require("../models/user.model");
 
 const {
@@ -270,7 +274,7 @@ const handleRegister = async (req, res) => {
   // console.log(phone)
   const randomUsername = generateUsername(1000000000, 9000000000);
   const randomPassword = generateRandomPassword(6);
-  // console.log(randomPassword);
+  console.log(randomPassword);
   const salt = await bcrypt.genSalt(10);
   const hashPassword = await bcrypt.hash(randomPassword.toString(), salt);
   if (phone === undefined || phone === "") {
@@ -632,6 +636,145 @@ async function profilePost(req, res, next) {
   }
 }
 
+const getprofilePostCMNDFront = async(req,res) =>{
+  let username = req.userClaims.username;
+  
+  return res.json({
+    data: await handleSelectFrontCMND(username)
+  })
+}
+
+const fs = require('fs'); //doi file name
+const profilePostCMNDFront = async (req, res) => {
+  // let image = req.file;
+  // console.log("hereee " + JSON.stringify(req.file))
+  let result = validationResult(req);
+  // console.log(result);
+
+  if (result.errors.length === 0) {
+      let image = req.file;
+      // console.log(image)
+      // const id = req.body.inputIdEdit;
+      let username = req.userClaims.username;
+
+      let imageFileName;
+      if (image == undefined) {
+
+          try {
+              const FrontCMND = await handleSelectFrontCMND(username);
+              imageFileName = FrontCMND
+              req.session.flash = {
+                type: "danger",
+                intro: "Oops!",
+                message: "You upload nothing so we take old picture"
+              }
+              return res.redirect('/users/profile');
+          } catch (error) {
+              console.log(error);
+          }
+      } else {
+          let imagePath = `public\\images\\${image.originalname}`;
+          fs.renameSync(image.path, imagePath);
+          imageFileName = image.originalname;
+      }
+
+
+      try {
+          if (await handleUpdateFrontCMND(imageFileName, username)) {
+              req.session.flash = {
+                  type: "success",
+                  intro: "Congratulation!",
+                  message: "Upload CMND font successfully!!!!"
+              }
+              return res.redirect('/users/profile');
+          } else {
+              req.session.flash = {
+                  type: "danger",
+                  intro: "Oops!",
+                  message: "Some thing went wrong"
+              }
+              return res.redirect('/users/profile');
+          }
+      } catch (error) {
+          console.log(error);
+      }
+  } else {
+      const errors = result.mapped()
+      let errorMessage = errors[Object.keys(errors)[0]].msg
+      req.session.flash = {
+          type: "danger",
+          intro: "Oops!",
+          message: errorMessage
+      }
+      res.redirect('/users/profile');
+  }
+}
+
+const profilePostCMNDBack = async (req, res) => {
+  // let image = req.file;
+  // console.log("hereee " + JSON.stringify(req.file))
+  let result = validationResult(req);
+  // console.log(result);
+
+  if (result.errors.length === 0) {
+      let image = req.file;
+      // console.log(image)
+      // const id = req.body.inputIdEdit;
+      let username = req.userClaims.username;
+
+      let imageFileName;
+      if (image == undefined) {
+
+          try {
+              const BackCMND = await handleSelectBackCMND(username);
+              imageFileName = BackCMND
+              req.session.flash = {
+                type: "danger",
+                intro: "Oops!",
+                message: "You upload nothing so we take old picture"
+              }
+              return res.redirect('/users/profile');
+          } catch (error) {
+              console.log(error);
+          }
+      } else {
+          let imagePath = `public\\images\\${image.originalname}`;
+          fs.renameSync(image.path, imagePath);
+          imageFileName = image.originalname;
+      }
+
+
+      try {
+          if (await handleUpdateBackCMND(imageFileName, username)) {
+              req.session.flash = {
+                  type: "success",
+                  intro: "Congratulation!",
+                  message: "Upload CMND back successfully!!!!"
+              }
+              return res.redirect('/users/profile');
+          } else {
+              req.session.flash = {
+                  type: "danger",
+                  intro: "Oops!",
+                  message: "Some thing went wrong"
+              }
+              return res.redirect('/users/profile');
+          }
+      } catch (error) {
+          console.log(error);
+      }
+  } else {
+      const errors = result.mapped()
+      let errorMessage = errors[Object.keys(errors)[0]].msg
+      req.session.flash = {
+          type: "danger",
+          intro: "Oops!",
+          message: errorMessage
+      }
+      res.redirect('/users/profile');
+  }
+}
+
 // todo Get /users/card
 async function cardGet(req, res) {
   let userData = req.userClaims;
@@ -763,7 +906,9 @@ module.exports = {
   handleChangePassword,
   handleFirstLogin,
   profileGet,
-  profilePost,
+  getprofilePostCMNDFront,
+  profilePostCMNDBack,
+  profilePostCMNDFront,
   cardGet,
   cardPost,
 };

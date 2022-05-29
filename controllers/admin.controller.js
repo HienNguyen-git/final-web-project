@@ -66,7 +66,7 @@ const handleAdminUserAccount = async (req, res) => {
       name: e.name,
       date_of_birth: formatDate(e.date_of_birth),
       address: e.address,
-      front_cmnd: e.front_cmnd,
+      front_cmnd: e.font_cmnd,
       back_cmnd: e.back_cmnd,
       total_value: e.total_value,
     }));
