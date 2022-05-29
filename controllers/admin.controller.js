@@ -16,6 +16,7 @@ const {
   handleSelectDepositMore5m,
   handleSelectEmailDepositMore5m,
   updateStatusToCheck,
+  getUserAccountBlock,
 } = require("../models/admin.model");
 const {
   handleUpdateTotalValueOfSender,
@@ -82,6 +83,7 @@ const handleAdminUserAccount = async (req, res) => {
 const handleAccountApi = async (req, res) => {
   const statusArr = [0, 1, 2, 3, 4];
   let status = req.query["status"];
+  console.log(status)
   if (status === undefined) {
     status = 0;
   }
@@ -91,17 +93,18 @@ const handleAccountApi = async (req, res) => {
       message: "Status not valid!",
     });
   } else {
+    let data
     if(status==4){
-      const raw = await getUserAccountByStatus(status);
-      const data = raw.map((e) => ({
+      const raw = await getUserAccountBlock(status);
+      data = raw.map((e) => ({
         id: e.id,
         username: e.username,
-        status: e.status,
+        status: 4,
         last_modified: formatDateTime(e.last_modified),
       }));
     }else{
       const raw = await getUserAccountByStatus(status);
-      const data = raw.map((e) => ({
+      data = raw.map((e) => ({
         id: e.id,
         username: e.username,
         status: e.status,
