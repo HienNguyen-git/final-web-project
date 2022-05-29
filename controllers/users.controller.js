@@ -660,6 +660,7 @@ const getprofilePostCMNDFront = async(req,res) =>{
 }
 
 const fs = require('fs'); //doi file name
+let path = require('path');
 const profilePostCMNDFront = async (req, res) => {
   // let image = req.file;
   // console.log("hereee " + JSON.stringify(req.file))
@@ -688,9 +689,13 @@ const profilePostCMNDFront = async (req, res) => {
               console.log(error);
           }
       } else {
-          let imagePath = `public\\images\\${image.originalname}`;
+          
+
+          let pathofimage = image.filename + ".png";
+          let imagePath = path.join('public','images',pathofimage);
+          console.log(imagePath)
           fs.renameSync(image.path, imagePath);
-          imageFileName = image.originalname;
+          imageFileName = pathofimage;
       }
 
 
@@ -726,14 +731,14 @@ const profilePostCMNDFront = async (req, res) => {
 }
 
 const profilePostCMNDBack = async (req, res) => {
-  // let image = req.file;
-  // console.log("hereee " + JSON.stringify(req.file))
   let result = validationResult(req);
   // console.log(result);
 
   if (result.errors.length === 0) {
       let image = req.file;
       // console.log(image)
+      console.log("hereee " + JSON.stringify(req.file))
+
       // const id = req.body.inputIdEdit;
       let username = req.userClaims.username;
 
@@ -753,9 +758,12 @@ const profilePostCMNDBack = async (req, res) => {
               console.log(error);
           }
       } else {
-          let imagePath = `public\\images\\${image.originalname}`;
+          // let imagePath = `public\\images\\${image.originalname}`;
+          let pathofimage = image.filename + ".png";
+          let imagePath = path.join('public','images',pathofimage);
+          console.log(imagePath)
           fs.renameSync(image.path, imagePath);
-          imageFileName = image.originalname;
+          imageFileName = pathofimage;
       }
 
 

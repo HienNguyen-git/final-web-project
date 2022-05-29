@@ -13,7 +13,7 @@
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">
-                                    <i class="fas fa-user"></i>
+                                    <i class="fa-solid fa-phone"></i>
                                 </span>
                             </div>
                             <input id="phone_receiver" type="number" name="phone_receiver" class="form-control"
@@ -35,7 +35,7 @@
                                 <div class="input-group mb-3">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">
-                                            <i class="fas fa-user"></i>
+                                            <i class="fa-solid fa-money-bill"></i>
                                         </span>
                                     </div>
                                     <input id="money" type="number" name="money" class="form-control"
@@ -46,12 +46,8 @@
                             <div class="form-group">
                                 <label for="fee">Fee 5%: <span id="feeDeposit"></span></label>
                                 <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">
-                                            <i class="fas fa-user"></i>
-                                        </span>
-                                    </div>
-                                    <select id="feeperson" name="feeperson">
+
+                                    <select id="feeperson" name="feeperson" style="width: 100%;">
                                         <option value="sender">Sender</option>
                                         <option value="receiver">Receiver</option>
                                     </select>
@@ -61,7 +57,7 @@
                                     <div class="input-group mb-3">
                                         <div class="input-group-prepend">
                                             <span class="input-group-text">
-                                                <i class="fas fa-user"></i>
+                                                <i class="fa-solid fa-envelope"></i>
                                             </span>
                                         </div>
                                         <input id="note" type="text" name="note" class="form-control"
@@ -110,26 +106,26 @@
     const phone_receiver = document.getElementById('phone_receiver');
     const name_receiver = document.getElementById('name');
 
-    phone_receiver.addEventListener('blur', async e =>{
+    phone_receiver.addEventListener('blur', async e => {
         let phone = phone_receiver.value;
         //console.log(phone);
-        const myFetch = await fetch(location.href + "/info",{
+        const myFetch = await fetch(location.href + "/info", {
             method: "POST",
-            body: JSON.stringify({phone}),
-             headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ phone }),
+            headers: { 'Content-Type': 'application/json' },
 
         })
         const res = await myFetch.json();
-        if(!res.code){
+        if (!res.code) {
             const data = res.data;
             const name = data.name;
             name_receiver.value = name;
             myAlert.innerHTML = ""
-        }else{
+        } else {
             showAlert(res.message);
             name_receiver.value = "";
         }
-        
+
     })
 
 
