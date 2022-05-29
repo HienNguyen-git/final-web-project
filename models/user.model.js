@@ -275,6 +275,18 @@ async function getUserDetailByUserName(username) {
   });
 }
 
+const getUserStatusByUserName = (username) => {
+  const sql = "SELECT status FROM user WHERE username = ?";
+  const value = [username];
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, value, async (err, result) => {
+      if (err) throw err;
+      resolve(result[0]);
+    });
+  });
+}
+
 const getTranSHistoryByUsername = (username) =>
   new Promise((resolve, reject) => {
     connect.query(
@@ -363,4 +375,5 @@ module.exports = {
   increaseLoginAttemptsByUsername,
   updateAbnormal,
   getUserNameByPhoneNumber,
+  getUserStatusByUserName,
 };
