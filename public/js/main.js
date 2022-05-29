@@ -173,4 +173,69 @@ $(document).ready(() => {
       });
     }
   }
+
+  // * Javascript for GET /admin/trans-history
+  if (document.getElementById("view-admin-trans-history")) {
+    let selectBox = document.getElementById("history-type");
+
+    selectBox.onchange = (e) => {
+      let choice = e.target.value;
+      loadData(choice);
+    };
+
+    function loadData(choice) {
+      $("#tbody tr").remove();
+      $.get(`/users/trans-history/${choice}`, (response) => {
+        console.log(response);
+        if (response.success) {
+          let data = response.data;
+          data.forEach((currVal) => {
+            renderData(currVal, choice);
+          });
+        }
+      });
+    }
+    function renderData(data, choice) {
+      /**
+       * Render a row of data to table body
+       * Input: withdraw Object
+       * Output: Data has been append to the table
+       */
+      let tableBody = $("#tbody");
+      console.log(choice);
+      if (choice === "1") {
+        data.status = "Thành công";
+      }
+      let tableContent = `
+      <tr>
+          <th scope="row">${data.id}</th>
+          <td>${data.username}</td>
+          <td>${data.value}</td>
+          <td>${data.date}</td>
+          <td class="font-weight-bold text-success">${data.status}</td>
+        </tr>
+      `;
+
+      tableBody.append(tableContent);
+    }
+
+    function onClickButton(e) {
+      /**
+       * Xử lý click event của approve/disapprove
+       * Input: e Event
+       * Output: lấy dữ liệu và POST lên /admin/withdraw
+       */
+      let isApproved = this.getAttribute("data-approve");
+      let id = this.getAttribute("data-id");
+
+      let data = { id, isApproved };
+
+      $.post("/admin/withdraw", data, (response) => {
+        if (response.success) {
+          loadData();
+        }
+        alert(response.message);
+      });
+    }
+  }
 });

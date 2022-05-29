@@ -21,6 +21,7 @@ const {
   getUserIntervalOneMinute,
   updateStatusByUsername,
   updateAbnormal,
+  getUserNameByPhoneNumber,
 } = require("../models/user.model");
 
 const {
@@ -31,6 +32,7 @@ const {
   getQuantityCardByUsername,
 } = require("../models/credit_card.model");
 
+const { getAllBills } = require("../models/phone_card.model");
 const {
   generateRandomPassword,
   generateUsername,
@@ -40,7 +42,12 @@ var nodemailer = require("nodemailer"); // khai báo sử dụng module nodemail
 var smtpTransport = require("nodemailer-smtp-transport");
 const { off } = require("../config/db");
 const { getAllWithdraws } = require("../models/withdraw.model");
-const { getAllDeposits } = require("../models/deposit.model");
+const {
+  getAllDeposits,
+  getAllDepositsSender,
+  getAllDepositsReceiver,
+} = require("../models/deposit.model");
+const { getAllRecharges } = require("../models/recharge.model");
 
 const resetPasswordGet = (req, res) => {
   res.render("account/resetpassword", { title: "Reset Password" });
@@ -745,30 +752,50 @@ function assignDataToCookie(res, data) {
 }
 
 async function apiGetTransHistory(req, res) {
-  let choice = req.params.choice;
+  // let userData = req.userClaims;
 
+  // if (userData.username !== "admin") {
+  //   return res.json({
+  //     success: false,
+  //     message: "Phải là admin để sử dụng api này",
+  //   });
+  // }
+  let choice = parseInt(req.params.choice);
+
+  let data = null;
   switch (choice) {
     case 1:
+      // Nạp tiền - recharge
+      data = await getAllRecharges();
+
       break;
     case 2:
+      // Rút tiền - withdraw
+      data = await getAllWithdraws();
+
       break;
     case 3:
+      // Chuyển tiền - deposit
+      data = await getAllDepositsSender();
       break;
     case 4:
+      //  Nhận tiền - deposit
+      data = await getAllDepositsReceiver();
+      break;
+    case 5:
+      // Thanh toán dịch vụ - phone_card
+      data = await getAllBills();
       break;
     default:
-      break;
+      return res.json({
+        success: false,
+        message: "Không có option này",
+      });
   }
-  let userData = req.userClaims;
-
-  let withdraws = await getAllWithdraws();
-  let deposits = await getAllDeposits();
-
-  console.log(withdraws);
-  console.log(deposits);
-  let data = getTranSHistoryByUsername("1234");
 
   return res.json({
+    success: true,
+    message: "Lấy lịch sử giao dịch thành công",
     data: data,
   });
 }

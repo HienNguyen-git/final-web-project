@@ -117,6 +117,40 @@ const getUserDepositInfo = (username) =>
     );
   });
 
+async function getAllDepositsSender() {
+  /**
+   * Lấy tất cả giao dịch chuyển tiền
+   * Input: None
+   * Output: list of giao dịch
+   */
+  const sql =
+    "select a.* , b.username from deposit a left join user_detail b on a.phone_sender=b.phone";
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, (err, result) => {
+      if (err) throw err;
+      resolve(result);
+    });
+  });
+}
+
+async function getAllDepositsReceiver() {
+  /**
+   * Lấy tất cả giao dịch nhận tiền
+   * Input: None
+   * Output: list of giao dịch
+   */
+  const sql =
+    "select a.* , b.username from deposit a left join user_detail b on a.phone_receiver=b.phone";
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, (err, result) => {
+      if (err) throw err;
+      resolve(result);
+    });
+  });
+}
+
 async function getAllDeposits() {
   /**
    * Lấy tất cả giao dịch chuyển tiền
@@ -143,4 +177,6 @@ module.exports = {
   selectReceiverName,
   handleUpdateStatusDeposit5m,
   getAllDeposits,
+  getAllDepositsSender,
+  getAllDepositsReceiver,
 };

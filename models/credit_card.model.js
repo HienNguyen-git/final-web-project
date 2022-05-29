@@ -64,7 +64,7 @@ async function addCardByUsername({
    */
 
   const sql =
-    "INSERT INTO recharge (username, card_number, recharge_date, money) VALUES (?,?,?,?)";
+    "INSERT INTO recharge (username, card_number, date, value) VALUES (?,?,?,?)";
   const value = [username, card_number, recharge_date, money];
 
   return new Promise((resolve, reject) => {
