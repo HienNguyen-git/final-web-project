@@ -134,12 +134,10 @@ function getDataFromToken(req) {
 }
 
 const getWithdrawByUser = async(req,res)=>{
-  console.log("Receive")
   const userData = req.userClaims
   let data
   try {
     const rawData = await getWithdrawListByUsername(userData.username)
-    console.log(rawData)
     data = rawData.map(e=>({
       id: e.id,
       card_number: e.card_number,

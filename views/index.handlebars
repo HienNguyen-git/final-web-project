@@ -60,7 +60,7 @@
                         <th>Date</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="deposit-body">
                     <tr>
                         <td>
                             <a href="{{subPath}}">name</a>
@@ -123,7 +123,7 @@
                         <th>Date</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="phonecard-body">
                     <tr>
                         <td>
                             <a href="{{subPath}}">name</a>
@@ -153,7 +153,7 @@
                         <th>Date</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="recharge-body">
                     <tr>
                         <td>
                             <a href="{{subPath}}">name</a>
@@ -307,45 +307,63 @@
 
     <script>
         const myUrl = location.href
-        let withdrawBody
-        let depositBody
-        let phonecardBody
-        let rechargeBody
+        let withdrawContent
+        let depositContent
+        let phonecardContent
+        let rechargeContent
         let data
 
         const withdrawBody = document.querySelector('#withdraw-body')
         const depositBody = document.querySelector('#deposit-body')
         const phonecardBody = document.querySelector('#phonecard-body')
-        const rechargeBody = document.querySelector('#recharge-body')
+        const rechargeBody = document.querySelector('#recharge-body');
 
+        // Get withdraw 
         (async()=>{
             const myFetch = await fetch(myUrl+"withdraw/api")
             const res = await myFetch.json()
             if(res.code==0) withdrawData = res.data
             else console.error(res.message)
             console.log(res)
-        })()
+        })();
 
+        // Get deposit
         (async()=>{
-            const myFetch = await fetch(myUrl+"withdraw/api")
+            const myFetch = await fetch(myUrl+"deposit/api/sender")
             const res = await myFetch.json()
             if(res.code==0) withdrawData = res.data
             else console.error(res.message)
             console.log(res)
-        })
+        })();
 
+
+        // Get receive
         (async()=>{
+            const myFetch = await fetch(myUrl+"deposit/api/receiver")
+            const res = await myFetch.json()
+            if(res.code==0) withdrawData = res.data
+            else console.error(res.message)
+            console.log(res)
+        })();
 
-        })
 
+        // Get phone card
         (async()=>{
+            const myFetch = await fetch(myUrl+"phonecard/api")
+            const res = await myFetch.json()
+            if(res.code==0) withdrawData = res.data
+            else console.error(res.message)
+            console.log(res)
+        })();
 
-        })
-
+        // Get recharge
         (async()=>{
-
-        })
-
+            const myFetch = await fetch(myUrl+"recharge/api")
+            const res = await myFetch.json()
+            if(res.code==0) withdrawData = res.data
+            else console.error(res.message)
+            console.log(res)
+        })();
 
 
         

@@ -1,12 +1,13 @@
 var express = require('express');
 var router = express.Router();
 
-const { PostDeposit,sendOtp, getDeposit, getUserInfo,getUserInfomation,sendOtpPost,getSuccessDeposit,getPendingDeposit } = require('../controllers/deposit.controller');
+const { PostDeposit,sendOtp, getDeposit, getUserInfo,getUserInfomation,sendOtpPost,getSuccessDeposit,getPendingDeposit, getSenderByUser, getReceiverByUser } = require('../controllers/deposit.controller');
 const { validatorPostDeposit } = require('../validations/deposit')
 
 router.get('/', getDeposit)
 
-router.get('/api', getDeposit)
+router.get('/api/sender', getSenderByUser)
+router.get('/api/receiver', getReceiverByUser)
 
 router.post('/',validatorPostDeposit,PostDeposit);
 

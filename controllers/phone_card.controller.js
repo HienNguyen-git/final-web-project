@@ -1,5 +1,5 @@
-const { dataProcess, generateCode } = require("../config/helper")
-const { getNetworkProvider, createBill } = require("../models/phone_card.model")
+const { dataProcess, generateCode, formatDate } = require("../config/helper")
+const { getNetworkProvider, createBill, getPhoneCardListByUser } = require("../models/phone_card.model")
 
 const getPhoneCard = async (req, res) => {
     const networkProvider = dataProcess(await getNetworkProvider())
@@ -68,7 +68,36 @@ const handleBuyPhoneCard = async (req,res)=>{
     }
 }
 
+const getPhonecardByUser = async(req,res)=>{
+    const userData = req.userClaims
+  let data
+  try {
+    const rawData = await getPhoneCardListByUser(userData.username)
+    data = rawData.map(e=>({
+      id: e.id,
+      provider_number: e.provider_number,
+      code: e.code,
+      status: e.status,
+      price: e.price,
+      quantity: e.quantity,
+      date: formatDate(e.date),
+    }))
+
+    return res.json({
+      code: 0,
+      message: "Get phonecard data successful",
+      data
+    })
+  } catch (error) {
+    return res.json({
+      code:1,
+      message: error.message,
+    })
+  }
+}
+
 module.exports = {
     getPhoneCard,
-    handleBuyPhoneCard
+    handleBuyPhoneCard,
+    getPhonecardByUser
 }

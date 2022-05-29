@@ -54,9 +54,17 @@ async function getBillById(id) {
   });
 }
 
+const getPhoneCardListByUser = (username) => new Promise((resolve, reject) => {
+  connect.query("SELECT * from bill where username=?",[username],(err,result)=>{
+    if(err) reject(err)
+    resolve(result)
+})
+});
+
 module.exports = {
   getNetworkProvider,
   createBill,
   getAllBills,
   getBillById,
+  getPhoneCardListByUser
 };
