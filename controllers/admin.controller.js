@@ -18,7 +18,7 @@ const {
   handleUpdateTotalValueOfSender,
   handleUpdateTotalValueOfReceiver,
 } = require("../models/deposit.model");
-const { updateTotalValueByDifference } = require("../models/user.model");
+const { updateTotalValueByDifference, updateAbnormal } = require("../models/user.model");
 const {
   getWithdrawAdmin,
   updateStatusById,
@@ -33,6 +33,7 @@ const getAdminHome = (req, res) => {
 
 const handleAdminUserAccount = async (req, res) => {
   const username = req.query["username"];
+  console.log(username)
   if (username === undefined) {
     const raw = await getUserAccountByStatus(0);
     const data = raw.map((e) => ({
@@ -50,11 +51,13 @@ const handleAdminUserAccount = async (req, res) => {
     });
   } else {
     const raw = await getUserDetailByUsername(username);
+    console.log(raw)
     const data = raw.map((e) => ({
       id: e.id,
       username: e.username,
-      status: encodeStatusCode(e.status),
-      statusCode: e.status,
+      status: e.abnormal == 2 ? encodeStatusCode(4) : encodeStatusCode(e.status),
+      statusCode: e.abnormal == 2 ? 4:e.status,
+      login_attempts: e.login_attempts,
       phone: e.phone,
       email: e.email,
       name: e.name,
@@ -85,13 +88,23 @@ const handleAccountApi = async (req, res) => {
       message: "Status not valid!",
     });
   } else {
-    const raw = await getUserAccountByStatus(status);
-    const data = raw.map((e) => ({
-      id: e.id,
-      username: e.username,
-      status: e.status,
-      last_modified: formatDateTime(e.last_modified),
-    }));
+    if(status==4){
+      const raw = await getUserAccountByStatus(status);
+      const data = raw.map((e) => ({
+        id: e.id,
+        username: e.username,
+        status: e.status,
+        last_modified: formatDateTime(e.last_modified),
+      }));
+    }else{
+      const raw = await getUserAccountByStatus(status);
+      const data = raw.map((e) => ({
+        id: e.id,
+        username: e.username,
+        status: e.status,
+        last_modified: formatDateTime(e.last_modified),
+      }));
+    }
     res.json({
       code: 0,
       message: "Get data successful!",
@@ -110,19 +123,28 @@ const handleAccountStatus = async (req, res) => {
     });
   } else {
     try {
-      const actions = ["verify", "cancel", "request"];
+      const actions = ["verify", "cancel", "request", "unclock"];
       const actionIndex = actions.indexOf(action) + 1;
       const currentDateTime = formatDateTime2();
-      if (await updateUserStatus(username, actionIndex, currentDateTime)) {
-        return res.json({
-          code: 0,
-          message: `Update username=${username} successful!`,
-        });
+      if (actionIndex == 4) {
+        if (await updateAbnormal(username, 0)) {
+          return res.json({
+            code: 0,
+            message: `Update username=${username} successful!`,
+          });
+        }
       } else {
-        res.json({
-          code: 1,
-          message: "Something went wrong!",
-        });
+        if (await updateUserStatus(username, actionIndex, currentDateTime)) {
+          return res.json({
+            code: 0,
+            message: `Update username=${username} successful!`,
+          });
+        } else {
+          res.json({
+            code: 1,
+            message: "Something went wrong!",
+          });
+        }
       }
     } catch (error) {
       console.log(error.message);

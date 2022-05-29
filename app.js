@@ -32,10 +32,15 @@ app.engine(
         // console.log(routerPath, navPath)
         return routerPath === navPath ? fnTrue(this) : fnFalse(this);
       },
-      checkStatus(status, options) {
+      checkStatusIs0(status, options) {
         const fnTrue = options.fn,
           fnFalse = options.inverse;
         return status == 0 ? fnTrue(this) : fnFalse(this);
+      },
+      checkStatusIs4(status, options) {
+        const fnTrue = options.fn,
+          fnFalse = options.inverse;
+        return status == 4 ? fnTrue(this) : fnFalse(this);
       },
     },
   })
