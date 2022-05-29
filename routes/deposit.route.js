@@ -6,6 +6,8 @@ const { validatorPostDeposit } = require('../validations/deposit')
 
 router.get('/', getDeposit)
 
+router.get('/api', getDeposit)
+
 router.post('/',validatorPostDeposit,PostDeposit);
 
 router.get('/info', getUserInfo)

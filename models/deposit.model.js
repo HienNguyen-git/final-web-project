@@ -47,29 +47,40 @@ const selectReceiverName = (phone_receiver) =>
   new Promise((resolve, reject) => {
     const sql = "select * from user_detail where phone = ?";
     const values = [phone_receiver];
-    connect.query(sql, values, (err,result) => {
-        if (err) reject(false)
-        else{
-            resolve(result[0].email);
-        }
-    })
-})
+    connect.query(sql, values, (err, result) => {
+      if (err) reject(false);
+      else {
+        resolve(result[0].email);
+      }
+    });
+  });
 
-const handleSelectDepositByPhone = (phone) => new Promise((resolve,reject) => {
-    connect.query("select * from deposit where phone_sender=? order by date desc limit 1",[phone],(err,result)=>{
-        if(err) reject(err)
-        resolve(result[0])
-    })
-})
+const handleSelectDepositByPhone = (phone) =>
+  new Promise((resolve, reject) => {
+    connect.query(
+      "select * from deposit where phone_sender=? order by date desc limit 1",
+      [phone],
+      (err, result) => {
+        if (err) reject(err);
+        resolve(result[0]);
+      }
+    );
+  });
 
-const handleUpdateStatusDeposit5m = (phone) => new Promise((resolve,reject) => {
-    connect.query("update deposit set status = 0 where phone_sender=? order by date desc limit 1",[phone],(err,result)=>{
-        if(err) reject(err)
-        resolve(true)
-    })
-})
+const handleUpdateStatusDeposit5m = (phone) =>
+  new Promise((resolve, reject) => {
+    connect.query(
+      "update deposit set status = 0 where phone_sender=? order by date desc limit 1",
+      [phone],
+      (err, result) => {
+        if (err) reject(err);
+        resolve(true);
+      }
+    );
+  });
 
-const handleUpdateTotalValueOfSender = (moneyDepositFeeSender,phone) => new Promise((resolve,reject) =>{
+const handleUpdateTotalValueOfSender = (moneyDepositFeeSender, phone) =>
+  new Promise((resolve, reject) => {
     // console.log(moneyDepositFeeSender);
     const sql =
       "update user_detail set total_value = total_value - ? where phone = ?";
@@ -172,6 +183,16 @@ async function getAllDeposits() {
   });
 }
 
+
+const getDepositListByUser = (username)=> new Promise((resolve,reject)=>{
+    connect.query("select * from deposit where phone_sender=?",[username],(err,result)=>{
+        if(err) reject(err)
+        resolve(result[0])
+    })
+})
+
+
+
 module.exports = {
   handlePostDeposit,
   selectReceiverValue,
@@ -185,4 +206,5 @@ module.exports = {
   getAllDepositsSender,
   getAllDepositsReceiver,
   getDepositById,
+  getDepositListByUser
 };

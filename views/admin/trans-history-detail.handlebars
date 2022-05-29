@@ -3,12 +3,12 @@
 
     <section class="account-info-container">
       <h1>Transaction History Detail</h1>
-        <h3>{{username}}</h3>
+        <h3>{{data.username}}</h3>
         <div class="account-container">
             <table>
             <tr>
                 <th>Name</th>
-                <td>{{name}}</td>
+                <td>{{data.phone}}</td>
                 <th>Email</th>
                 <td>{{email}}</td>
             </tr>
@@ -27,12 +27,6 @@
             <tr>
                 <th>Login attempt</th>
                 <td>{{login_attempts}}</td>
-            </tr>
-            <tr>
-                <th>Front identification</th>
-                <td><img src="/images/front.png" alt="Front identification"></td>
-                <th>Back identification</th>
-                <td><img src="/images/front.png" alt="Front identification"></td>
             </tr>
             <tr>
                 <th>Total value</th>

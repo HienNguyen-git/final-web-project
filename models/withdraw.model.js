@@ -96,9 +96,13 @@ async function updateStatusById(id, status) {
   });
 }
 
-const getWithdrawListByUsername = (username)=>{
-  connect.query('select * from withdraw where ')
-}
+const getWithdrawListByUsername = (username)=>new Promise((resolve,reject)=>{
+  connect.query('select * from withdraw where username=?', [username], (err,result)=>{
+    if (err) reject(err);
+    resolve(result);
+  })
+})
+
 
 module.exports = {
   createWithdraw,
@@ -106,5 +110,6 @@ module.exports = {
   getWithdrawAdmin,
   updateStatusById,
   getWithdrawById,
+  getWithdrawListByUsername,
   getAllWithdraws,
 };

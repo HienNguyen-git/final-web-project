@@ -343,6 +343,8 @@ const handleRegister = async (req, res) => {
       address
     );
     await putAccCreatedIntoUser(randomUsername, hashPassword);
+    console.log(randomPassword);
+    console.log(randomUsername)
     return res.json({
       code: 0,
       message:
@@ -358,7 +360,7 @@ const handleRegister = async (req, res) => {
     //   secureConnection: false,
     //   auth: {
     //       user: 'sinhvien@phongdaotao.com',
-    //       pass: 'svtdtu'
+    //       pass: 'svtdtu' 
     //   }
     // }));
 
