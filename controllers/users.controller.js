@@ -44,65 +44,69 @@ const resetPasswordGet = (req, res) => {
   res.render("account/resetpassword", { title: "Reset Password" });
 };
 const requestOtpToMail = (req, res) => {
-    let result = validationResult(req);
-    if(result.errors.length === 0){
+  let result = validationResult(req);
+  if (result.errors.length === 0) {
+    let { email } = req.body;
+    const otp = Math.floor(100000 + Math.random() * 900000);
 
-        let { email } = req.body;
-        const otp = Math.floor(100000 + Math.random() * 900000);
-        
-        var transporter = nodemailer.createTransport({ // config mail server
-            service: 'Gmail',
-            auth: {
-                user: 'nchdang16012001@gmail.com',
-                pass: 'mlrafbeyqtvtqloe'
-            }
-        });
+    var transporter = nodemailer.createTransport({
+      // config mail server
+      service: "Gmail",
+      auth: {
+        user: "nchdang16012001@gmail.com",
+        pass: "mlrafbeyqtvtqloe",
+      },
+    });
 
-        // var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
-        //     tls: {
-        //         rejectUnauthorized: false
-        //     },
-        //     host: 'mail.phongdaotao.com',
-        //     port: 25,
-        //     secureConnection: false,
-        //     auth: {
-        //         user: 'sinhvien@phongdaotao.com',
-        //         pass: 'svtdtu'
-        //     }
-        // }));
+    // var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
+    //     tls: {
+    //         rejectUnauthorized: false
+    //     },
+    //     host: 'mail.phongdaotao.com',
+    //     port: 25,
+    //     secureConnection: false,
+    //     auth: {
+    //         user: 'sinhvien@phongdaotao.com',
+    //         pass: 'svtdtu'
+    //     }
+    // }));
 
-        var mainOptions = { // thiết lập đối tượng, nội dung gửi mail
-            from: 'sinhvien@phongdaotao.com',
-            to: email,
-            subject: 'OTP code',
-            html: '<p>You have got a code: ' + otp + '<br></br> Code will expired in 1 minute </p>'
-        }
-    
-        transporter.sendMail(mainOptions, function (err, info) {
-            if (err) {
-                // console.log(err);
-                req.session.flash = {
-                    type: "danger",
-                    intro: "Oops!",
-                    message: "Some thing went wrong"
-                }
-                
-                res.redirect('/users/account/resetpassword');
-            } else {
-                //lưu vào db
-                let time = Date.now() + 60000;
-                let day = new Date(time);
-                req.session.email = email;
-                handlePostOTP(email,otp, day);
-                req.session.flash = {
-                    type: "success",
-                    intro: "Congratulation!",
-                    message: "OTP has been sent to your email. Please check your email!!!!"
-                }
-                res.redirect('/users/account/resetpassword/sendOtp');
-            }
-        });
-  
+    var mainOptions = {
+      // thiết lập đối tượng, nội dung gửi mail
+      from: "sinhvien@phongdaotao.com",
+      to: email,
+      subject: "OTP code",
+      html:
+        "<p>You have got a code: " +
+        otp +
+        "<br></br> Code will expired in 1 minute </p>",
+    };
+
+    transporter.sendMail(mainOptions, function (err, info) {
+      if (err) {
+        // console.log(err);
+        req.session.flash = {
+          type: "danger",
+          intro: "Oops!",
+          message: "Some thing went wrong",
+        };
+
+        res.redirect("/users/account/resetpassword");
+      } else {
+        //lưu vào db
+        let time = Date.now() + 60000;
+        let day = new Date(time);
+        req.session.email = email;
+        handlePostOTP(email, otp, day);
+        req.session.flash = {
+          type: "success",
+          intro: "Congratulation!",
+          message:
+            "OTP has been sent to your email. Please check your email!!!!",
+        };
+        res.redirect("/users/account/resetpassword/sendOtp");
+      }
+    });
   } else {
     const errors = result.mapped();
     let errorMessage = errors[Object.keys(errors)[0]].msg;
