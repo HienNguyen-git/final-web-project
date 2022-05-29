@@ -183,6 +183,16 @@ async function getAllDeposits() {
   });
 }
 
+
+const getDepositListByUser = (username)=> new Promise((resolve,reject)=>{
+    connect.query("select * from deposit where phone_sender=?",[username],(err,result)=>{
+        if(err) reject(err)
+        resolve(result[0])
+    })
+})
+
+
+
 module.exports = {
   handlePostDeposit,
   selectReceiverValue,
@@ -196,4 +206,5 @@ module.exports = {
   getAllDepositsSender,
   getAllDepositsReceiver,
   getDepositById,
+  getDepositListByUser
 };
