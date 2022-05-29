@@ -1,0 +1,35 @@
+<div class="admin-section admin-section2">
+  <div class="admin-section-panel admin-section-panel4">
+    <div class="admin-panel-section-header">
+      <h2>Transaction History</h2>
+    </div>
+    <table cellpadding="10" cellspacing="10" border="1" style="width: 100%">
+      <tr class="header">
+        <td>ID</td>
+        <td>Username</td>
+        {{!-- <td>Total Value</td> --}}
+        {{!-- <td>Status</td> --}}
+        {{!-- <td>Date Transaction</td> --}}
+        {{!-- <td>Action</td> --}}
+      </tr>
+      <tbody id="tbody" class="p-3">
+        {{#each data}}
+          <tr class="item">
+            <td>{{id}}</td>
+            <td><a href="trans-history?username={{username}}">{{username}}</a></td>
+            {{!-- <td>{{ total_value }}</td> --}}
+            {{!-- {{#if status}}
+            <td class="text-secondary font-weight-bold"><i class="fas fa-circle-notch fa-spin"></i></td>
+            {{else}}
+            <td class="text-success font-weight-bold"><i class="fa fa-check "></i></td>
+            {{/if}} --}}
+            {{!-- <td>{{last_modified}}</td> --}}
+            {{!-- <td>
+              <button class="btn btn-primary" onclick="checkClick('{{id}}','{{phone_sender}}','{{phone_receiver}}','{{value}}','{{fee}}','{{feeperson}}')" id="checkbtn" type="submit" >Check</button>
+            </td> --}}
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>

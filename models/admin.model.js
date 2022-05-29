@@ -57,6 +57,15 @@ const updateStatusToCheck = (status,id) => new Promise((resolve, reject) => {
     })
 })
 
+const getUserAccountBlock = () => new Promise((resolve,reject)=>{
+    connect.query('select * from deposit where status = ?',[status],(err,result)=>{
+        if(err) reject(false);
+        else{
+            resolve(result);
+        }
+    })
+})
+
 
 const handleSelectEmailDepositMore5m = (phone_receiver) => new Promise((resolve,reject) =>{
     const sql = "select * from user_detail where phone = ?"

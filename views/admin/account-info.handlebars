@@ -26,6 +26,10 @@
                 {{{status}}}
             </tr>
             <tr>
+                <th>Login attempt</th>
+                <td>{{login_attempts}}</td>
+            </tr>
+            <tr>
                 <th>Front identification</th>
                 <td><img src="/images/front.png" alt="Front identification"></td>
                 <th>Back identification</th>
@@ -36,13 +40,18 @@
                 <td>{{total_value}}</td>
             </tr>
         </table>
-        {{#checkStatus statusCode}}
+        {{#checkStatusIs0 statusCode}}
         <div id="handle-box">
             <button class="btn btn-primary mr-2 mb-2" id="verify">Verify</button> 
             <button class="btn btn-danger mr-2 mb-2" id="cancel">Cancel</button> 
             <button class="btn btn-info mr-2 mb-2" id="request">Request additional information</button> 
         </div>
-        {{/checkStatus}}
+        {{/checkStatusIs0}}
+        {{#checkStatusIs4 statusCode}}
+        <div id="handle-box">
+            <button class="btn btn-success mr-2 mb-2" id="unclock">Unclock</button> 
+        </div>
+        {{/checkStatusIs4}}
         </div>
     </section>
     {{/each}}
@@ -55,7 +64,7 @@
     if(handleBox){
         // Get origin and pathname
         const myURL = location.origin+location.pathname
-        const actionList = ['verify','cancel','request']
+        const actionList = ['verify','cancel','request','unclock']
         const urlParams = new URLSearchParams(window.location.search);
         const username = urlParams.get('username');
         console.log(username)
@@ -73,7 +82,6 @@
                         headers: {
                             'Content-Type': 'application/json'
                         },
-
                     })
                     const res = await myFetch.json()
                     if(!res.code){
@@ -81,8 +89,6 @@
                         window.location.reload();
                     }
                 }
-                
-
             }
         })
     }

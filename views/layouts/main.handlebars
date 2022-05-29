@@ -12,7 +12,13 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css    "
     />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+      integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <script
       src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"
     ></script>
@@ -22,10 +28,55 @@
     <script
       src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
     ></script>
+    <script src="/js/main.js"></script>
     <title>{{title}}</title>
   </head>
   <body>
-  {{#if flash}}
+    <nav class="main-nav">
+      <a href="#" class="main-nav__logo">Web Final Project</a>
+      <div class="toggle-menu">
+        <button class="toggle-btn"><i class="fa-solid fa-bars"></i></button>
+      </div>
+      <ul class="main-nav__list">
+        <li class="main-nav__item">
+          <a href="/">Dashboard</a>
+        </li>
+        <li class="main-nav__item">
+          <a href="#">Account</a>
+        </li>
+        <li class="main-nav__item">
+          <a href="/deposit">Deposit</a>
+        </li>
+        <li class="main-nav__item">
+          <a href="/withdraw">Withdraw</a>
+        </li>
+        <li class="main-nav__item hidden">
+          <a href="#">Profile</a>
+        </li>
+        <li class="main-nav__item hidden">
+          <a href="/users/logout">Đăng xuất</a>
+        </li>
+        <li class="login-menu">
+          <i class="fa-solid fa-gear" id="login-menu-btn"></i>
+          <div class="drop-down">
+            <ul class="drop-down-list">
+              <li class="drop-down-item">
+                <a href="/logout"><i class="fa-solid fa-address-card"></i>
+                  Profile</a>
+              </li>
+              <li class="drop-down-item">
+                <a href="/logout">
+                  <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                  Đăng xuất</a>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </nav>
+
+  
+    {{#if flash}}
     <div
       class="text-center fade show alert alert-dismissible alert-{{flash.type}}"
     >
@@ -56,32 +107,20 @@
 					<a href="/admin"><li class="{{#checkPath routerPath ""}}active-menu{{/checkPath}}" ><i class="fas fa-sliders-h"></i>Dashboard</li></a>
 					<a href="/admin/account"><li class="{{#checkPath routerPath "admin/account"}}active-menu{{/checkPath}}"><i class="fas fa-user-tie"></i>Account</li></a>
           <a href="/admin/deposit"><li class="{{#checkPath routerPath "admin/deposit"}}active-menu{{/checkPath}}"><i class="fa-solid fa-money-bill"></i>Deposit</li></a>
+          <a href="/admin/withdraw"><li class="{{#checkPath routerPath "admin/withdraw"}}active-menu{{/checkPath}}"><i class="fa-solid fa-money-bill"></i>Withdraw</li></a>
+          <a href="/admin/trans-history"><li class="{{#checkPath routerPath "admin/trans-history"}}active-menu{{/checkPath}}"><i class="fa-solid fa-money-bill"></i>Transaction History</li></a>
 				</ul>
 			</div>
 			{{{body}}}
 		</div>
   {{else}}
-   <div class="header-container">
-      <div class="navbar-brand">
-        <a href="/">
-          <h1 class="navbar-heading">Web Final Project</h1>
-        </a>
-      </div>
-      <div class="navbar-container">
-        <nav class="navbar">
-          <ul class="navbar-menu nav">
-            <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
-            <li class="nav-item"><a
-                href="/"
-                class="nav-link"
-              >Schedule</a></li>
-            <li class="nav-item"><a href="/phone-card" class="nav-link">Phone Card</a></li>
-            <li class="nav-item"><a href="/" class="nav-link">Logout</a></li>
-          </ul>
-        </nav>
-      </div>
-    </div>
     {{{body}}}
 	{{/if}}
   </body>
+  <script>
+    $("#login-menu-btn").click((e) => { $(".drop-down").toggle("active"); });
+    $(".toggle-menu .toggle-btn").click((e) => {
+    $(".main-nav__list").toggleClass("active");
+    $(".main-nav").toggleClass("active"); });
+  </script>
 </html>

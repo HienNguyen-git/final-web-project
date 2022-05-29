@@ -35,6 +35,20 @@ const generateCode = (provider_number)=>{
    return result.join('');
 }
 
+const generateUsername = (from, to) => {
+    return Math.floor(from + Math.random() * to);
+}
+
+const generateRandomPassword = (numCharacters) => {
+    let result = '';
+    let ranCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let charactersNumber = ranCharacters.length;
+    for (let i = 0; i < numCharacters; i++ ) {
+      result += ranCharacters.charAt(Math.floor(Math.random() * charactersNumber));
+    }
+    return result;
+}
+
 function sleep(ms) {
     return new Promise((resolve) => {
         setTimeout(resolve, ms);
@@ -48,5 +62,7 @@ module.exports = {
     formatDate,
     encodeStatusCode,
     generateCode,
+    generateUsername,
+    generateRandomPassword,
     sleep
 }

@@ -237,7 +237,8 @@ CREATE TABLE `withdraw` (
   `date` datetime NOT NULL,
   `value` int(11) NOT NULL,
   `status` int(11) NOT NULL,
-  `fee` int(11) NOT NULL
+  `fee` int(11) NOT NULL,
+  `note` varchar(1000) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
