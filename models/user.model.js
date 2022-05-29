@@ -12,43 +12,63 @@ const handlePostOTP = (email, otpcode, expired) =>
         resolve(true);
       }
     });
-});
+  });
 
-const handleSelectFrontCMND = (username) => new Promise((resolve,reject) => {
-  connect.query("select font_cmnd from user_detail where username = ?",[username],(err,result) =>{
-    if(err) reject(err);
-    else{
-      resolve(result)
-    }
-  })
-})
+const handleSelectFrontCMND = (username) =>
+  new Promise((resolve, reject) => {
+    connect.query(
+      "select font_cmnd from user_detail where username = ?",
+      [username],
+      (err, result) => {
+        if (err) reject(err);
+        else {
+          resolve(result);
+        }
+      }
+    );
+  });
 
-const handleSelectBackCMND = (username) => new Promise((resolve,reject) => {
-  connect.query("select back_cmnd from user_detail where username = ?",[username],(err,result) =>{
-    if(err) reject(err);
-    else{
-      resolve(result)
-    }
-  })
-})
+const handleSelectBackCMND = (username) =>
+  new Promise((resolve, reject) => {
+    connect.query(
+      "select back_cmnd from user_detail where username = ?",
+      [username],
+      (err, result) => {
+        if (err) reject(err);
+        else {
+          resolve(result);
+        }
+      }
+    );
+  });
 
-const handleUpdateFrontCMND = (font_cmnd,username)=> new Promise((resolve,reject) => {
-  connect.query("update user_detail set font_cmnd = ? where username = ?",[font_cmnd,username],(err,result) =>{
-    if(err) reject(err);
-    else{
-      resolve(true)
-    }
-  })
-})
+const handleUpdateFrontCMND = (font_cmnd, username) =>
+  new Promise((resolve, reject) => {
+    connect.query(
+      "update user_detail set font_cmnd = ? where username = ?",
+      [font_cmnd, username],
+      (err, result) => {
+        if (err) reject(err);
+        else {
+          resolve(true);
+        }
+      }
+    );
+  });
 
-const handleUpdateBackCMND = (back_cmnd,username)=> new Promise((resolve,reject) => {
-  connect.query("update user_detail set back_cmnd = ? where username = ?",[back_cmnd,username],(err,result) =>{
-    if(err) reject(err);
-    else{
-      resolve(true)
-    }
-  })
-})
+const handleUpdateBackCMND = (back_cmnd, username) =>
+  new Promise((resolve, reject) => {
+    connect.query(
+      "update user_detail set back_cmnd = ? where username = ?",
+      [back_cmnd, username],
+      (err, result) => {
+        if (err) reject(err);
+        else {
+          resolve(true);
+        }
+      }
+    );
+  });
 
 const handleSelectOTP = (email) =>
   new Promise((resolve, reject) => {
