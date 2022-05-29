@@ -222,6 +222,16 @@ const getTransHistoryDetail = async (req, res) => {
   let id = req.params.id;
 
   let data = null;
+
+  let choices = [
+    "isRecharge",
+    "isWithdraw",
+    "isDeposit",
+    "isDeposit",
+    "isBill",
+  ];
+  let type = choices[choice - 1];
+
   switch (choice) {
     case "1":
       // Nạp tiền - recharge
@@ -230,7 +240,6 @@ const getTransHistoryDetail = async (req, res) => {
     case "2":
       // Rút tiền - withdraw
       data = await getWithdrawById(id);
-
       break;
     case "3":
       // Chuyển tiền - deposit
@@ -254,10 +263,27 @@ const getTransHistoryDetail = async (req, res) => {
   return res.render("admin/trans-history-detail", {
     title: "Transaction History Detail",
     isAdmin: true,
+    [type]: true,
     routerPath: "admin/trans-history-detail",
     data,
   });
 };
+
+const postRejectDeposit5m = async(req,res) => {
+  let {id} = req.body;
+  try {
+    
+    if(await updateStatusToCheck(-1,+id)){
+  
+      return res.json({
+        code: 0,
+        message: `Reject deposit successful!`,
+      })
+    };
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 const postDepositMore5m = async (req, res) => {
   let { id, phone_sender, phone_receiver, value, fee, feeperson } = req.body;
@@ -275,7 +301,7 @@ const postDepositMore5m = async (req, res) => {
       moneyDepositFeeReceiver,
       phone_receiver
     );
-    await updateStatusToCheck(1, +id);
+    await updateStatusToCheck(2, +id);
     let email = await handleSelectEmailDepositMore5m(phone_receiver);
     console.log(email);
 
@@ -442,6 +468,7 @@ module.exports = {
   handleAccountStatus,
   getDepositMore5m,
   postDepositMore5m,
+  postRejectDeposit5m,
   getWithdrawMore5m,
   postWithdrawMore5m,
   apiGetWithdrawMore5m,
