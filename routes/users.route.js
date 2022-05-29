@@ -95,7 +95,7 @@ const fileStorageEngine = multer.diskStorage({
   }
 })
 const upload = multer({ storage: fileStorageEngine })
-router.post("/profile",upload.array('images',2), profilePostCMND);
+router.post("/profile",upload.array('images',2),profilePostCMNDValidation, profilePostCMND);
 
 router.get("/card", cardGet);
 router.post("/card", rechargeValidator, cardPost);

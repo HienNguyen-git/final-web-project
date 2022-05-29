@@ -38,6 +38,11 @@ app.engine(
           fnFalse = options.inverse;
         return status == 0 ? fnTrue(this) : fnFalse(this);
       },
+      checkStatusIs1(status, options) {
+        const fnTrue = options.fn,
+          fnFalse = options.inverse;
+        return status == 1 ? fnTrue(this) : fnFalse(this);
+      },
       checkStatusIs3(status, options) {
         const fnTrue = options.fn,
           fnFalse = options.inverse;
