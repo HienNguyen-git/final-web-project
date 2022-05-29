@@ -736,6 +736,15 @@ function assignDataToCookie(res, data) {
   }
 }
 
+async function apiGetTransHistory(req, res) {
+  let userData = req.userClaims;
+
+  let data = getTranSHistoryByUsername(userData.username);
+
+  return res.json({
+    data: data,
+  });
+}
 function getDataFromToken(req) {
   /**
    * Function này sẽ giải mã token và trả về data lấy được từ token
@@ -770,4 +779,5 @@ module.exports = {
   profilePost,
   cardGet,
   cardPost,
+  apiGetTransHistory,
 };
