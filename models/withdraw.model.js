@@ -80,6 +80,11 @@ async function updateStatusById(id, status) {
     resolve(true);
   });
 }
+
+const getWithdrawListByUsername = (username)=>{
+  connect.query('select * from withdraw where ')
+}
+
 module.exports = {
   createWithdraw,
   getTodayWithdraw,

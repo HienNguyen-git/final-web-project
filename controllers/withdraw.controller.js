@@ -130,4 +130,18 @@ function getDataFromToken(req) {
   }
 }
 
-module.exports = { renderWithdraw, handleWithdraw };
+const getWithdrawByUser = async(req,res)=>{
+  console.log("Receive")
+  const userData = req.userClaims
+  console.log(userData)
+  res.json({
+    code: 0,
+    data: userData
+  })
+}
+
+module.exports = { 
+  renderWithdraw, 
+  handleWithdraw,
+  getWithdrawByUser
+};
