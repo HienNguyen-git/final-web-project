@@ -213,7 +213,7 @@ $(document).ready(() => {
           <td>${data.date}</td>
           <td class="font-weight-bold text-success">${data.status}</td>
           <td>
-            <a href="#" class="btn btn-sm btn-primary">
+            <a href="/admin/trans-history/${choice}/${data.id}" class="btn btn-sm btn-primary">
               <i class="fa-solid fa-eye"></i>
             </a>
           </td>
