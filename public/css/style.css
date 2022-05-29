@@ -909,6 +909,22 @@ nav {
   align-items: center;
 }
 
+.index table tbody {
+  display: block;
+  max-height: 190px;
+  overflow: auto;
+}
+
+.index table tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  text-align: center;
+}
+.index table td {
+  text-align: center;
+}
+
 @media only screen and (max-width: 992px) {
   .main-nav.active {
     position: fixed;

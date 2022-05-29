@@ -40,7 +40,7 @@
 </head>
 
 <body>
-    <div class="container">
+    <div class="container index">
         <div class="row align-items-center py-5">
             Welcome back  <a class="font-weight-bold p-2" href="/users/profile">{{username}} sdfafd</a>
         </div>
@@ -51,97 +51,134 @@
             <ol class="breadcrumb" style=" margin-bottom: 0;" >
                 <li class="breadcrumb-item">Receive</li>
             </ol>
-            <table class="table table-hover border">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Phone sender</th>
-                        <th>Value</th>
-                        <th>Fee</th>
-                        <th>Cost bearer</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody id="receive-body">
-                </tbody>
-            </table>
+            <div class="table-container">
+                <table class="table table-hover border">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Phone sender</th>
+                            <th>Value</th>
+                            <th>Fee</th>
+                            <th>Cost bearer</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="receive-body">
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div class="deposit-box">
             <ol class="breadcrumb" style=" margin-bottom: 0;">
                 <li class="breadcrumb-item">Deposit</li>
             </ol>
-            <table class="table table-hover border">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Send to</th>
-                        <th>Value</th>
-                        <th>Fee</th>
-                        <th>Status</th>
-                        <th>Cost bearer</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody id="deposit-body">
-                </tbody>
-            </table>
+            <div class="table-container">
+                <table class="table table-hover border">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Send to</th>
+                            <th>Value</th>
+                            <th>Fee</th>
+                            <th>Status</th>
+                            <th>Cost bearer</th>
+                            <th>Date</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="deposit-body">
+                    </tbody>
+                </table>
+            </div>
+
         </div>
         <div class="withdraw-box">
             <ol class="breadcrumb" style=" margin-bottom: 0;">
                 <li class="breadcrumb-item">Withdraw</li>
             </ol>
-            <table class="table table-hover border">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Card number</th>
-                        <th>Value</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody id="withdraw-body">
-                </tbody>
-            </table>
+            <div class="table-container">
+                <table class="table table-hover border">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Card number</th>
+                            <th>Value</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="withdraw-body">
+                    </tbody>
+                </table>
+            </div>
+
         </div>
         <div class="phone-card-box" >
             <ol class="breadcrumb" style=" margin-bottom: 0;">
                 <li class="breadcrumb-item">Phone card</li>
             </ol>
-            <table class="table table-hover border">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Provider</th>
-                        <th>Code</th>
-                        <th>Type</th>
-                        <th>Quantity</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody id="phonecard-body">
-                </tbody>
-            </table>
+            <div class="table-container">
+                <table class="table table-hover border">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Provider</th>
+                            <th>Code</th>
+                            <th>Type</th>
+                            <th>Quantity</th>
+                            <th>Date</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="phonecard-body">
+                    </tbody>
+                </table>
+            </div>
+
         </div>
 
         <div class="recharge-box">
             <ol class="breadcrumb" style=" margin-bottom: 0;" >
                 <li class="breadcrumb-item">Recharge</li>
             </ol>
-            <table class="table table-hover border">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Card number</th>
-                        <th>Value</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody id="recharge-body">
-                </tbody>
-            </table>
+            <div class="table-container">
+                <table class="table table-hover border">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Card number</th>
+                            <th>Value</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recharge-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="view1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Delete product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <strong>Are you sure want to delete product ABC</strong>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger">Delete</button>
+            </div>
+            </div>
         </div>
     </div>
 
@@ -166,11 +203,12 @@
             if(res.code==0){
                 const context = res.data.map(e=>`
                     <tr>
-                        <td><a href="/detail/deposit?id=${e.id}">${e.id}</a></td>
+                        <td>${e.id}</td>
                         <td>${e.card_number}</td>
                         <td>${e.value}</td>
                         <td>${e.status}</td>
                         <td>${e.date}</td>
+                        <td><i data-toggle="modal" data-target="#view1"  onclick="handleView('${e.note}')" class="fa fa-edit action"></i></td>
                     </tr>
                     `
                 ).join("")
@@ -187,13 +225,14 @@
             if(res.code==0){
                 const context = res.data.map(e=>`
                     <tr>
-                        <td><a href="/detail/deposit?id=${e.id}">${e.id}</a></td>
+                        <td>${e.id}</td>
                         <td>${e.phone_receiver}</td>
                         <td>${e.value}</td>
                         <td>${e.fee}</td>
                         <td>${e.status}</td>
                         <td>${e.feeperson}</td>
                         <td>${e.date}</td>
+                        <td><i data-toggle="modal" data-target="#view1"  onclick="handleView('${e.id}')" class="fa fa-edit action"></i></td>
                     </tr>
                     `
                 ).join("")
@@ -212,17 +251,17 @@
             if(res.code==0){
                 const context = res.data.map(e=>`
                     <tr>
-                        <td><a href="/detail/deposit?id=${e.id}">${e.id}</a></td>
+                        <td>${e.id}</td>
                         <td>${e.phone_sender}</td>
                         <td>${e.value}</td>
                         <td>${e.fee}</td>
                         <td>${e.feeperson}</td>
                         <td>${e.status}</td>
                         <td>${e.date}</td>
+                        <td><i data-toggle="modal" data-target="#view1"  onclick="handleView('${e.id}')" class="fa fa-edit action"></i></td>
                     </tr>
                     `
                 ).join("")
-                
                 receiveBody.insertAdjacentHTML('beforeend', context)
             }
             else console.error(res.message)
@@ -237,7 +276,7 @@
             if(res.code==0){
                 const context = res.data.map(e=>`
                     <tr>
-                        <td><a href="/detail/deposit?id=${e.id}">${e.id}</a></td>
+                        <td>${e.id}</td>
                         <td>${e.provider_number}</td>
                         <td>${e.code}</td>
                         <td>${e.price}</td>
@@ -260,14 +299,13 @@
             if(res.code==0) {
                 const context = res.data.map(e=>`
                     <tr>
-                        <td><a href="/detail/deposit?id=${e.id}">${e.id}</a></td>
+                        <td>${e.id}</td>
                         <td>${e.card_number}</td>
                         <td>${e.money}</td>
                         <td>${e.recharge_date}</td>
                     </tr>
                     `
                 ).join("")
-
                 rechargeBody.insertAdjacentHTML('beforeend', context)
             }
             else console.error(res.message)
