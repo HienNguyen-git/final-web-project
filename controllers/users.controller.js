@@ -345,7 +345,7 @@ const handleRegister = async (req, res) => {
     );
     await putAccCreatedIntoUser(randomUsername, hashPassword);
     console.log(randomPassword);
-    console.log(randomUsername)
+    console.log(randomUsername);
     return res.json({
       code: 0,
       message:
@@ -361,7 +361,7 @@ const handleRegister = async (req, res) => {
     //   secureConnection: false,
     //   auth: {
     //       user: 'sinhvien@phongdaotao.com',
-    //       pass: 'svtdtu' 
+    //       pass: 'svtdtu'
     //   }
     // }));
 
@@ -655,16 +655,16 @@ async function profilePost(req, res, next) {
   }
 }
 
-const getprofilePostCMNDFront = async(req,res) =>{
+const getprofilePostCMNDFront = async (req, res) => {
   let username = req.userClaims.username;
-  
-  return res.json({
-    data: await handleSelectFrontCMND(username)
-  })
-}
 
-const fs = require('fs'); //doi file name
-let path = require('path');
+  return res.json({
+    data: await handleSelectFrontCMND(username),
+  });
+};
+
+const fs = require("fs"); //doi file name
+let path = require("path");
 const profilePostCMNDFront = async (req, res) => {
   // let image = req.file;
   // console.log("hereee " + JSON.stringify(req.file))
@@ -672,135 +672,129 @@ const profilePostCMNDFront = async (req, res) => {
   // console.log(result);
 
   if (result.errors.length === 0) {
-      let image = req.file;
-      // console.log(image)
-      // const id = req.body.inputIdEdit;
-      let username = req.userClaims.username;
+    let image = req.file;
+    // console.log(image)
+    // const id = req.body.inputIdEdit;
+    let username = req.userClaims.username;
 
-      let imageFileName;
-      if (image == undefined) {
-
-          try {
-              const FrontCMND = await handleSelectFrontCMND(username);
-              imageFileName = FrontCMND
-              req.session.flash = {
-                type: "danger",
-                intro: "Oops!",
-                message: "You upload nothing so we take old picture"
-              }
-              return res.redirect('/users/profile');
-          } catch (error) {
-              console.log(error);
-          }
-      } else {
-          
-
-          let pathofimage = image.filename + ".png";
-          let imagePath = path.join('public','images',pathofimage);
-          console.log(imagePath)
-          fs.renameSync(image.path, imagePath);
-          imageFileName = pathofimage;
-      }
-
-
+    let imageFileName;
+    if (image == undefined) {
       try {
-          if (await handleUpdateFrontCMND(imageFileName, username)) {
-              req.session.flash = {
-                  type: "success",
-                  intro: "Congratulation!",
-                  message: "Upload CMND font successfully!!!!"
-              }
-              return res.redirect('/users/profile');
-          } else {
-              req.session.flash = {
-                  type: "danger",
-                  intro: "Oops!",
-                  message: "Some thing went wrong"
-              }
-              return res.redirect('/users/profile');
-          }
-      } catch (error) {
-          console.log(error);
-      }
-  } else {
-      const errors = result.mapped()
-      let errorMessage = errors[Object.keys(errors)[0]].msg
-      req.session.flash = {
+        const FrontCMND = await handleSelectFrontCMND(username);
+        imageFileName = FrontCMND;
+        req.session.flash = {
           type: "danger",
           intro: "Oops!",
-          message: errorMessage
+          message: "You upload nothing so we take old picture",
+        };
+        return res.redirect("/users/profile");
+      } catch (error) {
+        console.log(error);
       }
-      res.redirect('/users/profile');
+    } else {
+      let pathofimage = image.filename + ".png";
+      let imagePath = path.join("public", "images", pathofimage);
+      console.log(imagePath);
+      fs.renameSync(image.path, imagePath);
+      imageFileName = pathofimage;
+    }
+
+    try {
+      if (await handleUpdateFrontCMND(imageFileName, username)) {
+        req.session.flash = {
+          type: "success",
+          intro: "Congratulation!",
+          message: "Upload CMND font successfully!!!!",
+        };
+        return res.redirect("/users/profile");
+      } else {
+        req.session.flash = {
+          type: "danger",
+          intro: "Oops!",
+          message: "Some thing went wrong",
+        };
+        return res.redirect("/users/profile");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    const errors = result.mapped();
+    let errorMessage = errors[Object.keys(errors)[0]].msg;
+    req.session.flash = {
+      type: "danger",
+      intro: "Oops!",
+      message: errorMessage,
+    };
+    res.redirect("/users/profile");
   }
-}
+};
 
 const profilePostCMNDBack = async (req, res) => {
   let result = validationResult(req);
   // console.log(result);
 
   if (result.errors.length === 0) {
-      let image = req.file;
-      // console.log(image)
-      console.log("hereee " + JSON.stringify(req.file))
+    let image = req.file;
+    // console.log(image)
+    console.log("hereee " + JSON.stringify(req.file));
 
-      // const id = req.body.inputIdEdit;
-      let username = req.userClaims.username;
+    // const id = req.body.inputIdEdit;
+    let username = req.userClaims.username;
 
-      let imageFileName;
-      if (image == undefined) {
-
-          try {
-              const BackCMND = await handleSelectBackCMND(username);
-              imageFileName = BackCMND
-              req.session.flash = {
-                type: "danger",
-                intro: "Oops!",
-                message: "You upload nothing so we take old picture"
-              }
-              return res.redirect('/users/profile');
-          } catch (error) {
-              console.log(error);
-          }
-      } else {
-          // let imagePath = `public\\images\\${image.originalname}`;
-          let pathofimage = image.filename + ".png";
-          let imagePath = path.join('public','images',pathofimage);
-          console.log(imagePath)
-          fs.renameSync(image.path, imagePath);
-          imageFileName = pathofimage;
-      }
-
-
+    let imageFileName;
+    if (image == undefined) {
       try {
-          if (await handleUpdateBackCMND(imageFileName, username)) {
-              req.session.flash = {
-                  type: "success",
-                  intro: "Congratulation!",
-                  message: "Upload CMND back successfully!!!!"
-              }
-              return res.redirect('/users/profile');
-          } else {
-              req.session.flash = {
-                  type: "danger",
-                  intro: "Oops!",
-                  message: "Some thing went wrong"
-              }
-              return res.redirect('/users/profile');
-          }
-      } catch (error) {
-          console.log(error);
-      }
-  } else {
-      const errors = result.mapped()
-      let errorMessage = errors[Object.keys(errors)[0]].msg
-      req.session.flash = {
+        const BackCMND = await handleSelectBackCMND(username);
+        imageFileName = BackCMND;
+        req.session.flash = {
           type: "danger",
           intro: "Oops!",
-          message: errorMessage
+          message: "You upload nothing so we take old picture",
+        };
+        return res.redirect("/users/profile");
+      } catch (error) {
+        console.log(error);
       }
-      res.redirect('/users/profile');
+    } else {
+      // let imagePath = `public\\images\\${image.originalname}`;
+      let pathofimage = image.filename + ".png";
+      let imagePath = path.join("public", "images", pathofimage);
+      console.log(imagePath);
+      fs.renameSync(image.path, imagePath);
+      imageFileName = pathofimage;
+    }
+
+    try {
+      if (await handleUpdateBackCMND(imageFileName, username)) {
+        req.session.flash = {
+          type: "success",
+          intro: "Congratulation!",
+          message: "Upload CMND back successfully!!!!",
+        };
+        return res.redirect("/users/profile");
+      } else {
+        req.session.flash = {
+          type: "danger",
+          intro: "Oops!",
+          message: "Some thing went wrong",
+        };
+        return res.redirect("/users/profile");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    const errors = result.mapped();
+    let errorMessage = errors[Object.keys(errors)[0]].msg;
+    req.session.flash = {
+      type: "danger",
+      intro: "Oops!",
+      message: errorMessage,
+    };
+    res.redirect("/users/profile");
   }
-}
+};
 
 // todo Get /users/card
 async function cardGet(req, res) {
@@ -893,12 +887,12 @@ function assignDataToCookie(res, data) {
   console.log(data);
   try {
     var token = jwt.sign(data, process.env.TOKEN_KEY, {
-      expiresIn: "1h",
+      expiresIn: "4h",
     });
 
     // ? Sử dụng cookie hay refreshToken
     res.cookie("accessToken", token, {
-      expires: new Date(Date.now() + 60 * 1000 * 60),
+      expires: new Date(Date.now() + 4 * 60 * 1000 * 60),
     });
 
     return token;

@@ -260,30 +260,55 @@ const getTransHistoryDetail = async (req, res) => {
       });
   }
 
+  let statusMessages = {
+    "-1": "Bị từ chối",
+    0: "Đang chờ duyệt",
+    1: "Thành công",
+    2: "Admin đã duyệt",
+  };
+
+  let statusTypes = {
+    "-1": "danger",
+    0: "warning",
+    1: "success",
+    2: "success",
+  };
+  let statusMessage = "Thành công";
+  let statusType = "success";
+
+  if (data.status !== undefined || data.status !== null) {
+    statusMessage = statusMessages[data.status];
+    statusType = statusTypes[data.status];
+  }
+
+  if (data.code) {
+    let code = data.code.match(/.{1,5}/g);
+    data.code = code.join(" - ");
+  }
   return res.render("admin/trans-history-detail", {
     title: "Transaction History Detail",
     isAdmin: true,
     [type]: true,
     routerPath: "admin/trans-history-detail",
     data,
+    statusMessage,
+    statusType,
   });
 };
 
-const postRejectDeposit5m = async(req,res) => {
-  let {id} = req.body;
+const postRejectDeposit5m = async (req, res) => {
+  let { id } = req.body;
   try {
-    
-    if(await updateStatusToCheck(-1,+id)){
-  
+    if (await updateStatusToCheck(-1, +id)) {
       return res.json({
         code: 0,
         message: `Reject deposit successful!`,
-      })
-    };
+      });
+    }
   } catch (error) {
     console.log(error);
   }
-}
+};
 
 const postDepositMore5m = async (req, res) => {
   let { id, phone_sender, phone_receiver, value, fee, feeperson } = req.body;

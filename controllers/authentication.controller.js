@@ -31,6 +31,21 @@ class AuthenticationController {
         const isFirstLoginRoute = permissionFirstLoginRoutes.includes(routeKey);
 
         isFirstLoginRoute ? next() : res.redirect("/users/first-login");
+      }
+
+      // Chưa xác minh thì chỉ cho xem thông tin cá nhân và đổi mật khẩu
+      if (req.userClaims.status === 0) {
+        let permissionNotConfirmRoutes = [
+          "GET /users/change-password",
+          "POST /users/change-password",
+          "GET /users/logout",
+          "GET /users/profile",
+        ];
+
+        const isNotConfirmLoginRoute =
+          permissionNotConfirmRoutes.includes(routeKey);
+
+        isNotConfirmLoginRoute ? next() : res.redirect("/users/profile");
       } else {
         next();
       }

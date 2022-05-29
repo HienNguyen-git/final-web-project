@@ -23,7 +23,7 @@
                 <th>Phí giao dịch</th>
                 <td>{{data.fee}}</td>
                 <th>Status</th>
-                {{{data.status}}}
+                <td class="font-weight-bold text-{{statusType}}">{{statusMessage}}</td>
             </tr>
             <tr>
                 <th>Ghi chú</th>
@@ -44,6 +44,10 @@
                 <td>{{data.date}}</td>
                 <th>Số tiền nạp</th>
                 <td>{{data.value}}</td>
+            </tr>
+            <tr>
+               <th>Trạng thái</th>
+                <td class="font-weight-bold text-{{statusType}}">{{statusMessage}}</td>
             </tr>
       </table>
       {{/if}}
@@ -75,7 +79,7 @@
                 <th>Ngày chuyển tiền</th>
                 <td>{{data.date}}</td>
                 <th>Trạng thái</th>
-                <td>{{data.status}}</td>
+                <td class="font-weight-bold text-{{statusType}}">{{statusMessage}}</td>
             </tr>
       </table>
       {{/if}}
@@ -87,7 +91,7 @@
                 <td>{{data.id}}</td>
             </tr>
             <tr>
-                <th>provider_number</th>
+                <th>Mã số nhà mạng</th>
                 <td>{{data.provider_number}}</td>
                 <th>Các loại mã thẻ đã mua</th>
                 <td>{{data.code}}</td>
@@ -101,6 +105,8 @@
             <tr>
                 <th>Ngày chuyển tiền</th>
                 <td>{{data.date}}</td>
+                <th>Trạng thái</th>
+                <td class="font-weight-bold text-{{statusType}}">{{statusMessage}}</td>
             </tr>
       </table>
       {{/if}}
