@@ -15,3 +15,5 @@ withdraw:
 		2: thanh cong
 
 Note: đổi status default thành -1
+
+abnormal defaul =0

@@ -272,6 +272,10 @@ const getUserInfo = async(req,res)=>{
     })
 }
 
+const getDepositByUser = async(req,res)=>{
+    
+}
+
 module.exports = {
     PostDeposit,
     sendOtp,

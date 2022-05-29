@@ -5,6 +5,7 @@ const {
   createWithdraw,
   getTodayWithdraw,
   getWithdrawAdmin,
+  getWithdrawListByUsername,
 } = require("../models/withdraw.model");
 const { getCardByAll } = require("../models/credit_card.model");
 const {
@@ -13,6 +14,7 @@ const {
   updateTotalValue,
   updateTotalValueByDifference,
 } = require("../models/user.model");
+const { formatDateTime } = require("../config/helper");
 
 // GET /withdraw
 function renderWithdraw(req, res) {
@@ -134,11 +136,32 @@ function getDataFromToken(req) {
 const getWithdrawByUser = async(req,res)=>{
   console.log("Receive")
   const userData = req.userClaims
-  console.log(userData)
-  res.json({
-    code: 0,
-    data: userData
-  })
+  let data
+  try {
+    const rawData = await getWithdrawListByUsername(userData.username)
+    console.log(rawData)
+    data = rawData.map(e=>({
+      id: e.id,
+      card_number: e.card_number,
+      date: formatDateTime(e.date),
+      value: e.value,
+      status: e.status,
+      fee: e.fee,
+      note: e.note,
+    }))
+
+    return res.json({
+      code: 0,
+      message: "Get withdraw data successful",
+      data
+    })
+  } catch (error) {
+    return res.json({
+      code:1,
+      message: error.message,
+    })
+  }
+  
 }
 
 module.exports = { 
@@ -146,3 +169,6 @@ module.exports = {
   handleWithdraw,
   getWithdrawByUser
 };
+
+// 78RYZh
+// 5532778774

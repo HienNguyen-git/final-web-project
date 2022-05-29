@@ -77,6 +77,13 @@ const getUserDepositInfo = (username)=> new Promise((resolve,reject)=>{
     })
 })
 
+const getDepositListByUser = (username)=> new Promise((resolve,reject)=>{
+    connect.query("select * from deposit where phone_sender=?",[username],(err,result)=>{
+        if(err) reject(err)
+        resolve(result[0])
+    })
+})
+
 
 module.exports ={
     handlePostDeposit,
@@ -87,4 +94,5 @@ module.exports ={
     handleUpdateTotalValueOfReceiver,
     selectReceiverName,
     handleUpdateStatusDeposit5m,
+    getDepositListByUser
 }
