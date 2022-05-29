@@ -53,7 +53,7 @@ async function createWithdraw(withdraw) {
     Output: Đã tạo thành công
     */
   const sql =
-    "INSERT INTO withdraw(username,date,value,status,fee,note) values(?,?,?,?,?,?)";
+    "INSERT INTO withdraw(username,card_number,date,value,status,fee,note) values(?,?,?,?,?,?,?)";
   const value = [...Object.values(withdraw)];
 
   return new Promise((resolve, reject) => {

@@ -48,30 +48,28 @@ const requestOtpToMail = (req, res) => {
   if (result.errors.length === 0) {
     let { email } = req.body;
     const otp = Math.floor(100000 + Math.random() * 900000);
-    // var transporter = nodemailer.createTransport({ // config mail server
-    //     service: 'Gmail',
-    //     auth: {
-    //         user: 'nchdang16012001@gmail.com',
-    //         pass: 'mlrafbeyqtvtqloe'
-    //     }
-    // });
 
-    var transporter = nodemailer.createTransport(
-      smtpTransport({
-        // config mail server
-        tls: {
-          rejectUnauthorized: false,
-        },
-        // service: 'Gmail',
-        host: "mail.phongdaotao.com",
-        port: 25,
-        secureConnection: false,
-        auth: {
-          user: "sinhvien@phongdaotao.com",
-          pass: "svtdtu",
-        },
-      })
-    );
+    var transporter = nodemailer.createTransport({
+      // config mail server
+      service: "Gmail",
+      auth: {
+        user: "nchdang16012001@gmail.com",
+        pass: "mlrafbeyqtvtqloe",
+      },
+    });
+
+    // var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
+    //     tls: {
+    //         rejectUnauthorized: false
+    //     },
+    //     host: 'mail.phongdaotao.com',
+    //     port: 25,
+    //     secureConnection: false,
+    //     auth: {
+    //         user: 'sinhvien@phongdaotao.com',
+    //         pass: 'svtdtu'
+    //     }
+    // }));
 
     var mainOptions = {
       // thiết lập đối tượng, nội dung gửi mail
@@ -738,6 +736,15 @@ function assignDataToCookie(res, data) {
   }
 }
 
+async function apiGetTransHistory(req, res) {
+  let userData = req.userClaims;
+
+  let data = getTranSHistoryByUsername(userData.username);
+
+  return res.json({
+    data: data,
+  });
+}
 function getDataFromToken(req) {
   /**
    * Function này sẽ giải mã token và trả về data lấy được từ token
@@ -772,4 +779,5 @@ module.exports = {
   profilePost,
   cardGet,
   cardPost,
+  apiGetTransHistory,
 };

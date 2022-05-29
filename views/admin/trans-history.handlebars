@@ -1,34 +1,51 @@
+<div id="view-admin-withdraw" style="display:none"></div>
 <div class="admin-section admin-section2">
   <div class="admin-section-panel admin-section-panel4">
     <div class="admin-panel-section-header">
-      <h2>Transaction History</h2>
+      <h2>Pending withdrawal that is over 5m</h2>
+      <select
+        name="type"
+        id="account-type"
+        style="margin-left: 1rem; padding: 10px"
+      >
+        <option value="0" selected>Waiting for verification</option>
+        <option value="1">Nạp tiền</option>
+        <option value="2">Rút tiền</option>
+        <option value="3">Chuyển tiền</option>
+        <option value="4">Thanh toán dịch vụ</option>
+      </select>
     </div>
-    <table cellpadding="10" cellspacing="10" border="1" style="width: 100%">
-      <tr class="header">
-        <td>ID</td>
-        <td>Username</td>
-        {{!-- <td>Total Value</td> --}}
-        {{!-- <td>Status</td> --}}
-        {{!-- <td>Date Transaction</td> --}}
-        {{!-- <td>Action</td> --}}
-      </tr>
+    <table class="table table-hover">
+      <thead class="thead-dark">
+        <tr class="header">
+          <th>ID</th>
+          <th>Username</th>
+          <th>Value</th>
+          <th>Fee</th>
+          <th>Date</th>
+          <th>Note</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
       <tbody id="tbody" class="p-3">
-        {{#each data}}
-          <tr class="item">
-            <td>{{id}}</td>
-            <td><a href="trans-history?username={{username}}">{{username}}</a></td>
-            {{!-- <td>{{ total_value }}</td> --}}
-            {{!-- {{#if status}}
-            <td class="text-secondary font-weight-bold"><i class="fas fa-circle-notch fa-spin"></i></td>
-            {{else}}
-            <td class="text-success font-weight-bold"><i class="fa fa-check "></i></td>
-            {{/if}} --}}
-            {{!-- <td>{{last_modified}}</td> --}}
-            {{!-- <td>
-              <button class="btn btn-primary" onclick="checkClick('{{id}}','{{phone_sender}}','{{phone_receiver}}','{{value}}','{{fee}}','{{feeperson}}')" id="checkbtn" type="submit" >Check</button>
-            </td> --}}
-          </tr>
-        {{/each}}
+        {{! Will be rendered by ajax }}
+        {{! <tr>
+          <th class="withdraw-id" scope="row">${withdraw.id}</th>
+          <td class="withdraw-username">${withdraw.username}</td>
+          <td class="withdraw-value">${withdraw.value}</td>
+          <td class="withdraw-fee">${withdraw.fee}</td>
+          <td class="withdraw-date">${withdraw.date}</td>
+          <td class="withdraw-note">${withdraw.note}</td>
+          <td>
+            <button class="btn btn-sm btn-success" data-approve="true">
+              <i class="fa-solid fa-check"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" data-approve="false">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </td>
+        </tr> }}
       </tbody>
     </table>
   </div>

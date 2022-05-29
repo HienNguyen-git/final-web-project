@@ -1,3 +1,5 @@
+var nodemailer = require('nodemailer'); // khai báo sử dụng module nodemailer
+
 const jwt = require("jsonwebtoken");
 
 const {
@@ -12,6 +14,7 @@ const {
   getUserDetailByUsername,
   updateUserStatus,
   handleSelectDepositMore5m,
+  handleSelectEmailDepositMore5m,
   updateStatusToCheck,
   getUserAccountBlock,
 } = require("../models/admin.model");
@@ -237,6 +240,94 @@ const getTransHistory = async (req, res) => {
   }
 };
 
+const postDepositMore5m = async(req,res) =>{
+    let {id,phone_sender,phone_receiver,value,fee,feeperson} = req.body;
+    //console.log(id,phone_sender,phone_receiver,value,fee,feeperson)
+    try {
+        let moneyDepositFeeReceiver = value;
+        if(feeperson == 'receiver'){
+            moneyDepositFeeReceiver = value - fee;
+            // console.log(moneyDepositFeeReceiver)
+        }
+        else{
+            value = +value + +fee;
+        }
+        await handleUpdateTotalValueOfSender(value,phone_sender);
+        await handleUpdateTotalValueOfReceiver(moneyDepositFeeReceiver,phone_receiver);
+        await updateStatusToCheck(1,+id)
+        let email = await handleSelectEmailDepositMore5m(phone_receiver);
+        console.log(email);
+
+
+
+        //email to receiver
+        var transporter = nodemailer.createTransport({ // config mail server
+            service: 'Gmail',
+            auth: {
+                user: 'nchdang16012001@gmail.com',
+                pass: 'mlrafbeyqtvtqloe'
+            }
+        });
+    
+        // var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
+        //     tls: {
+        //         rejectUnauthorized: false
+        //     },
+        //     host: 'mail.phongdaotao.com',
+        //     port: 25,
+        //     secureConnection: false,
+        //     auth: {
+        //         user: 'sinhvien@phongdaotao.com',
+        //         pass: 'svtdtu'
+        //     }
+        // }));
+        
+        var mainOptions = { // thiết lập đối tượng, nội dung gửi mail
+            from: 'sinhvien@phongdaotao.com',
+            to: email,
+            subject: 'Confirm Deposit',
+            html: '<p>Sender: ' + phone_sender +
+            '<br></br> Receiver: ' + phone_receiver + 
+            '<br></br> Money:' + moneyDepositFeeReceiver + '</p>'
+        }
+    
+        transporter.sendMail(mainOptions, async function  (err, info) {
+            if (err) {
+                // console.log(err);
+                // req.session.flash = {
+                //     type: "danger",
+                //     intro: "Oops!",
+                //     message: "Some thing went wrong"
+                // }
+                return res.json({
+                    code: 1,
+                    message: `Some thing wrong`,
+                })
+                // return res.redirect('/deposit')
+            } else {
+                // req.session.flash = {
+                //     type: "success",
+                //     intro: "Congratulation!",
+                //     message: "OTP is right. And money is deposit to receiver. Receiver please check mail!"
+                // }
+                return res.json({
+                    code: 0,
+                    message: `Update status successful!`,
+                })
+                // return res.redirect('/deposit/successDeposit')
+
+            }
+        });
+        // return res.json({
+        //                 code: 0,
+        //                 message: `Update status successful!`,
+        //             })
+    } catch (error) {
+        console.log(error)
+    }
+  }
+
+
 const apiGetWithdrawMore5m = async (req, res) => {
   /**
    * Api dùng để lấy withdraw cần duyệt của admin
@@ -305,31 +396,6 @@ const postWithdrawMore5m = async (req, res) => {
   }
 };
 
-const postDepositMore5m = async (req, res) => {
-  let { id, phone_sender, phone_receiver, value, fee, feeperson } = req.body;
-  //console.log(id,phone_sender,phone_receiver,value,fee,feeperson)
-  try {
-    let moneyDepositFeeReceiver = value;
-    if (feeperson == "receiver") {
-      moneyDepositFeeReceiver = value - fee;
-      // console.log(moneyDepositFeeReceiver)
-    } else {
-      value = +value + +fee;
-    }
-    await handleUpdateTotalValueOfSender(value, phone_sender);
-    await handleUpdateTotalValueOfReceiver(
-      moneyDepositFeeReceiver,
-      phone_receiver
-    );
-    await updateStatusToCheck(1, +id);
-    return res.json({
-      code: 0,
-      message: `Update status successful!`,
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
 
 function getDataFromToken(req) {
   /**

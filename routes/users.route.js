@@ -19,6 +19,7 @@ const {
   cardPost,
   firstLoginGet,
   handleFirstLogin,
+  apiGetTransHistory,
 } = require("../controllers/users.controller");
 const {
   changePassValidator,
@@ -43,6 +44,8 @@ router.get("/register", function (req, res, next) {
 router.get("/trans-history", function (req, res, next) {
   res.render("account/trans_history", { title: "Transaction History" });
 });
+
+router.get("/trans-history/api", apiGetTransHistory);
 
 router.get("/logout", logoutGet);
 

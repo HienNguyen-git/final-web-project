@@ -135,6 +135,7 @@ $(document).ready(() => {
       <tr>
           <th scope="row">${withdraw.id}</th>
           <td>${withdraw.username}</td>
+          <td>${withdraw.card_number}</td>
           <td>${withdraw.value}</td>
           <td>${withdraw.fee}</td>
           <td>${withdraw.date}</td>
