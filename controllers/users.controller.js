@@ -26,6 +26,7 @@ const {
   handleSelectBackCMND,
   handleUpdateBackCMND,
   getUserNameByPhoneNumber,
+  getUserStatusByUserName,
 } = require("../models/user.model");
 
 const {
@@ -626,10 +627,13 @@ async function profileGet(req, res) {
   let userData = req.userClaims;
 
   let userDetail = await getUserDetailByUserName(userData.username);
+  let userStatus = await getUserStatusByUserName(userData.username);
+  console.log(userStatus)
 
   res.render("account/profile", {
     title: "Reset Password",
     userDetail: userDetail,
+    userStatus
   });
 }
 

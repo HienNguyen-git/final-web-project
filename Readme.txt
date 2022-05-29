@@ -17,3 +17,10 @@ withdraw:
 Note: đổi status default thành -1
 
 abnormal defaul =0
+
+deposit:
+	status:
+		-1: tu choi
+		0: dang cho
+		1: thanh cong
+		2: admin đã duyệt

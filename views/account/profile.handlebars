@@ -6,8 +6,15 @@
           <img src={{#if userDetail.font_cmnd}} "/images/{{userDetail.font_cmnd}}"
             {{else}} "https://www.nj.com/resizer/zovGSasCaR41h_yUGYHXbVTQW2A=/1280x0/smart/cloudfront-us-east-1.images.arcpublishing.com/advancelocal/SJGKVE5UNVESVCW7BBOHKQCZVE.jpg"
             {{/if}} alt="profile-image" width="100%" />
-          <button class="btn btn-success" data-toggle="modal" data-target="#add-fontcmnd"
+          
+           {{#checkStatusIs0 statusCode}}
+              <button class="btn btn-success" data-toggle="modal" data-target="#add-fontcmnd"
             style="float: right; margin-top:8px">Upload front CMND</button>
+                
+            {{/checkStatusIs0}}
+          <button disabled class="form-btn btn btn-primary " style="float: right;margin-top:8px ">
+                Waiting admin approved
+                </button>
         </div>
         <div class="col-12 profile-image">
 
@@ -18,6 +25,7 @@
             style="float: right; margin-top:8px">Upload back CMND</button>
         </div>
       </div>
+
     </div>
     <div class="col-12 col-md-9">
       <ul class="profile-list row">
@@ -95,9 +103,10 @@
               </div>
             </div>
             <div class="form-group">
-
-              <button type="submit" class="form-btn btn btn-primary px-5" style="float: right;">Upload Front
-                CMND</button>
+              <button type="submit" class="form-btn btn btn-primary px-5" style="float: right;">
+                Upload Front CMND
+              </button>
+             
             </div>
           </div>
         </form>
