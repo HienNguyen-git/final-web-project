@@ -1,17 +1,26 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const emailvalidator = require("email-validator");
-const multer = require('multer');
+
+const validatePhoneNumber = require("validate-phone-number-node-js");
+const multer = require("multer");
 
 const {
   handlePostOTP,
   handleSelectOTP,
   handleChangePass,
   getUserByUsername,
+  getUserDetailByUserName,
   updatePasswordById,
   createAnAccount,
   putAccCreatedIntoUser,
   getTranSHistoryByUsername,
+  increaseLoginAttemptsByUsername,
+  updateStatusById,
+  updateLoginDateToCurrent,
+  getUserIntervalOneMinute,
+  updateStatusByUsername,
+  updateAbnormal,
 } = require("../models/user.model");
 
 const {
@@ -20,12 +29,16 @@ const {
   getCardByUsername,
   addCardByUsername,
   getQuantityCardByUsername,
-} = require("../models/credit_card.model")
+} = require("../models/credit_card.model");
 
-const { generateRandomPassword, generateUsername } = require("../config/helper")
+const {
+  generateRandomPassword,
+  generateUsername,
+} = require("../config/helper");
 const { validationResult } = require("express-validator");
 var nodemailer = require("nodemailer"); // khai báo sử dụng module nodemailer
 var smtpTransport = require("nodemailer-smtp-transport");
+const { off } = require("../config/db");
 
 const resetPasswordGet = (req, res) => {
   res.render("account/resetpassword", { title: "Reset Password" });
@@ -139,6 +152,15 @@ const changePassGet = (req, res) => {
   res.render("account/user-change-pw", { title: "changepassword" });
 };
 
+const firstLoginGet = (req, res) => {
+  let userData = req.userClaims;
+  if (userData.status !== -1) {
+    // Không phải login lần đầu thì không cho truy cập
+    res.redirect("/");
+  }
+  res.render("account/user-change-pw-first-login", { title: "First Login" });
+};
+
 const changePassPost = async (req, res) => {
   let result = validationResult(req);
   if (result.errors.length === 0) {
@@ -249,54 +271,72 @@ function logoutGet(req, res) {
 }
 
 // todo POST /users/register
-const handleRegister = async (req,res) => {
-  const {phone, email, name, date_of_birth, address} = req.body;
+const handleRegister = async (req, res) => {
+  const { phone, email, name, date_of_birth, address } = req.body;
   // console.log(phone)
   const randomUsername = generateUsername(1000000000, 9000000000);
   const randomPassword = generateRandomPassword(6);
-  // console.log(randomPassword)
+  // console.log(randomPassword);
   const salt = await bcrypt.genSalt(10);
   const hashPassword = await bcrypt.hash(randomPassword.toString(), salt);
-  if(phone===undefined|| phone===''){
+  if (phone === undefined || phone === "") {
     return res.json({
       code: 1,
       message: "Please enter your phone",
-    })
-  }else if(email === undefined || email === ''){
+    });
+  } else if (!validatePhoneNumber.validate(phone)) {
     return res.json({
       code: 1,
-      message: "Please enter your email"
-    })
-  }else if(!(emailvalidator.validate(email))){
+      message: "Phone's form is invalid",
+    });
+  } else if (phone.length > 11 || phone.length < 10) {
     return res.json({
       code: 1,
-      message: "Email's format is invalid"
-    })
-  }else if(name === undefined || name === ''){
+      message: "Phone must have 10 or 11 number",
+    });
+  } else if (email === undefined || email === "") {
     return res.json({
       code: 1,
-      message: "Please enter your name"
-    })
-  }else if(date_of_birth === undefined || date_of_birth === ''){
+      message: "Please enter your email",
+    });
+  } else if (!emailvalidator.validate(email)) {
     return res.json({
       code: 1,
-      message: "Please enter your date of birth"
-    })
-  }else if(address === undefined || address === ''){
+      message: "Email's format is invalid",
+    });
+  } else if (name === undefined || name === "") {
     return res.json({
       code: 1,
-      message: "Please enter your address"
-    })
-  }else{
+      message: "Please enter your name",
+    });
+  } else if (date_of_birth === undefined || date_of_birth === "") {
+    return res.json({
+      code: 1,
+      message: "Please enter your date of birth",
+    });
+  } else if (address === undefined || address === "") {
+    return res.json({
+      code: 1,
+      message: "Please enter your address",
+    });
+  } else {
     // Do mail thầy tui nghĩ đang có vấn đề nền gửi k dc, hôm kia tui có thấy mail gửi dc. Nên t để code dòng từ 287 -> 292 ở đây để tạo dc account và lưu trong db trước để thao tác mấy khác trước á
     // còn nếu muốn chạy đúng (gửi dc accoutn về mail) thì mình đóng code dòng 287 -> 292 lại rồi mở dòng 293 -> 327 để chạy. Thì này nó sẽ báo Something went wrong.
     // T có test thử bên gửi mã OTP nó cũng bị zậy nên t nghĩ là do mail thầy đang trục trặc
-    await createAnAccount(randomUsername, phone, email, name, date_of_birth, address)
-    await putAccCreatedIntoUser(randomUsername, hashPassword)
+    await createAnAccount(
+      randomUsername,
+      phone,
+      email,
+      name,
+      date_of_birth,
+      address
+    );
+    await putAccCreatedIntoUser(randomUsername, hashPassword);
     return res.json({
       code: 0,
-      message: "Create account successful. Please check your email to get your account!",
-    })
+      message:
+        "Create account successful. Please check your email to get your account!",
+    });
     // var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
     //   tls: {
     //       rejectUnauthorized: false
@@ -333,7 +373,7 @@ const handleRegister = async (req,res) => {
     //   }
     // });
   }
-}
+};
 
 // todo POST /users/login
 async function handleLogin(req, res, next) {
@@ -348,44 +388,86 @@ async function handleLogin(req, res, next) {
     });
   }
 
-  let accessToken = req.cookies.accessToken;
-  // res.clearCookie("accessToken");
-
-  if (accessToken) {
+  if (req.userClaims) {
     return res.json({
       success: false,
       message: "Already login!",
     });
   }
 
-  let acc = await getUserByUsername(req.body.username);
+  let { username, password } = req.body;
+  let acc = await getUserByUsername(username);
 
   if (!acc) {
     return res.json({ success: false, message: "Account not exist!" });
   } else {
-    const validPassword = await bcrypt.compare(req.body.password, acc.password);
+    if (acc.status === 4) {
+      // Không cho tài khoản bị block login
+      return res.json({
+        success: false,
+        message:
+          "Tài khoản đã bị khóa do nhập sai mật khẩu nhiều lần, vui lòng liên hệ quản trị viên để được hỗ trợ",
+      });
+    } else if (acc.status === 2) {
+      // Không cho tài khoản bị vô hiệu hóa login
+      return res.json({
+        success: false,
+        message:
+          "Tài khoản này đã bị vô hiệu hóa, xin vui lòng liên hệ tổng đài 18001008",
+      });
+    }
+
+    const validPassword = await bcrypt.compare(password, acc.password);
+
+    /* 
+        Cập nhật lại login_date mỗi lần user sử dụng
+        chức năng login
+    */
+    await updateLoginDateToCurrent(username);
+
     if (!validPassword) {
+      // ghi nhận login sai mật khẩu
+      await increaseLoginAttemptsByUsername(username);
+
+      //* Automatic lock account feature
+      if (acc["login_attempts"] % 3 === 2 && username !== "admin") {
+        if (acc.abnormal === 0) {
+          // khóa tài khoản 1 phút
+          let accIntervalOneMin = await getUserIntervalOneMinute(username);
+          await updateAbnormal(username);
+          await updateLoginDateToCurrent(username);
+
+          if (accIntervalOneMin) {
+            return res.json({
+              success: false,
+              message:
+                "Tài khoản hiện đang tạm khóa, vui lòng thử lại sau 1 phút",
+            });
+          }
+        } else if (acc.abnormal === 1) {
+          // Khóa tài khoản chờ quản trị viên duyệt
+          await updateStatusByUsername(username, 4);
+          return res.json({
+            success: false,
+            message:
+              "Tài khoản đã bị khóa do nhập sai mật khẩu nhiều lần, vui lòng liên hệ quản trị viên để được hỗ trợ",
+          });
+        }
+      }
       return res.json({ success: false, message: "Incorrect password!" });
     } else {
-      var token = jwt.sign(
-        {
-          id: acc.id,
-          username: acc.username,
-          status: acc.status,
-        },
-        process.env.TOKEN_KEY,
-        {
-          expiresIn: "1h",
-        }
-      );
+      let assignData = {
+        id: acc.id,
+        username: acc.username,
+        status: acc.status,
+        loginAttempts: acc["login_attempts"],
+      };
 
-      // ? Sử dụng cookie hay refreshToken
-      res.cookie("accessToken", token, {
-        expires: new Date(Date.now() + 60 * 1000 * 60),
-      });
-      const raw = await getTranSHistoryByUsername(acc.username)
+      let token = assignDataToCookie(res, assignData);
+
+      const raw = await getTranSHistoryByUsername(acc.username);
       // console.log(raw.name)
-      const data = raw.map(e => ({
+      const data = raw.map((e) => ({
         id: e.id,
         phone: e.phone,
         name: e.name,
@@ -394,8 +476,7 @@ async function handleLogin(req, res, next) {
         note: e.note,
         fee: e.fee,
         total_value: e.total_value,
-      })) 
-      console.log(data)
+      }));
       // return res.redirect('/')
       // return res.render('users/trans-history', { title: "Transaction History", data,routerPath:'users/trans-history' })
 
@@ -410,7 +491,7 @@ async function handleLogin(req, res, next) {
   }
 }
 
-// todo POST /users/change-password
+// * POST /users/change-password
 async function handleChangePassword(req, res, next) {
   let errors = validationResult(req).errors;
   let error = errors[0];
@@ -421,6 +502,23 @@ async function handleChangePassword(req, res, next) {
       message: error.msg,
     });
   }
+
+  let { currentPass, newPass, renewPass } = req.body;
+
+  if (currentPass === newPass) {
+    return res.json({
+      success: false,
+      message: "Current password can't be the same as the new password",
+    });
+  }
+
+  if (newPass !== renewPass) {
+    return res.json({
+      success: false,
+      message: "re-new password must be the same as the new password",
+    });
+  }
+
   let userData = req.userClaims;
 
   if (!userData) {
@@ -442,37 +540,87 @@ async function handleChangePassword(req, res, next) {
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(req.body.newPass, salt);
 
-    let changeResult = updatePasswordById(acc.id, hashPassword);
+    await updatePasswordById(acc.id, hashPassword);
 
-    if (!changeResult) {
-      return res.json({
-        success: false,
-        message: "There's error while changing your password",
-      });
-    } else {
-      return res.json({
-        success: true,
-        message: "You have changed your password successfully",
-      });
-    }
+    return res.json({
+      success: true,
+      message: "You have changed your password successfully",
+    });
   }
 }
 
+// * POST /users/first-login
+async function handleFirstLogin(req, res, next) {
+  let userData = req.userClaims;
+  if (userData.status !== -1) {
+    // Không phải login lần đầu thì không cho truy cập
+    res.redirect("/");
+  }
+  let errors = validationResult(req).errors;
+  let error = errors[0];
+
+  if (error) {
+    return res.json({
+      success: false,
+      message: error.msg,
+    });
+  }
+
+  let { newPass, renewPass } = req.body;
+
+  if (newPass !== renewPass) {
+    return res.json({
+      success: false,
+      message: "re-new password must be the same as the new password",
+    });
+  }
+
+  if (!userData) {
+    return res.json({
+      success: false,
+      message: "Please sign in to change your password",
+    });
+  }
+  let acc = await getUserByUsername(userData.username);
+
+  if (!acc) {
+    return res.json({ success: false, message: "Account not exist!" });
+  } else {
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(req.body.newPass, salt);
+
+    await updatePasswordById(acc.id, hashPassword);
+
+    // Trường hợp đăng nhập lần đầu
+    updateStatusById(acc.id, 0);
+
+    userData.status = 0;
+    delete userData["iat"];
+    delete userData["exp"];
+
+    assignDataToCookie(res, userData);
+
+    return res.json({
+      success: true,
+      message: "You have changed your password successfully",
+    });
+  }
+}
 
 // todo Get /users/profile
 async function profileGet(req, res) {
-
   let userData = req.userClaims;
-  const raw = await getUserDetailByUserName(userData.username)
-  const account = await getUserByUsername(userData.username)
+  const raw = await getUserDetailByUserName(userData.username);
+  const account = await getUserByUsername(userData.username);
 
-  if (account.status == 3){
+  if (account.status == 3) {
     return res.json({
       title: "profile",
       isUser: true,
       routerPath: "account/profile",
       data: raw,
-      massage: "Requires users to re-upload a double-sided photo of their ID card"
+      massage:
+        "Requires users to re-upload a double-sided photo of their ID card",
     });
   }
   return res.json({
@@ -481,34 +629,30 @@ async function profileGet(req, res) {
     routerPath: "account/profile",
     data: raw,
   });
-  // console.log(data);
-  
 }
 
 async function profilePost(req, res, next) {
-
-  let [font_cmnd, back_cmnd] = req.body
+  let [font_cmnd, back_cmnd] = req.body;
   let userData = req.userClaims;
-  let changeResult = updateCMND(userData.username, font_cmnd, back_cmnd)
+  let changeResult = updateCMND(userData.username, font_cmnd, back_cmnd);
 
   if (!changeResult) {
-      return res.json({
-        success: false,
-        message: "There's error while update your cmnd",
-      });
+    return res.json({
+      success: false,
+      message: "There's error while update your cmnd",
+    });
   } else {
-      return res.json({
-        success: true,
-        message: "You have updated your cmnd successfully",
-      });
+    return res.json({
+      success: true,
+      message: "You have updated your cmnd successfully",
+    });
   }
 }
 
 // todo Get /users/card
 async function cardGet(req, res) {
   let userData = req.userClaims;
-  const raw = await getCardByUsername(userData.username)
-  // console.log(data);
+  const raw = await getCardByUsername(userData.username);
   return res.json({
     title: "card",
     isUser: true,
@@ -519,49 +663,54 @@ async function cardGet(req, res) {
 
 // todo Post /users/card
 async function cardPost(req, res, next) {
-
   var d = new Date();
-  var charge_date = d.getFullYear + "-" + d.getMonth + "-" + d.getDate
+  var charge_date = d.getFullYear + "-" + d.getMonth + "-" + d.getDate;
 
   let userData = req.userClaims;
-  let { card_number, expire_date, cvv} = req.body;
+  let { card_number, expire_date, cvv } = req.body;
 
-  const quantity = getQuantityCardByUsername(userData.username)
-  const raw = await getCardByNumber(card_number)
+  const quantity = getQuantityCardByUsername(userData.username);
+  const raw = await getCardByNumber(card_number);
 
-  if (!raw){
+  if (!raw) {
     return res.json({
       success: false,
       message: "Credit card is not supported.",
     });
   }
-  if (expire_date > raw.expire_date){
+  if (expire_date > raw.expire_date) {
     return res.json({
       success: false,
       message: "Expire date is not correct.",
     });
   }
-  if (cvv !== raw.cvv){
+  if (cvv !== raw.cvv) {
     return res.json({
       success: false,
       message: "Cvv is not correct.",
     });
   }
-  if (card_number == '222222' && quantity > 1000000 ){
+  if (card_number == "222222" && quantity > 1000000) {
     return res.json({
       success: false,
       message: "The number of recharge cards has run out.",
     });
   }
 
-  if (card_number == '333333'){
+  if (card_number == "333333") {
     return res.json({
       success: false,
       message: "Card is out of money.",
     });
   }
 
-  let changeResult = addCardByUsername(userData.username, card_number, expire_date, cvv, charge_date)
+  let changeResult = addCardByUsername(
+    userData.username,
+    card_number,
+    expire_date,
+    cvv,
+    charge_date
+  );
   // console.log(data);
   if (!changeResult) {
     return res.json({
@@ -569,10 +718,34 @@ async function cardPost(req, res, next) {
       message: "There's error while recharge your card",
     });
   } else {
-      return res.json({
-        success: true,
-        message: "You have recharged your card successfully",
-      });
+    return res.json({
+      success: true,
+      message: "You have recharged your card successfully",
+    });
+  }
+}
+
+function assignDataToCookie(res, data) {
+  /**
+   * Tạo token từ data rồi thêm vào cookie
+   * Input: res - Request, data - Object
+   * Output: Assign token được tạo ra vào cookie và trả về token
+   */
+  console.log(data);
+  try {
+    var token = jwt.sign(data, process.env.TOKEN_KEY, {
+      expiresIn: "1h",
+    });
+
+    // ? Sử dụng cookie hay refreshToken
+    res.cookie("accessToken", token, {
+      expires: new Date(Date.now() + 60 * 1000 * 60),
+    });
+
+    return token;
+  } catch (err) {
+    console.log(err);
+    return null;
   }
 }
 
@@ -601,9 +774,11 @@ module.exports = {
   changePassPost,
   resendOtpPost,
   logoutGet,
+  firstLoginGet,
   handleRegister,
   handleLogin,
   handleChangePassword,
+  handleFirstLogin,
   profileGet,
   profilePost,
   cardGet,

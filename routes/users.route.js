@@ -17,11 +17,14 @@ const {
   profilePost,
   cardGet,
   cardPost,
+  firstLoginGet,
+  handleFirstLogin,
 } = require("../controllers/users.controller");
 const {
   changePassValidator,
   requestOtpToMailValidator,
   loginValidator,
+  firstLoginValidator,
 } = require("../validations/account");
 
 /* GET users listing. */
@@ -44,19 +47,21 @@ router.get("/trans-history", function (req, res, next) {
 router.get("/logout", logoutGet);
 
 // * POST /login
-router.post("/login", /* loginValidator, */ handleLogin);
+router.post("/login", loginValidator, handleLogin);
 
 // *POST /register
-router.post("/register",  handleRegister);
+router.post("/register", handleRegister);
 
 // * GET /change-password
 router.get("/change-password", changePassGet);
 
 // * POST /change-password
-router.post(
-  "/change-password",
-  /* changePassValidator, */ handleChangePassword
-);
+router.post("/change-password", changePassValidator, handleChangePassword);
+
+// * GET /first-login
+router.get("/first-login", firstLoginGet);
+
+router.post("/first-login", firstLoginValidator, handleFirstLogin);
 
 router.get("/account/resetpassword", resetPasswordGet);
 router.post(
@@ -73,11 +78,10 @@ router.post("/account/resetpassword/changepassword", changePassPost);
 
 router.post("/account/resetpassword/resendOtpPost", resendOtpPost);
 
-
-router.get("/profile", profileGet)
+router.get("/profile", profileGet);
 router.post("/profile", profilePost);
 
-router.get("/card", cardGet)
-router.post("/card", cardPost)
+router.get("/card", cardGet);
+router.post("/card", cardPost);
 
 module.exports = router;

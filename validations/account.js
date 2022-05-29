@@ -155,6 +155,27 @@ const changePassValidator = [
     .withMessage("Password can not be less than 6 characters"),
 ];
 
+const firstLoginValidator = [
+  check("newPass")
+    .exists()
+    .withMessage("Please enter your new password")
+    .bail()
+    .notEmpty()
+    .withMessage("New password can not be empty")
+    .bail()
+    .isLength((min = 6))
+    .withMessage("Password can not be less than 6 characters"),
+  check("renewPass")
+    .exists()
+    .withMessage("Please enter your confirm password")
+    .bail()
+    .notEmpty()
+    .withMessage("Your confirm password can not be empty")
+    .bail()
+    .isLength((min = 6))
+    .withMessage("Password can not be less than 6 characters"),
+];
+
 const requestOtpToMailValidator = [
   check("email")
     .exists()
@@ -234,6 +255,7 @@ module.exports = {
   loginValidator,
   loginAdminValidator,
   changePassValidator,
+  firstLoginValidator,
   requestOtpToMailValidator,
   withdrawValidator,
   adminWithdrawValidator,

@@ -1,5 +1,6 @@
 user:
     status:
+	  -1: dang nhap lan dau
         0: cho xac minh
         1: da xac minh
         2: da vo hieu hoa
@@ -12,3 +13,5 @@ withdraw:
 		0: dang cho
 		1: admin da duyet
 		2: thanh cong
+
+Note: đổi status default thành -1
