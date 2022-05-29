@@ -401,7 +401,7 @@ async function handleLogin(req, res, next) {
   if (!acc) {
     return res.json({ success: false, message: "Account not exist!" });
   } else {
-    if (acc.status === 4) {
+    if (acc.status === 3 || acc.abnormal === 2) {
       // Không cho tài khoản bị block login
       return res.json({
         success: false,
@@ -446,6 +446,7 @@ async function handleLogin(req, res, next) {
           }
         } else if (acc.abnormal === 1) {
           // Khóa tài khoản chờ quản trị viên duyệt
+          await updateAbnormal(username, 2);
           await updateStatusByUsername(username, 4);
           return res.json({
             success: false,
@@ -609,26 +610,7 @@ async function handleFirstLogin(req, res, next) {
 
 // todo Get /users/profile
 async function profileGet(req, res) {
-  let userData = req.userClaims;
-  const raw = await getUserDetailByUserName(userData.username);
-  const account = await getUserByUsername(userData.username);
-
-  if (account.status == 3) {
-    return res.json({
-      title: "profile",
-      isUser: true,
-      routerPath: "account/profile",
-      data: raw,
-      massage:
-        "Requires users to re-upload a double-sided photo of their ID card",
-    });
-  }
-  return res.json({
-    title: "profile",
-    isUser: true,
-    routerPath: "account/profile",
-    data: raw,
-  });
+  res.render("account/profile", { title: "Reset Password" });
 }
 
 async function profilePost(req, res, next) {
