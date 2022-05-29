@@ -31,9 +31,9 @@
             </tr>
             <tr>
                 <th>Front identification</th>
-                <td><img src="/images/front.png" alt="Front identification"></td>
+                <td><img {{#if front_cmnd }} src="/images/{{front_cmnd}}"{{else}} src="/images/front.png" {{/if}} alt="Front identification"></td>
                 <th>Back identification</th>
-                <td><img src="/images/front.png" alt="Front identification"></td>
+                <td><img {{#if back_cmnd }} src="/images/{{back_cmnd}}"{{else}} src="/images/front.png" {{/if}} alt="Front identification"></td>
             </tr>
             <tr>
                 <th>Total value</th>

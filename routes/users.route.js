@@ -15,11 +15,13 @@ const {
   handleChangePassword,
   logoutGet,
   profileGet,
-  profilePost,
+  profilePostCMNDFront,
   cardGet,
   cardPost,
   firstLoginGet,
   handleFirstLogin,
+  getprofilePostCMNDFront,
+  profilePostCMNDBack,
   apiGetTransHistory,
 } = require("../controllers/users.controller");
 const {
@@ -29,6 +31,7 @@ const {
   firstLoginValidator,
   rechargeValidator,
 } = require("../validations/account");
+const { profilePostCMNDFrontValidation, profilePostCMNDBackValidation } = require("../validations/profile");
 
 /* GET users listing. */
 router.get("/", function (req, res, next) {
@@ -82,7 +85,11 @@ router.post("/account/resetpassword/changepassword", changePassPost);
 router.post("/account/resetpassword/resendOtpPost", resendOtpPost);
 
 router.get("/profile", profileGet);
-router.post("/profile", profilePost);
+const multer = require('multer')
+const upload = multer({ dest: 'public/images' })
+router.get("/profileFrontCMND",getprofilePostCMNDFront)
+router.post("/profile",upload.single('image'),profilePostCMNDFrontValidation, profilePostCMNDFront);
+router.post("/profile2",upload.single('image2'),profilePostCMNDBackValidation, profilePostCMNDBack);
 
 router.get("/card", cardGet);
 router.post("/card", rechargeValidator, cardPost);
