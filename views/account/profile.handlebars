@@ -1,33 +1,7 @@
-<div class="container-fluid">
+<div class="container">
   <div class="row mt-5">
-    <div class="col-12 col-md-3 profile-image-container">
-      <div class="row">
-        <div class="col-12 mb-5 profile-image">
-          <img src={{#if userDetail.font_cmnd}} "/images/{{userDetail.font_cmnd}}"
-            {{else}} "https://www.nj.com/resizer/zovGSasCaR41h_yUGYHXbVTQW2A=/1280x0/smart/cloudfront-us-east-1.images.arcpublishing.com/advancelocal/SJGKVE5UNVESVCW7BBOHKQCZVE.jpg"
-            {{/if}} alt="profile-image" width="100%" />
-          
-           {{#checkStatusIs0 statusCode}}
-              <button class="btn btn-success" data-toggle="modal" data-target="#add-fontcmnd"
-            style="float: right; margin-top:8px">Upload front CMND</button>
-                
-            {{/checkStatusIs0}}
-          <button disabled class="form-btn btn btn-primary " style="float: right;margin-top:8px ">
-                Waiting admin approved
-                </button>
-        </div>
-        <div class="col-12 profile-image">
-
-          <img src={{#if userDetail.back_cmnd}} "/images/{{userDetail.back_cmnd}}"
-            {{else}} "https://previews.123rf.com/images/yupiramos/yupiramos1608/yupiramos160828671/61876287-avatar-man-back-male-guy-person-wearing-casual-clothes-vector-illustration.jpg"
-            {{/if}} alt="profile-image" width="100%" />
-          <button class="btn btn-success" data-toggle="modal" data-target="#add-backcmnd"
-            style="float: right; margin-top:8px">Upload back CMND</button>
-        </div>
-      </div>
-
-    </div>
-    <div class="col-12 col-md-9">
+    
+    <div class="col-12 col-md-12">
       <ul class="profile-list row">
         <li class="profile-item col-12 col-md-6">
           <div class="profile-icon"><i class="fa-solid fa-user"></i></div>
@@ -77,6 +51,40 @@
 
       </ul>
     </div>
+    <div class="col-12 col-md-12 profile-image-container">
+      <div class="text-center">
+      {{#checkStatusIs0 userStatus}}
+              <button class="btn btn-success" data-toggle="modal" data-target="#add-fontcmnd"
+            style="margin:8px">Upload front CMND</button>
+                
+            {{/checkStatusIs0}}
+            {{#checkStatusIs3 userStatus}}
+          <button disabled class="form-btn btn btn-primary " style="margin:8px ">
+                Waiting admin approved
+                </button>
+                {{/checkStatusIs3}}
+    </div>
+      
+      <div class="row">
+        
+        <div class="col-12 col-md-6 mb-5 profile-image">
+          <img src={{#if userDetail.font_cmnd}} "/images/{{userDetail.font_cmnd}}"
+            {{else}} "https://www.nj.com/resizer/zovGSasCaR41h_yUGYHXbVTQW2A=/1280x0/smart/cloudfront-us-east-1.images.arcpublishing.com/advancelocal/SJGKVE5UNVESVCW7BBOHKQCZVE.jpg"
+            {{/if}} alt="profile-image" width="100%" height="100%" />
+          
+           
+        </div>
+        <div class="col-12 col-md-6 profile-image">
+
+          <img src={{#if userDetail.back_cmnd}} "/images/{{userDetail.back_cmnd}}"
+            {{else}} "https://previews.123rf.com/images/yupiramos/yupiramos1608/yupiramos160828671/61876287-avatar-man-back-male-guy-person-wearing-casual-clothes-vector-illustration.jpg"
+            {{/if}} alt="profile-image" width="100%" height="100%"/>
+          {{!-- <button class="btn btn-success" data-toggle="modal" data-target="#add-backcmnd"
+            style="float: right; margin-top:8px">Upload back CMND</button> --}}
+        </div>
+      </div>
+
+    </div>
   </div>
 
   <div id="add-fontcmnd" class="modal fade" role="dialog">
@@ -93,8 +101,8 @@
             <div class="form-group">
               <label for="customFile">Picture:</label>
               <div class="custom-file">
-                <input type="file" class="custom-file-input" id="customFile" name="image">
-                <label class="custom-file-label" for="customFile">Choose file</label>
+                <input type="file" class="custom-file-input" id="customFile" name="images" multiple>
+                <label class="custom-file-label" for="customFile">Choose pictures</label>
               </div>
             </div>
             <div class="row">
@@ -153,8 +161,10 @@
 
   // Add the following code if you want the name of the file appear on select
   $(".custom-file-input").on("change", function () {
-    var fileName = $(this).val().split("\\").pop();
-    $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    //var fileName = $(this).val().split("\\").pop();
+    var numFiles = $("input:file")[0].files.length;
+    $(this).siblings(".custom-file-label").addClass("selected").html(numFiles + " pictures");
+    
   });
 
   $(".custom-file-input2").on("change", function () {

@@ -18,7 +18,7 @@ const { formatDateTime } = require("../config/helper");
 
 // GET /withdraw
 function renderWithdraw(req, res) {
-  res.render("exchange/withdraw", { title: "withdraw" });
+  res.render("exchange/withdraw", { title: "Withdraw" });
 }
 
 // POST /withdraw

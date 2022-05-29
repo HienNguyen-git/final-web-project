@@ -15,15 +15,13 @@ const {
   handleChangePassword,
   logoutGet,
   profileGet,
-  profilePostCMNDFront,
   cardGet,
   cardPost,
   firstLoginGet,
   handleFirstLogin,
-  getprofilePostCMNDFront,
-  profilePostCMNDBack,
   apiGetTransHistory,
   getRechargeByUser,
+  profilePostCMND,
 } = require("../controllers/users.controller");
 const {
   changePassValidator,
@@ -32,7 +30,7 @@ const {
   firstLoginValidator,
   rechargeValidator,
 } = require("../validations/account");
-const { profilePostCMNDFrontValidation, profilePostCMNDBackValidation } = require("../validations/profile");
+const { profilePostCMNDValidation } = require("../validations/profile");
 
 /* GET users listing. */
 router.get("/", function (req, res, next) {
@@ -86,11 +84,18 @@ router.post("/account/resetpassword/changepassword", changePassPost);
 router.post("/account/resetpassword/resendOtpPost", resendOtpPost);
 
 router.get("/profile", profileGet);
+
 const multer = require('multer')
-const upload = multer({ dest: 'public/images' })
-router.get("/profileFrontCMND",getprofilePostCMNDFront)
-router.post("/profile",upload.single('image'),profilePostCMNDFrontValidation, profilePostCMNDFront);
-router.post("/profile2",upload.single('image2'),profilePostCMNDBackValidation, profilePostCMNDBack);
+const fileStorageEngine = multer.diskStorage({
+  destination: (req,file,cb) =>{
+    cb(null,'public/images');
+  },
+  filename:(req,file,cb) => {
+    cb(null,Date.now() + "--" + file.originalname);
+  }
+})
+const upload = multer({ storage: fileStorageEngine })
+router.post("/profile",upload.array('images',2), profilePostCMND);
 
 router.get("/card", cardGet);
 router.post("/card", rechargeValidator, cardPost);

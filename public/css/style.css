@@ -901,10 +901,11 @@ nav {
 
 .profile-image {
   width: 100%;
+  max-height: 300px !important;
 }
 
 .profile-image-container {
-  display: flex;
+  /* display: flex; */
   align-items: center;
 }
 
