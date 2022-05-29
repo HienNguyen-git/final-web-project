@@ -26,6 +26,7 @@ const {
   requestOtpToMailValidator,
   loginValidator,
   firstLoginValidator,
+  rechargeValidator,
 } = require("../validations/account");
 
 /* GET users listing. */
@@ -45,7 +46,7 @@ router.get("/trans-history", function (req, res, next) {
   res.render("account/trans_history", { title: "Transaction History" });
 });
 
-router.get("/trans-history/api", apiGetTransHistory);
+router.get("/trans-history/:choice", apiGetTransHistory);
 
 router.get("/logout", logoutGet);
 
@@ -85,6 +86,6 @@ router.get("/profile", profileGet);
 router.post("/profile", profilePost);
 
 router.get("/card", cardGet);
-router.post("/card", cardPost);
+router.post("/card", rechargeValidator, cardPost);
 
 module.exports = router;

@@ -31,6 +31,21 @@ async function getTodayWithdraw() {
   });
 }
 
+async function getAllWithdraws() {
+  /**
+   * Lấy tất cả giao dịch rút tiền
+   * Input: None
+   * Output: list of giao dịch
+   */
+  const sql = "SELECT * FROM withdraw";
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, (err, result) => {
+      if (err) throw err;
+      resolve(result);
+    });
+  });
+}
 async function getWithdrawAdmin() {
   /**
    * Lấy các giao dịch mà admin cần phải duyệt
@@ -86,4 +101,5 @@ module.exports = {
   getWithdrawAdmin,
   updateStatusById,
   getWithdrawById,
+  getAllWithdraws,
 };

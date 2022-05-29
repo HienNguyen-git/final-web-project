@@ -39,6 +39,8 @@ const { validationResult } = require("express-validator");
 var nodemailer = require("nodemailer"); // khai báo sử dụng module nodemailer
 var smtpTransport = require("nodemailer-smtp-transport");
 const { off } = require("../config/db");
+const { getAllWithdraws } = require("../models/withdraw.model");
+const { getAllDeposits } = require("../models/deposit.model");
 
 const resetPasswordGet = (req, res) => {
   res.render("account/resetpassword", { title: "Reset Password" });
@@ -650,66 +652,72 @@ async function cardGet(req, res) {
 
 // todo Post /users/card
 async function cardPost(req, res, next) {
-  var d = new Date();
-  var charge_date = d.getFullYear + "-" + d.getMonth + "-" + d.getDate;
+  let errors = validationResult(req).errors;
+  let error = errors[0];
+
+  if (error) {
+    return res.json({
+      success: false,
+      message: error.msg,
+    });
+  }
+
+  var recharge_date = formatDateTime(new Date());
 
   let userData = req.userClaims;
-  let { card_number, expire_date, cvv } = req.body;
+  let { money, card_number, expire_date, cvv } = req.body;
 
   const quantity = getQuantityCardByUsername(userData.username);
   const raw = await getCardByNumber(card_number);
 
+  console.log(raw);
   if (!raw) {
     return res.json({
       success: false,
       message: "Credit card is not supported.",
     });
   }
-  if (expire_date > raw.expire_date) {
+
+  let inputDate = formatDateTime(expire_date);
+  let foundDate = formatDateTime(raw.expire_date);
+
+  if (inputDate !== foundDate) {
     return res.json({
       success: false,
       message: "Expire date is not correct.",
     });
   }
-  if (cvv !== raw.cvv) {
+  if (parseInt(cvv) !== raw.cvv) {
     return res.json({
       success: false,
       message: "Cvv is not correct.",
     });
   }
-  if (card_number == "222222" && quantity > 1000000) {
+  if (raw.card_number === "222222" && money > 1000000) {
     return res.json({
       success: false,
-      message: "The number of recharge cards has run out.",
+      message: "Thẻ này chỉ hỗ trợ nạp tiền tối đa là 1 triệu",
     });
   }
 
-  if (card_number == "333333") {
+  if (raw.card_number === "333333") {
     return res.json({
       success: false,
-      message: "Card is out of money.",
+      message: "Thẻ này đã hết tiền",
     });
   }
 
-  let changeResult = addCardByUsername(
-    userData.username,
+  await addCardByUsername({
+    username: userData.username,
     card_number,
-    expire_date,
-    cvv,
-    charge_date
-  );
-  // console.log(data);
-  if (!changeResult) {
-    return res.json({
-      success: false,
-      message: "There's error while recharge your card",
-    });
-  } else {
-    return res.json({
-      success: true,
-      message: "You have recharged your card successfully",
-    });
-  }
+    recharge_date,
+    money,
+  });
+
+  return res.json({
+    success: true,
+    message: "You have recharged your card successfully",
+  });
 }
 
 function assignDataToCookie(res, data) {
@@ -737,9 +745,28 @@ function assignDataToCookie(res, data) {
 }
 
 async function apiGetTransHistory(req, res) {
+  let choice = req.params.choice;
+
+  switch (choice) {
+    case 1:
+      break;
+    case 2:
+      break;
+    case 3:
+      break;
+    case 4:
+      break;
+    default:
+      break;
+  }
   let userData = req.userClaims;
 
-  let data = getTranSHistoryByUsername(userData.username);
+  let withdraws = await getAllWithdraws();
+  let deposits = await getAllDeposits();
+
+  console.log(withdraws);
+  console.log(deposits);
+  let data = getTranSHistoryByUsername("1234");
 
   return res.json({
     data: data,
@@ -759,6 +786,12 @@ function getDataFromToken(req) {
   } catch {
     return null;
   }
+}
+
+function formatDateTime(time) {
+  let change = new Date(time);
+
+  return `${change.getFullYear()}-${change.getMonth()}-${change.getDate()}`;
 }
 
 module.exports = {
