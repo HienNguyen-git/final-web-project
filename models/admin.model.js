@@ -34,7 +34,7 @@ const updateUserStatus = (username, status, currentDateTime) => new Promise((res
 })
 
 const handleSelectDepositMore5m = (status) => new Promise((resolve,reject) =>{
-    connect.query('select * from deposit where status = ?',[status],(err,result)=>{
+    connect.query('select * from deposit where status = ? order by date desc',[status],(err,result)=>{
         if(err) reject(false);
         else{
             resolve(result);
@@ -58,10 +58,22 @@ const updateStatusToCheck = (status,id) => new Promise((resolve, reject) => {
 })
 
 
+const handleSelectEmailDepositMore5m = (phone_receiver) => new Promise((resolve,reject) =>{
+    const sql = "select * from user_detail where phone = ?"
+    const values = [phone_receiver];
+    connect.query(sql, values, (err,result) => {
+        if (err) reject(err)
+        else{
+            resolve(result[0].email);
+        }
+    })
+})
+
 module.exports = {
     getUserAccountByStatus,
     getUserDetailByUsername,
     updateUserStatus,
     handleSelectDepositMore5m,
     updateStatusToCheck,
+    handleSelectEmailDepositMore5m,
 }

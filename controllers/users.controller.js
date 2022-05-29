@@ -12,27 +12,27 @@ const requestOtpToMail = (req, res) => {
 
         let { email } = req.body;
         const otp = Math.floor(100000 + Math.random() * 900000);
-        // var transporter = nodemailer.createTransport({ // config mail server
-        //     service: 'Gmail',
-        //     auth: {
-        //         user: 'nchdang16012001@gmail.com',
-        //         pass: 'mlrafbeyqtvtqloe'
-        //     }
-        // });
-
-        var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
-            tls: {
-                rejectUnauthorized: false
-            },
-            // service: 'Gmail',
-            host: 'mail.phongdaotao.com',
-            port: 25,
-            secureConnection: false,
+        
+        var transporter = nodemailer.createTransport({ // config mail server
+            service: 'Gmail',
             auth: {
-                user: 'sinhvien@phongdaotao.com',
-                pass: 'svtdtu'
+                user: 'nchdang16012001@gmail.com',
+                pass: 'mlrafbeyqtvtqloe'
             }
-        }));
+        });
+
+        // var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
+        //     tls: {
+        //         rejectUnauthorized: false
+        //     },
+        //     host: 'mail.phongdaotao.com',
+        //     port: 25,
+        //     secureConnection: false,
+        //     auth: {
+        //         user: 'sinhvien@phongdaotao.com',
+        //         pass: 'svtdtu'
+        //     }
+        // }));
 
         var mainOptions = { // thiết lập đối tượng, nội dung gửi mail
             from: 'sinhvien@phongdaotao.com',
