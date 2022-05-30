@@ -4,6 +4,8 @@ const emailvalidator = require("email-validator");
 const multiparty = require("multiparty");
 const validatePhoneNumber = require("validate-phone-number-node-js");
 const multer = require("multer");
+const fs = require("fs"); //doi file name
+let path = require("path");
 
 const {
   handlePostOTP,
@@ -29,6 +31,8 @@ const {
   getUserStatusByUserName,
   updateStatusAndLastModifiedByUsername,
   getUsernameByEmail,
+  getEmailExistOrNot,
+  getEmailPhoneExistOrNot,
 } = require("../models/user.model");
 
 const {
@@ -47,7 +51,7 @@ const {
   formatDateTime,
   formatDate,
 } = require("../config/helper");
-const { validationResult } = require("express-validator");
+const { validationResult, check } = require("express-validator");
 var nodemailer = require("nodemailer"); // khai báo sử dụng module nodemailer
 var smtpTransport = require("nodemailer-smtp-transport");
 const { off } = require("../config/db");
@@ -306,116 +310,101 @@ function logoutGet(req, res) {
 // todo POST /users/register
 const handleRegister = async (req, res) => {
   const form = new multiparty.Form();
-  form.parse(req, (err, fields, files) => {
-    if (err) return res.status(500).send(err.message);
-    console.log(fields);
-    console.log(files);
-  });
-  // console.log(req.file.front_cmnd);
-  // console.log(req.file.back_cmnd);
+  form.parse(req, async (err, fields, files) => {
+    // if (err) return res.status(500).send(err.message);
+    if (err) {
+      return res.json({
+      code: 1,
+      message: err.message,
+      });
+    }
+    let checkEP = await getEmailPhoneExistOrNot(fields.email,fields.phone)
+    console.log(checkEP !== undefined)
+    if(checkEP !== undefined){
+            return res.json({
+              code: 1,
+              message: 'Email or Phone has exist. Please register another email or phone!',
+              });
+    }
+    else{
+      const randomUsername = generateUsername(1000000000, 9000000000);
+      const randomPassword = generateRandomPassword(6);
+      const salt = await bcrypt.genSalt(10);
+      const hashPassword = await bcrypt.hash(randomPassword.toString(), salt);
 
-  // console.log(phone)
-  // const randomUsername = generateUsername(1000000000, 9000000000);
-  // const randomPassword = generateRandomPassword(6);
-  // console.log(randomPassword);
-  // const salt = await bcrypt.genSalt(10);
-  // const hashPassword = await bcrypt.hash(randomPassword.toString(), salt);
-  // if (phone === undefined || phone === "") {
-  //   return res.json({
-  //     code: 1,
-  //     message: "Please enter your phone",
-  //   });
-  // } else if (!validatePhoneNumber.validate(phone)) {
-  //   return res.json({
-  //     code: 1,
-  //     message: "Phone's form is invalid",
-  //   });
-  // } else if (phone.length > 11 || phone.length < 10) {
-  //   return res.json({
-  //     code: 1,
-  //     message: "Phone must have 10 or 11 number",
-  //   });
-  // } else if (email === undefined || email === "") {
-  //   return res.json({
-  //     code: 1,
-  //     message: "Please enter your email",
-  //   });
-  // } else if (!emailvalidator.validate(email)) {
-  //   return res.json({
-  //     code: 1,
-  //     message: "Email's format is invalid",
-  //   });
-  // } else if (name === undefined || name === "") {
-  //   return res.json({
-  //     code: 1,
-  //     message: "Please enter your name",
-  //   });
-  // } else if (date_of_birth === undefined || date_of_birth === "") {
-  //   return res.json({
-  //     code: 1,
-  //     message: "Please enter your date of birth",
-  //   });
-  // } else if (address === undefined || address === "") {
-  //   return res.json({
-  //     code: 1,
-  //     message: "Please enter your address",
-  //   });
-  // } else {
-  //   // Do mail thầy tui nghĩ đang có vấn đề nền gửi k dc, hôm kia tui có thấy mail gửi dc. Nên t để code dòng từ 287 -> 292 ở đây để tạo dc account và lưu trong db trước để thao tác mấy khác trước á
-  //   // còn nếu muốn chạy đúng (gửi dc accoutn về mail) thì mình đóng code dòng 287 -> 292 lại rồi mở dòng 293 -> 327 để chạy. Thì này nó sẽ báo Something went wrong.
-  //   // T có test thử bên gửi mã OTP nó cũng bị zậy nên t nghĩ là do mail thầy đang trục trặc
-  //   await createAnAccount(
-  //     randomUsername,
-  //     phone,
-  //     email,
-  //     name,
-  //     date_of_birth,
-  //     address
-  //   );
-  //   await putAccCreatedIntoUser(randomUsername, hashPassword);
-  //   console.log(randomPassword);
-  //   console.log(randomUsername);
-  return res.json({
-    code: 0,
-    message:
-      "Create account successful. Please check your email to get your account!",
-  });
-  // var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
-  //   tls: {
-  //       rejectUnauthorized: false
-  //   },
-  //   // service: 'Gmail',
-  //   host: 'mail.phongdaotao.com',
-  //   port: 25,
-  //   secureConnection: false,
-  //   auth: {
-  //       user: 'sinhvien@phongdaotao.com',
-  //       pass: 'svtdtu'
-  //   }
-  // }));
+      console.log(fields);
+      console.log(files);
+      let pathofimage1 = Date.now() + "--" + files.front_cmnd[0].originalFilename ;
+      let imagePath1 = path.join("public", "images", pathofimage1);
+      let pathofimage2 = Date.now() + "--" + files.back_cmnd[0].originalFilename ;
+      let imagePath2 = path.join("public", "images", pathofimage2);
+      fs.renameSync(files.front_cmnd[0].path, imagePath1);
+      fs.renameSync(files.back_cmnd[0].path, imagePath2);
 
-  // var mainOptions = { // thiết lập đối tượng, nội dung gửi mail
-  //   from: 'sinhvien@phongdaotao.com',
-  //   to: email,   //Mail của chính mình
-  //   subject: 'Your account',
-  //   html: '<h2>WELCOME TO OUR BANKING SYSTEM</h2><br></br><p>We send you your account. Now you can log in our system. Do not share this account for someone except you.<br></br></p>Username: '+ randomUsername +' <br></br>Password: '+ randomPassword +'<br></br>To secure you can change your password when you log in successful.</p>'
-  // }
-  // transporter.sendMail(mainOptions, async function  (err, info) {
-  //   if (err) {
-  //     return res.json({
-  //       code: 1,
-  //       message: "Some thing went wrong",
-  //     })
-  //   }else{
-  //     await createAnAccount(randomUsername, phone, email, name, date_of_birth, address)
-  //     await putAccCreatedIntoUser(randomUsername, hashPassword)
-  //     return res.json({
-  //       code: 0,
-  //       message: "Create account successful. Please check your email to get your account!",
-  //     })
-  //   }
-  // });
-  // }
+      var transporter = nodemailer.createTransport({
+        // config mail server
+        service: "Gmail",
+        auth: {
+          user: "nchdang16012001@gmail.com",
+          pass: "mlrafbeyqtvtqloe",
+        },
+      });
+  
+      // config mail server = mail thầy
+      // var transporter = nodemailer.createTransport(smtpTransport({
+      //     tls: {
+      //         rejectUnauthorized: false
+      //     },
+      //     host: 'mail.phongdaotao.com',
+      //     port: 25,
+      //     secureConnection: false,
+      //     auth: {
+      //         user: 'sinhvien@phongdaotao.com',
+      //         pass: 'svtdtu'
+      //     }
+      // }));
+  
+      var mainOptions = {
+        // thiết lập đối tượng, nội dung gửi mail
+        from: "sinhvien@phongdaotao.com",
+        to: fields.email,
+        subject: 'Your account',
+        html: '<h2>WELCOME TO OUR BANKING SYSTEM</h2><br></br><p>Your account:<br></br></p>Username: '
+        + randomUsername +' <br></br>Password: '+ randomPassword +'</p>'
+   
+      };
+  
+      transporter.sendMail(mainOptions, async function (err, info) {
+        if (err) {
+          return res.json({
+            code: 1,
+            message: err.message,
+            });
+        } else {
+              //lưu vào db
+              await createAnAccount(
+                randomUsername,
+                fields.phone,
+                fields.email,
+                fields.name,
+                fields.date_of_birth,
+                fields.address,
+                pathofimage1,
+                pathofimage2
+              );
+              await putAccCreatedIntoUser(randomUsername, hashPassword);
+              console.log(randomPassword);
+              console.log(randomUsername);
+            return res.json({
+              code: 0,
+              message:
+                "Create account successful. Please check your email to get your account!",
+            });
+            }
+          
+      });
+    };
+  });
 };
 
 // todo POST /users/login
@@ -657,8 +646,7 @@ async function profileGet(req, res) {
   });
 }
 
-const fs = require("fs"); //doi file name
-let path = require("path");
+
 
 const profilePostCMND = async (req, res) => {
   console.log(req.files);
