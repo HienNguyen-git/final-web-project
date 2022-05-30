@@ -12,7 +12,7 @@ const { handlePostOTP, handleSelectOTP } = require('../models/user.model');
 const { validationResult } = require('express-validator');
 var nodemailer = require('nodemailer'); // khai báo sử dụng module nodemailer
 var smtpTransport = require('nodemailer-smtp-transport');
-const { dataProcess, formatDateTime, encodeStatusCode } = require('../config/helper');
+const { dataProcess, formatDateTime, encodeStatusCode, encodeTransistionCode } = require('../config/helper');
 
 // handleSelectUserDetail(req.userClaims);
 
@@ -327,7 +327,7 @@ const getSenderByUser = async (req, res) => {
             fee: e.fee,
             feeperson: e.feeperson,
             note: e.note,
-            status: encodeStatusCode(e.status),
+            status: encodeTransistionCode(e.status),
             statusCode: e.status,
             date: formatDateTime(e.date),
         }))
@@ -356,9 +356,9 @@ const getReceiverByUser = async (req,res)=>{
             fee: e.fee,
             feeperson: e.feeperson,
             note: e.note,
-            status: encodeStatusCode(e.status),
+            status: encodeTransistionCode(e.status),
             statusCode: e.status,
-            date: formatDateTime(e.date),
+            date: encodeTransistionCode(e.date),
         }))
         return res.json({
             code: 0,
