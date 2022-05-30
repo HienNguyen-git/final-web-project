@@ -352,6 +352,18 @@ async function updateStatusByUsername(username, status) {
   });
 }
 
+async function updateStatusAndLastModifiedByUsername(username, status,now) {
+  const sql = "UPDATE user SET status = ?, last_modified = ? WHERE username = ?";
+  const value = [status,now, username];
+
+  return new Promise((resolve, reject) => {
+    connect.query(sql, value, (err) => {
+      if (err) reject(false);
+    });
+    resolve(true);
+  });
+}
+
 module.exports = {
   handlePostOTP,
   handleSelectFrontCMND,
@@ -376,4 +388,5 @@ module.exports = {
   updateAbnormal,
   getUserNameByPhoneNumber,
   getUserStatusByUserName,
+  updateStatusAndLastModifiedByUsername,
 };

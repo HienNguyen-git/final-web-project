@@ -27,6 +27,7 @@ const {
   handleUpdateBackCMND,
   getUserNameByPhoneNumber,
   getUserStatusByUserName,
+  updateStatusAndLastModifiedByUsername,
 } = require("../models/user.model");
 
 const {
@@ -642,14 +643,14 @@ const fs = require("fs"); //doi file name
 let path = require("path");
 
 const profilePostCMND = async (req,res) => {
-  console.log(req.files);
+  // console.log(req.files);
   // console.log(req.files[1])
   let result = validationResult(req);
   if (result.errors.length === 0) {
     let image = req.file;
     let username = req.userClaims.username;
     let imageFileName;
-    if (req.files.length == 0) {
+    if (req.files.length != 2) {
       try {
         // const FrontCMND = await handleSelectFrontCMND(username);
         // const BackCMND = await handleSelectBackCMND(username);
@@ -657,7 +658,7 @@ const profilePostCMND = async (req,res) => {
         req.session.flash = {
           type: "danger",
           intro: "Oops!",
-          message: "You upload nothing so we take old picture",
+          message: "You upload not valid, please upload 2 pictures or we will take old picture",
         };
         return res.redirect("/users/profile");
       } catch (error) {
@@ -672,7 +673,7 @@ const profilePostCMND = async (req,res) => {
       try {
         if (await handleUpdateFrontCMND(req.files[0].filename, username) &&
         await handleUpdateBackCMND(req.files[1].filename,username) &&
-          await updateStatusByUsername(username,3)) {
+          await updateStatusAndLastModifiedByUsername(username,0,new Date(Date.now()))) {
           req.session.flash = {
             type: "success",
             intro: "Congratulation!",
