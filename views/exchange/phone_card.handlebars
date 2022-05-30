@@ -9,7 +9,9 @@
           <option value="{{provider_number}}">{{name}}</option>
         {{/each}}
       </select>
-
+    </div>
+    <div class="form-group">
+      <p>Fee: <span id="fee"></span>%</p>
     </div>
     <div class="form-group">
       <div class="form-check form-check-inline">
@@ -73,7 +75,18 @@
 
 <script>
   const formCardPhone = document.getElementById('phone-card-form')
+  const networkProviderBox = document.getElementById('networkProvider')
   const myAlert = document.getElementById('my-alert')
+  let myFee
+
+  if(networkProviderBox){
+    networkProviderBox.addEventListener('change',async e=>{
+      const myFetch = await fetch(location.href+"/fee?code="+e.target.value)
+      const res = await myFetch.json()
+      myFee = res.data[0].fee
+      document.querySelector('#fee').innerHTML = res.data[0].fee
+    })
+  }
 
   if (formCardPhone) {
       formCardPhone.addEventListener('submit', async e => {
@@ -91,7 +104,7 @@
               const myFetch = await fetch(location.href, {
                   method: "POST", 
                   body: JSON.stringify({
-                      name: networkProvider, type, amount
+                      name: networkProvider, type, amount, fee: myFee
                   }), 
                   headers: {
                       'Content-Type': 'application/json'

@@ -55,10 +55,17 @@ async function getBillById(id) {
 }
 
 const getPhoneCardListByUser = (username) => new Promise((resolve, reject) => {
-  connect.query("SELECT * from bill where username=?",[username],(err,result)=>{
-    if(err) reject(err)
+  connect.query("SELECT * from bill where username=?", [username], (err, result) => {
+    if (err) reject(err)
     resolve(result)
-})
+  })
+});
+
+const getNetworkFeeByCode = (code) => new Promise((resolve, reject) => {
+  connect.query("SELECT fee from network_provider where provider_number=?", [code], (err, result) => {
+    if (err) reject(err)
+    resolve(result)
+  })
 });
 
 module.exports = {
@@ -66,5 +73,6 @@ module.exports = {
   createBill,
   getAllBills,
   getBillById,
-  getPhoneCardListByUser
+  getPhoneCardListByUser,
+  getNetworkFeeByCode
 };
