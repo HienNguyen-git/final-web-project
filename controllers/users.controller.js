@@ -433,7 +433,16 @@ async function handleLogin(req, res, next) {
   if (!acc) {
     return res.json({ success: false, message: "Account not exist!" });
   } else {
-    if (acc.abnormal === 2) {
+    if (acc.login_attempts % 3 === 0 && acc.abnormal === 1) {
+      let accIntervalOneMin = await getUserIntervalOneMinute(username);
+
+      if (accIntervalOneMin) {
+        return res.json({
+          success: false,
+          message: "Tài khoản hiện đang tạm khóa, vui lòng thử lại sau 1 phút",
+        });
+      }
+    } else if (acc.abnormal === 2) {
       // Không cho tài khoản bị block login
       return res.json({
         success: false,
@@ -451,31 +460,20 @@ async function handleLogin(req, res, next) {
 
     const validPassword = await bcrypt.compare(password, acc.password);
 
-    /* 
-        Cập nhật lại login_date mỗi lần user sử dụng
-        chức năng login
-    */
-    await updateLoginDateToCurrent(username);
-
     if (!validPassword) {
       // ghi nhận login sai mật khẩu
       await increaseLoginAttemptsByUsername(username);
-
+      await updateLoginDateToCurrent(username);
       //* Automatic lock account feature
       if (acc["login_attempts"] % 3 === 2 && username !== "admin") {
         if (acc.abnormal === 0) {
-          // khóa tài khoản 1 phút
-          let accIntervalOneMin = await getUserIntervalOneMinute(username);
           await updateAbnormal(username);
           await updateLoginDateToCurrent(username);
-
-          if (accIntervalOneMin) {
-            return res.json({
-              success: false,
-              message:
-                "Tài khoản hiện đang tạm khóa, vui lòng thử lại sau 1 phút",
-            });
-          }
+          return res.json({
+            success: false,
+            message:
+              "Tài khoản hiện đang tạm khóa, vui lòng thử lại sau 1 phút",
+          });
         } else if (acc.abnormal === 1) {
           // Khóa tài khoản chờ quản trị viên duyệt
           await updateAbnormal(username, 2);
@@ -635,8 +633,8 @@ async function profileGet(req, res) {
   let userData = req.userClaims;
 
   let userDetail = await getUserDetailByUserName(userData.username);
-  console.log(userDetail)
-  userDetail.date_of_birth = formatDate(userDetail.date_of_birth)
+  console.log(userDetail);
+  userDetail.date_of_birth = formatDate(userDetail.date_of_birth);
   let status = (await getUserStatusByUserName(userData.username)).status;
 
   console.log("status", status);

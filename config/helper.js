@@ -1,4 +1,5 @@
-const statusEncode = ["Waiting for verification", "Complete", "Disable", "Pending", "Block"]
+const statusEncode = ["Waiting for verification", "Complete", "Disable", "Pending", "Lock"]
+const transistionStatusEncode = ["Pending","Success","Approved","Denied"]
 
 
 const moment = require("moment");
@@ -23,6 +24,19 @@ const encodeStatusCode = (status) => {
             return `<td class="text-secondary font-weight-bold"><i class="fas fa-circle-notch fa-spin"></i> ${statusEncode[+status]}</td>`
         default:
             return `<td class="text-danger font-weight-bold"><i class="fas fa-clock"></i> ${statusEncode[+status]}</td>`
+    }
+}
+
+const encodeTransistionCode = (status)=>{
+    switch (+status) {
+        case 0:
+            return `<td class="text-secondary font-weight-bold"><i class="fas fa-circle-notch fa-spin"></i> ${transistionStatusEncode[+status]}</td>`
+        case 1:
+            return `<td class="text-primary font-weight-bold"><i class="fa-solid fa-thumbs-up "></i> ${transistionStatusEncode[+status]}</td>`
+        case 2:
+            return `<td class="text-success font-weight-bold"><i class="fa fa-check "></i> ${transistionStatusEncode[+status]}</td>`
+        default:
+            return `<td class="text-danger font-weight-bold"><i class="fa fa-exclamation"></i> ${transistionStatusEncode[3]}</td>`
     }
 }
 
@@ -64,5 +78,6 @@ module.exports = {
     generateCode,
     generateUsername,
     generateRandomPassword,
-    sleep
+    sleep,
+    encodeTransistionCode
 }

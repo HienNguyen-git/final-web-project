@@ -1,5 +1,5 @@
 const { dataProcess, generateCode, formatDate } = require("../config/helper")
-const { getNetworkProvider, createBill, getPhoneCardListByUser } = require("../models/phone_card.model")
+const { getNetworkProvider, createBill, getPhoneCardListByUser, getNetworkFeeByCode } = require("../models/phone_card.model")
 const { getUserDetailByUserName, updateTotalValue } = require("../models/user.model")
 
 const getPhoneCard = async (req, res) => {
@@ -9,8 +9,8 @@ const getPhoneCard = async (req, res) => {
 
 const handleBuyPhoneCard = async (req,res)=>{
     const username = req.userClaims.username
-    const {name, type, amount} = req.body
-    console.log(name, type, amount)
+    let {name, type, amount, fee} = req.body
+    console.log(name,type,amount,fee)
     const phoneCardType = [10000,20000,50000,100000]
     const networkProvider = await dataProcess(await getNetworkProvider())
     const userData =  await getUserDetailByUserName(username)
@@ -56,7 +56,8 @@ const handleBuyPhoneCard = async (req,res)=>{
         tmp.push(generateCode(name))
     }
     const codeList = tmp.join(",")
-    if(userData.total_value<numAmount*typeNum){
+    let totalBill = userData.total_value-numAmount*typeNum
+    if(totalBill<0){
         return res.json({
             code: 1,
             message: "Your balance is not enough",
@@ -64,7 +65,9 @@ const handleBuyPhoneCard = async (req,res)=>{
     }else{
         try {
             if(await createBill(username,name,codeList,type,amount)){
-                await updateTotalValue(userData.total_value-numAmount*typeNum, username)
+                fee = +fee
+                const valueAfterFee = totalBill + totalBill*fee/100
+                await updateTotalValue(valueAfterFee, username)
                 return res.json({
                     code: 0,
                     message: "Get request successful!",
@@ -109,8 +112,19 @@ const getPhonecardByUser = async(req,res)=>{
   }
 }
 
+const getNetworkProviderFee = async(req,res)=>{
+    const code = req.query['code']
+    const data = await getNetworkFeeByCode(code)
+    console.log(data)
+    res.json({
+        code:0,
+        message:"Get successful",
+        data
+    })
+}
 module.exports = {
     getPhoneCard,
     handleBuyPhoneCard,
-    getPhonecardByUser
+    getPhonecardByUser,
+    getNetworkProviderFee
 }
