@@ -421,7 +421,7 @@ async function handleLogin(req, res, next) {
   if (!acc) {
     return res.json({ success: false, message: "Account not exist!" });
   } else {
-    if (acc.status === 3 || acc.abnormal === 2) {
+    if (acc.abnormal === 2) {
       // Không cho tài khoản bị block login
       return res.json({
         success: false,
@@ -486,20 +486,11 @@ async function handleLogin(req, res, next) {
 
       let token = assignDataToCookie(res, assignData);
 
-      const raw = await getTranSHistoryByUsername(acc.username);
-      // console.log(raw.name)
-      const data = raw.map((e) => ({
-        id: e.id,
-        phone: e.phone,
-        name: e.name,
-        date: e.date,
-        value: e.value,
-        note: e.note,
-        fee: e.fee,
-        total_value: e.total_value,
-      }));
-      // return res.redirect('/')
-      // return res.render('users/trans-history', { title: "Transaction History", data,routerPath:'users/trans-history' })
+      req.session.flash = {
+        type: "success",
+        intro: "Congratulation!",
+        message: "Login successfully!",
+      };
 
       return res.json({
         success: true,
