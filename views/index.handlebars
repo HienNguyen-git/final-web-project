@@ -195,6 +195,12 @@
         const rechargeBody = document.querySelector('#recharge-body');
         const receiveBody = document.querySelector('#receive-body');
 
+
+        function handleView(id,status){
+            console.log(id,status)
+        }
+
+
         // Get withdraw 
         (async()=>{
             const myFetch = await fetch(myUrl+"withdraw/api")
@@ -207,7 +213,7 @@
                         <td>${e.value}</td>
                         ${e.status}
                         <td>${e.date}</td>
-                        <td><i data-toggle="modal" data-target="#view1"  onclick="handleView('${e.note}')" class="fa fa-edit action"></i></td>
+                        <td><i data-toggle="modal" data-target="#view1"  onclick="handleView('${e.id}','${e.statusCode}')" class="fa fa-edit action"></i></td>
                     </tr>
                     `
                 ).join("")
@@ -231,7 +237,7 @@
                         ${e.status}
                         <td>${e.feeperson}</td>
                         <td>${e.date}</td>
-                        <td><i data-toggle="modal" data-target="#view1"  onclick="handleView('${e.id}')" class="fa fa-edit action"></i></td>
+                        <td><i data-toggle="modal" data-target="#view1"  onclick="handleView('${e.id}','${e.statusCode}')" class="fa fa-edit action"></i></td>
                     </tr>
                     `
                 ).join("")
@@ -257,7 +263,7 @@
                         <td>${e.feeperson}</td>
                         ${e.status}
                         <td>${e.date}</td>
-                        <td><i data-toggle="modal" data-target="#view1"  onclick="handleView('${e.id}')" class="fa fa-edit action"></i></td>
+                        <td><i data-toggle="modal" data-target="#view1"  onclick="handleView('${e.id}','${e.statusCode}')" class="fa fa-edit action"></i></td>
                     </tr>
                     `
                 ).join("")
@@ -280,7 +286,7 @@
                         <td>${e.price}</td>
                         <td>${e.quantity}</td>
                         <td>${e.date}</td>
-                        <td><i data-toggle="modal" data-target="#view1"  onclick="handleView('${e.id}')" class="fa fa-edit action"></i></td>
+                        <td><i data-toggle="modal" data-target="#view1"  onclick="handleView('${e.id}','${e.statusCode}')" class="fa fa-edit action"></i></td>
                     </tr>
                     `
                 ).join("")

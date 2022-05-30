@@ -144,6 +144,7 @@ const getWithdrawByUser = async(req,res)=>{
       date: formatDateTime(e.date),
       value: e.value,
       status: encodeStatusCode(e.status),
+      statusCode: e.status,
       fee: e.fee,
       note: e.note,
     }))
