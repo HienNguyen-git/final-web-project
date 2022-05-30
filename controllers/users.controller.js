@@ -42,6 +42,7 @@ const { getAllBills } = require("../models/phone_card.model");
 const {
   generateRandomPassword,
   generateUsername,
+  encodeStatusCode,
 } = require("../config/helper");
 const { validationResult } = require("express-validator");
 var nodemailer = require("nodemailer"); // khai báo sử dụng module nodemailer
@@ -53,7 +54,10 @@ const {
   getAllDepositsSender,
   getAllDepositsReceiver,
 } = require("../models/deposit.model");
-const { getAllRecharges, getRechargeListByUser } = require("../models/recharge.model");
+const {
+  getAllRecharges,
+  getRechargeListByUser,
+} = require("../models/recharge.model");
 
 const resetPasswordGet = (req, res) => {
   res.render("account/resetpassword", { title: "Reset Password" });
@@ -628,21 +632,21 @@ async function profileGet(req, res) {
   let userData = req.userClaims;
 
   let userDetail = await getUserDetailByUserName(userData.username);
-  let userStatus = await getUserStatusByUserName(userData.username);
-  console.log(userStatus.status)
+  let status = (await getUserStatusByUserName(userData.username)).status;
 
+  console.log("status", status);
   res.render("account/profile", {
     title: "Profile",
-    userDetail: userDetail,
-    userStatus: userStatus.status
+    userDetail,
+    encodeStatus: encodeStatusCode(status),
+    status,
   });
 }
-
 
 const fs = require("fs"); //doi file name
 let path = require("path");
 
-const profilePostCMND = async (req,res) => {
+const profilePostCMND = async (req, res) => {
   // console.log(req.files);
   // console.log(req.files[1])
   let result = validationResult(req);
@@ -658,7 +662,8 @@ const profilePostCMND = async (req,res) => {
         req.session.flash = {
           type: "danger",
           intro: "Oops!",
-          message: "You upload not valid, please upload 2 pictures or we will take old picture",
+          message:
+            "You upload not valid, please upload 2 pictures or we will take old picture",
         };
         return res.redirect("/users/profile");
       } catch (error) {
@@ -671,13 +676,20 @@ const profilePostCMND = async (req,res) => {
       // fs.renameSync(image.path, imagePath);
       // imageFileName = pathofimage;
       try {
-        if (await handleUpdateFrontCMND(req.files[0].filename, username) &&
-        await handleUpdateBackCMND(req.files[1].filename,username) &&
-          await updateStatusAndLastModifiedByUsername(username,0,new Date(Date.now()))) {
+        if (
+          (await handleUpdateFrontCMND(req.files[0].filename, username)) &&
+          (await handleUpdateBackCMND(req.files[1].filename, username)) &&
+          (await updateStatusAndLastModifiedByUsername(
+            username,
+            0,
+            new Date(Date.now())
+          ))
+        ) {
           req.session.flash = {
             type: "success",
             intro: "Congratulation!",
-            message: "Upload CMND successfully!!!! Please wait for admin verify",
+            message:
+              "Upload CMND successfully!!!! Please wait for admin verify",
           };
           return res.redirect("/users/profile");
         } else {
@@ -692,7 +704,6 @@ const profilePostCMND = async (req,res) => {
         console.log(error);
       }
     }
-
   } else {
     const errors = result.mapped();
     let errorMessage = errors[Object.keys(errors)[0]].msg;
@@ -703,8 +714,7 @@ const profilePostCMND = async (req,res) => {
     };
     res.redirect("/users/profile");
   }
-}
-
+};
 
 // todo Get /users/card
 async function cardGet(req, res) {
@@ -882,29 +892,29 @@ function formatDateTime(time) {
   return `${change.getFullYear()}-${change.getMonth()}-${change.getDate()}`;
 }
 
-const getRechargeByUser = async(req,res)=>{
-  const userData = req.userClaims
-    try {
-        const rawData = await getRechargeListByUser(userData.username)
-        console.log(rawData)
-        data = rawData.map(e => ({
-            id: e.id,
-            money: e.money,
-            card_number: e.card_number,
-            recharge_date: formatDateTime(e.recharge_date),
-        }))
-        return res.json({
-            code: 0,
-            message: "Get recharge data successful",
-            data
-        })
-    } catch (error) {
-        return res.json({
-            code: 1,
-            message: error.message,
-        })
-    }
-}
+const getRechargeByUser = async (req, res) => {
+  const userData = req.userClaims;
+  try {
+    const rawData = await getRechargeListByUser(userData.username);
+    console.log(rawData);
+    data = rawData.map((e) => ({
+      id: e.id,
+      money: e.money,
+      card_number: e.card_number,
+      recharge_date: formatDateTime(e.recharge_date),
+    }));
+    return res.json({
+      code: 0,
+      message: "Get recharge data successful",
+      data,
+    });
+  } catch (error) {
+    return res.json({
+      code: 1,
+      message: error.message,
+    });
+  }
+};
 
 module.exports = {
   resetPasswordGet,
@@ -925,5 +935,5 @@ module.exports = {
   cardGet,
   cardPost,
   apiGetTransHistory,
-  getRechargeByUser
+  getRechargeByUser,
 };

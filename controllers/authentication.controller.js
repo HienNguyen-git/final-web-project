@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken");
 
 const permissionNotNeededRoutes = [
-  "GET /",
   "GET /users/login",
   "POST /users/login",
   "GET /users/register",
