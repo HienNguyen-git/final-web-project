@@ -726,6 +726,8 @@ async function cardGet(req, res) {
     routerPath: "account/card",
     data: raw,
   });
+
+  res.render("account/user-change-pw", { title: "changepassword" });
 }
 
 // todo Post /users/card
@@ -836,12 +838,6 @@ function getDataFromToken(req) {
   } catch {
     return null;
   }
-}
-
-function formatDateTime(time) {
-  let change = new Date(time);
-
-  return `${change.getFullYear()}-${change.getMonth()}-${change.getDate()}`;
 }
 
 const getRechargeByUser = async (req, res) => {

@@ -13,10 +13,11 @@ var indexRouter = require("./routes/index.route");
 var usersRouter = require("./routes/users.route");
 var usersDepositRouter = require("./routes/deposit.route");
 var usersWithdrawRouter = require("./routes/withdraw.route");
+var usersRechargeRouter = require("./routes/recharge.route");
 const adminRouter = require("./routes/admin.route");
 
 var app = express();
-const bodyParser = require('body-parser'); // xử form dữ liệu
+const bodyParser = require("body-parser"); // xử form dữ liệu
 app.use(bodyParser.urlencoded({ extended: false })); //form
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -53,7 +54,6 @@ app.engine(
           fnFalse = options.inverse;
         return status == 4 ? fnTrue(this) : fnFalse(this);
       },
-      
     },
   })
 );
@@ -97,11 +97,12 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/deposit", usersDepositRouter);
 app.use("/withdraw", usersWithdrawRouter);
+app.use("/recharge", usersRechargeRouter);
 app.use("/admin", adminRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  next(createError(404)); 
+  next(createError(404));
 });
 
 // error handler

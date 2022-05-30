@@ -108,6 +108,33 @@ $(document).ready(() => {
     };
   }
 
+  // * Javascript for GET /recharge
+  if (document.getElementById("view-exchange-recharge")) {
+    let form = document.getElementById("form-recharge");
+    form.onsubmit = (e) => {
+      e.preventDefault();
+
+      let card_number = $(`input[name="card-number"]`).val();
+      let expire_date = $(`input[name="expire-date"]`).val();
+      let cvv = $(`input[name="cvv"]`).val();
+
+      let money = $(`input[name="amount"]`).val();
+
+      let data = {
+        card_number,
+        expire_date,
+        cvv,
+        money,
+      };
+
+      $.post("/recharge", data, (response) => {
+        if (response.success) {
+          // ? Redirect về đâu
+        }
+        alert(response.message);
+      });
+    };
+  }
   // * Javascript for GET /admin/withdraw
   if (document.getElementById("view-admin-withdraw")) {
     loadData();
