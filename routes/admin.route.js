@@ -9,11 +9,11 @@ const {
   getWithdrawMore5m,
   postWithdrawMore5m,
   apiGetWithdrawMore5m,
+  apiGetTransHistory,
   getTransHistory,
   getTransHistoryDetail,
   postRejectDeposit5m,
 } = require("../controllers/admin.controller");
-const { apiGetTransHistory } = require("../controllers/users.controller");
 const { adminWithdrawValidator } = require("../validations/account");
 var router = express.Router();
 
@@ -28,7 +28,7 @@ router.put("/account", handleAccountStatus);
 
 router.get("/deposit", getDepositMore5m);
 router.post("/deposit", postDepositMore5m);
-router.post("/deposit2",postRejectDeposit5m);
+router.post("/deposit2", postRejectDeposit5m);
 
 router.get("/trans-history", getTransHistory);
 router.get("/trans-history/:choice", apiGetTransHistory);

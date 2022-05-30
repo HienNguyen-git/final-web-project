@@ -23,7 +23,7 @@
                 <th>Phí giao dịch</th>
                 <td>{{data.fee}}</td>
                 <th>Status</th>
-                <td class="font-weight-bold text-{{statusType}}">{{statusMessage}}</td>
+                {{{data.status}}}
             </tr>
             <tr>
                 <th>Ghi chú</th>
@@ -47,7 +47,7 @@
             </tr>
             <tr>
                <th>Trạng thái</th>
-                <td class="font-weight-bold text-{{statusType}}">{{statusMessage}}</td>
+                {{{data.status}}}
             </tr>
       </table>
       {{/if}}
@@ -79,7 +79,7 @@
                 <th>Ngày chuyển tiền</th>
                 <td>{{data.date}}</td>
                 <th>Trạng thái</th>
-                <td class="font-weight-bold text-{{statusType}}">{{statusMessage}}</td>
+                {{{data.status}}}
             </tr>
       </table>
       {{/if}}
@@ -106,7 +106,7 @@
                 <th>Ngày chuyển tiền</th>
                 <td>{{data.date}}</td>
                 <th>Trạng thái</th>
-                <td class="font-weight-bold text-{{statusType}}">{{statusMessage}}</td>
+                {{{data.status}}}
             </tr>
       </table>
       {{/if}}

@@ -201,29 +201,10 @@ $(document).ready(() => {
        * Output: Data has been append to the table
        */
       let tableBody = $("#tbody");
-      let statusMessage = {
-        "-1": "Bị từ chối",
-        0: "Đang chờ duyệt",
-        1: "Thành công",
-        2: "Admin đã duyệt",
-      };
 
-      let statusType = {
-        "-1": "danger",
-        0: "warning",
-        1: "success",
-        2: "success",
-      };
-
-      let type = statusType[data.status];
-      data.status = statusMessage[data.status];
-      if (choice === "1") {
-        data.status = "Thành công";
-        type = "success";
-      } else if (choice === "5") {
-        data.status = "Thành công";
+      console.log(data);
+      if (choice === "5") {
         data.value = data.price;
-        type = "success";
       }
       let tableContent = `
       <tr>
@@ -231,7 +212,7 @@ $(document).ready(() => {
           <td>${data.username}</td>
           <td>${data.value}</td>
           <td>${data.date}</td>
-          <td class="font-weight-bold text-${type}">${data.status}</td>
+          ${data.status}
           <td>
             <a href="/admin/trans-history/${choice}/${data.id}" class="btn btn-sm btn-primary">
               <i class="fa-solid fa-eye"></i>

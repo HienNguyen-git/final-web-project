@@ -822,54 +822,6 @@ function assignDataToCookie(res, data) {
   }
 }
 
-async function apiGetTransHistory(req, res) {
-  // let userData = req.userClaims;
-
-  // if (userData.username !== "admin") {
-  //   return res.json({
-  //     success: false,
-  //     message: "Phải là admin để sử dụng api này",
-  //   });
-  // }
-  let choice = parseInt(req.params.choice);
-
-  let data = null;
-  switch (choice) {
-    case 1:
-      // Nạp tiền - recharge
-      data = await getAllRecharges();
-
-      break;
-    case 2:
-      // Rút tiền - withdraw
-      data = await getAllWithdraws();
-
-      break;
-    case 3:
-      // Chuyển tiền - deposit
-      data = await getAllDepositsSender();
-      break;
-    case 4:
-      //  Nhận tiền - deposit
-      data = await getAllDepositsReceiver();
-      break;
-    case 5:
-      // Thanh toán dịch vụ - phone_card
-      data = await getAllBills();
-      break;
-    default:
-      return res.json({
-        success: false,
-        message: "Không có option này",
-      });
-  }
-
-  return res.json({
-    success: true,
-    message: "Lấy lịch sử giao dịch thành công",
-    data: data,
-  });
-}
 function getDataFromToken(req) {
   /**
    * Function này sẽ giải mã token và trả về data lấy được từ token
@@ -934,6 +886,5 @@ module.exports = {
   profilePostCMND,
   cardGet,
   cardPost,
-  apiGetTransHistory,
   getRechargeByUser,
 };
