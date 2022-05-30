@@ -328,6 +328,7 @@ const getSenderByUser = async (req, res) => {
             feeperson: e.feeperson,
             note: e.note,
             status: encodeStatusCode(e.status),
+            statusCode: e.status,
             date: formatDateTime(e.date),
         }))
         return res.json({
@@ -356,6 +357,7 @@ const getReceiverByUser = async (req,res)=>{
             feeperson: e.feeperson,
             note: e.note,
             status: encodeStatusCode(e.status),
+            statusCode: e.status,
             date: formatDateTime(e.date),
         }))
         return res.json({

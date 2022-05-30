@@ -44,6 +44,8 @@ const {
   generateRandomPassword,
   generateUsername,
   encodeStatusCode,
+  formatDateTime,
+  formatDate,
 } = require("../config/helper");
 const { validationResult } = require("express-validator");
 var nodemailer = require("nodemailer"); // khai báo sử dụng module nodemailer
@@ -644,6 +646,8 @@ async function profileGet(req, res) {
   let userData = req.userClaims;
 
   let userDetail = await getUserDetailByUserName(userData.username);
+  console.log(userDetail)
+  userDetail.date_of_birth = formatDate(userDetail.date_of_birth)
   let status = (await getUserStatusByUserName(userData.username)).status;
 
   console.log("status", status);

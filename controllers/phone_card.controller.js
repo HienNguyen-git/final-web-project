@@ -1,5 +1,6 @@
 const { dataProcess, generateCode, formatDate } = require("../config/helper")
 const { getNetworkProvider, createBill, getPhoneCardListByUser } = require("../models/phone_card.model")
+const { getUserDetailByUserName, updateTotalValue } = require("../models/user.model")
 
 const getPhoneCard = async (req, res) => {
     const networkProvider = dataProcess(await getNetworkProvider())
@@ -7,11 +8,12 @@ const getPhoneCard = async (req, res) => {
 }
 
 const handleBuyPhoneCard = async (req,res)=>{
-    // const username = req.session.username
-    const username = 'user1'
+    const username = req.userClaims.username
     const {name, type, amount} = req.body
+    console.log(name, type, amount)
     const phoneCardType = [10000,20000,50000,100000]
     const networkProvider = await dataProcess(await getNetworkProvider())
+    const userData =  await getUserDetailByUserName(username)
     const nameIndex = networkProvider.findIndex(e=>e.provider_number==name)
     if(name===undefined|| name===''){
         return res.json({
@@ -45,26 +47,36 @@ const handleBuyPhoneCard = async (req,res)=>{
         })
     }
     const numAmount = +amount
+    const typeNum = +type
+    console.log(numAmount*typeNum)
+    
     // Create new bill
     const tmp = []
     for(let i=0;i<numAmount;i++){
         tmp.push(generateCode(name))
     }
     const codeList = tmp.join(",")
-
-    try {
-        if(await createBill(username,name,codeList,type,amount)){
-            return res.json({
-                code: 0,
-                message: "Get request successful!",
-                data: codeList
+    if(userData.total_value<numAmount*typeNum){
+        return res.json({
+            code: 1,
+            message: "Your balance is not enough",
+        })
+    }else{
+        try {
+            if(await createBill(username,name,codeList,type,amount)){
+                await updateTotalValue(userData.total_value-numAmount*typeNum, username)
+                return res.json({
+                    code: 0,
+                    message: "Get request successful!",
+                    data: codeList
+                })
+            }
+        } catch (error) {
+            res.json({
+                code: 1,
+                message: error.message,
             })
         }
-    } catch (error) {
-        res.json({
-            code: 1,
-            message: error.message,
-        })
     }
 }
 
