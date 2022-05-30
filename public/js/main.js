@@ -281,74 +281,73 @@ $(document).ready(() => {
 
       form.onsubmit = (e) => {
         e.preventDefault();
-        const suppported_extensions = ["jpg", "png", "docx", "pdf"];
+        const suppported_extensions = ["jpg", "png"];
 
         let phone = document.getElementById("phone").value;
         let email = document.getElementById("email").value;
         let name = document.getElementById("name").value;
         let date_of_birth = document.getElementById("date_of_birth").value;
         let address = document.getElementById("address").value;
-
         let frontCMND = document.getElementById("file-front-cmnd");
         let backCMND = document.getElementById("file-back-cmnd");
+        if(phone.length === 0){
+          console.log(phone.length)
+          showMessage("Please enter your phone", "error")
+        }else if(email.length === 0){
+          showMessage("Please enter your email", "error")
+          
+        }else if(name.length === 0){
+          showMessage("Please enter your name", "error")
 
-        let data = new FormData();
+        }else if(date_of_birth.length === 0){
+          showMessage("Please enter your date of birth", "error")
 
-        data.append("phone", phone);
-        data.append("email", email);
-        data.append("name", name);
-        data.append("date_of_birth", date_of_birth);
-        data.append("address", address);
-
-        if (frontCMND.files[0] && backCMND.files[0]) {
-          // let file = input.files[0];
-          // let extension = getExtension(file.name);
-          // let size = file.size;
-
-          // if (size >= MAX_FILE_SIZE) {
-          //   showError("File size exceeds the maximum size");
-          //   throw new Error("File size exceeds the maximum size");
-          // }
-          // if (!suppported_extensions.includes(extension)) {
-          //   showError("File type is not supported!");
-          //   throw new Error("File type is not supported!");
-          // }
-          // data.append("file_name", file.name);
-          data.append("front_cmnd", frontCMND.files[0]);
-          data.append("back_cmnd", backCMND.files[0]);
-        }
-
-        let xhr = new XMLHttpRequest();
-
-        // xhr.upload.addEventListener("progress", function (e) {
-        //   let loaded = e.loaded;
-        //   let total = e.total;
-        //   let progress = (loaded * 100) / total;
-
-        //   $(".progress-bar").attr("style", "width: " + progress + "%;");
-        // });
-
-        xhr.onload = function () {
-          if (xhr.readyState === xhr.DONE) {
-            if (xhr.status === 200) {
-              let response = JSON.parse(xhr.responseText);
-              if (response.code === 0) {
-                // SUCCESS
-                showMessage(response.message);
-              } else {
-                // FAIL
-                showMessage(response.message, "error");
-              }
-              // RESET PROGRESS BAR
-              // setTimeout(function () {
-              //   $(".progress-bar").attr("style", "width: 0");
-              // }, 2000);
-            }
+        }else if(address.length === 0){
+          showMessage("Please enter your address", "error")
+        }else if(frontCMND.files[0] == undefined){
+          showMessage("Please enter front CMND", "error")
+        }else if(backCMND.files[0] == undefined){
+          showMessage("Please enter back CMND", "error")
+        }else {
+          //console.log(frontCMND.files[0].name.split('.').pop().toLowerCase())
+          let extensionFrontCMND = frontCMND.files[0].name.split('.').pop().toLowerCase()
+          let extensionBackCMND = backCMND.files[0].name.split('.').pop().toLowerCase()
+          
+          if (!suppported_extensions.includes(extensionFrontCMND) || 
+          !suppported_extensions.includes(extensionBackCMND)) {
+            showMessage("File type is not supported! Only allow image png or jpg","error");
           }
-        };
-
-        xhr.open("POST", "/users/register", true);
-        xhr.send(data);
+          else{
+            let data = new FormData();
+    
+            data.append("phone", phone);
+            data.append("email", email);
+            data.append("name", name);
+            data.append("date_of_birth", date_of_birth);
+            data.append("address", address);
+            data.append("front_cmnd", frontCMND.files[0]);
+            data.append("back_cmnd", backCMND.files[0]);
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "/users/register", true);
+            xhr.send(data);
+            xhr.onload = function () {
+              if (xhr.readyState === xhr.DONE) {
+                if (xhr.status === 200) {
+                  let response = JSON.parse(xhr.responseText);
+                  if (response.code === 0) {
+                    console.log(response.code)
+                    // SUCCESS
+                    showMessage(response.message);
+                  } else {
+                    // FAIL
+                    showMessage(response.message, "error");
+                  }
+                  
+                }
+              }
+            };
+          }
+        }
       };
     }
   }

@@ -89,12 +89,14 @@ const createAnAccount = (
   email,
   name,
   date_of_birth,
-  address
+  address,
+  font_cmnd,
+  back_cmnd
 ) =>
   new Promise((resolve, reject) => {
     const sql =
-      "insert into user_detail(username, phone, email, name, date_of_birth, address) values(?,?,?,?,?,?)";
-    const value = [username, phone, email, name, date_of_birth, address];
+      "insert into user_detail(username, phone, email, name, date_of_birth, address,font_cmnd,back_cmnd) values(?,?,?,?,?,?,?,?)";
+    const value = [username, phone, email, name, date_of_birth, address,font_cmnd,back_cmnd];
     connect.query(sql, value, (err) => {
       if (err) reject(err.message);
       resolve(true);
@@ -373,6 +375,14 @@ const getUsernameByEmail = (email) => new Promise((resolve,reject) =>{
   })
 })
 
+const getEmailPhoneExistOrNot = (email,phone)=> new Promise((resolve,reject) =>{
+  connect.query('select email,phone from user_detail where email = ? or phone = ?',[email,phone],(err,result) =>{
+    if(err) reject(err)
+    else{
+      resolve(true)
+    }
+  })
+})
 module.exports = {
   handlePostOTP,
   handleSelectFrontCMND,
@@ -398,6 +408,7 @@ module.exports = {
   getUserNameByPhoneNumber,
   getUserStatusByUserName,
   updateStatusAndLastModifiedByUsername,
-  getUsernameByEmail
+  getUsernameByEmail,
+  getEmailPhoneExistOrNot,
 
 };
