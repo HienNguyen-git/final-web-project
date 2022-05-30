@@ -78,7 +78,7 @@ const requestOtpToMail = (req, res) => {
     });
 
     // config mail server = mail thầy
-    // var transporter = nodemailer.createTransport(smtpTransport({ 
+    // var transporter = nodemailer.createTransport(smtpTransport({
     //     tls: {
     //         rejectUnauthorized: false
     //     },
@@ -467,7 +467,6 @@ async function handleLogin(req, res, next) {
         } else if (acc.abnormal === 1) {
           // Khóa tài khoản chờ quản trị viên duyệt
           await updateAbnormal(username, 2);
-          await updateStatusByUsername(username, 4);
           return res.json({
             success: false,
             message:
@@ -639,7 +638,7 @@ const fs = require("fs"); //doi file name
 let path = require("path");
 
 const profilePostCMND = async (req, res) => {
-   console.log(req.files);
+  console.log(req.files);
   // console.log(req.files[1])
   let result = validationResult(req);
   if (result.errors.length === 0) {

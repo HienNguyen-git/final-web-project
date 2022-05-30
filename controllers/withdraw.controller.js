@@ -88,7 +88,8 @@ async function handleWithdraw(req, res) {
   }
 
   // Main
-  let status = total > 5000000 ? 0 : 1;
+
+  let status = amount > 5000000 ? 0 : 1;
   let withdraw = {
     username: userData.username,
     cardNumber: cardNumber,
