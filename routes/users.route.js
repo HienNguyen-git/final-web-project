@@ -1,6 +1,16 @@
 var express = require("express");
 const { getTransHistoryDetail } = require("../controllers/admin.controller");
 var router = express.Router();
+const multer = require("multer");
+const fileStorageEngine = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "--" + file.originalname);
+  },
+});
+const upload = multer({ storage: fileStorageEngine });
 
 const {
   resetPasswordGet,
@@ -21,6 +31,7 @@ const {
   handleFirstLogin,
   getRechargeByUser,
   profilePostCMND,
+  resetPassGet,
 } = require("../controllers/users.controller");
 const {
   changePassValidator,
@@ -54,7 +65,10 @@ router.get("/logout", logoutGet);
 router.post("/login", loginValidator, handleLogin);
 
 // *POST /register
-router.post("/register", handleRegister);
+router.post("/register",
+            upload.single("image"),
+            upload.single("image2"),
+            handleRegister);
 
 // * GET /change-password
 router.get("/change-password", changePassGet);
@@ -77,23 +91,14 @@ router.post(
 router.get("/account/resetpassword/sendOtp", sendOtp);
 router.post("/account/resetpassword/sendOtpPost", sendOtpPost);
 
-router.get("/account/resetpassword/changepassword", changePassGet);
+router.get("/account/resetpassword/changepassword", resetPassGet);
 router.post("/account/resetpassword/changepassword", changePassPost);
 
 router.post("/account/resetpassword/resendOtpPost", resendOtpPost);
 
 router.get("/profile", profileGet);
 
-const multer = require("multer");
-const fileStorageEngine = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "public/images");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "--" + file.originalname);
-  },
-});
-const upload = multer({ storage: fileStorageEngine });
+
 router.post(
   "/profile",
   upload.array("images", 2),

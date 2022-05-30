@@ -28,6 +28,7 @@ const {
   getUserNameByPhoneNumber,
   getUserStatusByUserName,
   updateStatusAndLastModifiedByUsername,
+  getUsernameByEmail,
 } = require("../models/user.model");
 
 const {
@@ -79,7 +80,7 @@ const requestOtpToMail = (req, res) => {
     });
 
     // config mail server = mail thầy
-    // var transporter = nodemailer.createTransport(smtpTransport({ 
+    // var transporter = nodemailer.createTransport(smtpTransport({
     //     tls: {
     //         rejectUnauthorized: false
     //     },
@@ -117,7 +118,7 @@ const requestOtpToMail = (req, res) => {
         //lưu vào db
         let time = Date.now() + 60000;
         let day = new Date(time);
-        req.session.email = email;
+         req.session.email = email;
         handlePostOTP(email, otp, day);
         req.session.flash = {
           type: "success",
@@ -166,6 +167,9 @@ const sendOtpPost = async (req, res) => {
     res.redirect("/users/account/resetpassword/sendOtp");
   }
 };
+const resetPassGet = (req, res) => {
+  res.render("account/changepassword", { title: "changepassword" });
+};
 
 const changePassGet = (req, res) => {
   res.render("account/user-change-pw", { title: "changepassword" });
@@ -181,70 +185,79 @@ const firstLoginGet = (req, res) => {
 };
 
 const changePassPost = async (req, res) => {
-  let result = validationResult(req);
-  if (result.errors.length === 0) {
-    let { newpass, renewpass } = req.body;
-    // console.log(password,newpass,renewpass);
-    if (newpass !== renewpass || newpass === "" || renewpass === "") {
-      req.session.flash = {
-        type: "danger",
-        intro: "Oops!",
-        message: "New password and Renew Password have problem",
-      };
-      return res.redirect("/users/account/resetpassword/changepassword");
-    } else if (await handleChangePass(newpass, req.session.email)) {
-      req.session.flash = {
-        type: "success",
-        intro: "Congratulation!",
-        message: "Change password successful",
-      };
-      return res.redirect("/users/login");
+  try {
+    
+    let result = validationResult(req);
+    let username = await getUsernameByEmail(req.session.email);
+    console.log(username)
+    if (result.errors.length === 0) {
+      let { newpass, renewpass } = req.body;
+      // console.log(password,newpass,renewpass);
+      if (newpass !== renewpass || newpass === "" || renewpass === "") {
+        req.session.flash = {
+          type: "danger",
+          intro: "Oops!",
+          message: "New password and Renew Password have problem",
+        };
+        return res.redirect("/users/account/resetpassword/changepassword");
+      } else if (await handleChangePass(newpass, username)) {
+        req.session.flash = {
+          type: "success",
+          intro: "Congratulation!",
+          message: "Change password successful",
+        };
+        return res.redirect("/users/login");
+      } else {
+        req.session.flash = {
+          type: "danger",
+          intro: "Oops!",
+          message: "Some thing went wrong here2",
+        };
+        return res.redirect("/users/account/resetpassword/changepassword");
+      }
     } else {
+      const errors = result.mapped();
+      let errorMessage = errors[Object.keys(errors)[0]].msg;
       req.session.flash = {
         type: "danger",
         intro: "Oops!",
-        message: "Some thing went wrong here2",
+        message: errorMessage,
       };
-      return res.redirect("/users/account/resetpassword/changepassword");
+      res.redirect("/users/account/resetpassword/changepassword");
     }
-  } else {
-    const errors = result.mapped();
-    let errorMessage = errors[Object.keys(errors)[0]].msg;
-    req.session.flash = {
-      type: "danger",
-      intro: "Oops!",
-      message: errorMessage,
-    };
-    res.redirect("/users/account/resetpassword/changepassword");
+  } catch (error) {
+    console.log(error)
+    return res.redirect("/users/account/resetpassword/changepassword");
   }
 };
 
 const resendOtpPost = (req, res) => {
   // let { email } = req.body;
   const otp = Math.floor(100000 + Math.random() * 900000);
-  // var transporter = nodemailer.createTransport({ // config mail server
-  //     service: 'Gmail',
-  //     auth: {
-  //         user: 'nchdang16012001@gmail.com',
-  //         pass: 'mlrafbeyqtvtqloe'
-  //     }
-  // });
-  var transporter = nodemailer.createTransport(
-    smtpTransport({
-      // config mail server
-      tls: {
-        rejectUnauthorized: false,
-      },
-      // service: 'Gmail',
-      host: "mail.phongdaotao.com",
-      port: 25,
-      secureConnection: false,
+  var transporter = nodemailer.createTransport({ // config mail server
+      service: 'Gmail',
       auth: {
-        user: "sinhvien@phongdaotao.com",
-        pass: "svtdtu",
-      },
-    })
-  );
+          user: 'nchdang16012001@gmail.com',
+          pass: 'mlrafbeyqtvtqloe'
+      }
+  });
+  //mail thầy
+  // var transporter = nodemailer.createTransport(
+  //   smtpTransport({
+  //     // config mail server
+  //     tls: {
+  //       rejectUnauthorized: false,
+  //     },
+  //     // service: 'Gmail',
+  //     host: "mail.phongdaotao.com",
+  //     port: 25,
+  //     secureConnection: false,
+  //     auth: {
+  //       user: "sinhvien@phongdaotao.com",
+  //       pass: "svtdtu",
+  //     },
+  //   })
+  // );
 
   var mainOptions = {
     // thiết lập đối tượng, nội dung gửi mail
@@ -291,68 +304,73 @@ function logoutGet(req, res) {
 
 // todo POST /users/register
 const handleRegister = async (req, res) => {
-  const { phone, email, name, date_of_birth, address } = req.body;
+  console.log('helo')
+  // const { phone, email, name, date_of_birth, address } = req.body;
+  // console.log(phone, email, name, date_of_birth, address)
+  // console.log(req.file.cmndfront)
+  // console.log(req.file.cmndback)
+
   // console.log(phone)
-  const randomUsername = generateUsername(1000000000, 9000000000);
-  const randomPassword = generateRandomPassword(6);
-  console.log(randomPassword);
-  const salt = await bcrypt.genSalt(10);
-  const hashPassword = await bcrypt.hash(randomPassword.toString(), salt);
-  if (phone === undefined || phone === "") {
-    return res.json({
-      code: 1,
-      message: "Please enter your phone",
-    });
-  } else if (!validatePhoneNumber.validate(phone)) {
-    return res.json({
-      code: 1,
-      message: "Phone's form is invalid",
-    });
-  } else if (phone.length > 11 || phone.length < 10) {
-    return res.json({
-      code: 1,
-      message: "Phone must have 10 or 11 number",
-    });
-  } else if (email === undefined || email === "") {
-    return res.json({
-      code: 1,
-      message: "Please enter your email",
-    });
-  } else if (!emailvalidator.validate(email)) {
-    return res.json({
-      code: 1,
-      message: "Email's format is invalid",
-    });
-  } else if (name === undefined || name === "") {
-    return res.json({
-      code: 1,
-      message: "Please enter your name",
-    });
-  } else if (date_of_birth === undefined || date_of_birth === "") {
-    return res.json({
-      code: 1,
-      message: "Please enter your date of birth",
-    });
-  } else if (address === undefined || address === "") {
-    return res.json({
-      code: 1,
-      message: "Please enter your address",
-    });
-  } else {
-    // Do mail thầy tui nghĩ đang có vấn đề nền gửi k dc, hôm kia tui có thấy mail gửi dc. Nên t để code dòng từ 287 -> 292 ở đây để tạo dc account và lưu trong db trước để thao tác mấy khác trước á
-    // còn nếu muốn chạy đúng (gửi dc accoutn về mail) thì mình đóng code dòng 287 -> 292 lại rồi mở dòng 293 -> 327 để chạy. Thì này nó sẽ báo Something went wrong.
-    // T có test thử bên gửi mã OTP nó cũng bị zậy nên t nghĩ là do mail thầy đang trục trặc
-    await createAnAccount(
-      randomUsername,
-      phone,
-      email,
-      name,
-      date_of_birth,
-      address
-    );
-    await putAccCreatedIntoUser(randomUsername, hashPassword);
-    console.log(randomPassword);
-    console.log(randomUsername);
+  // const randomUsername = generateUsername(1000000000, 9000000000);
+  // const randomPassword = generateRandomPassword(6);
+  // console.log(randomPassword);
+  // const salt = await bcrypt.genSalt(10);
+  // const hashPassword = await bcrypt.hash(randomPassword.toString(), salt);
+  // if (phone === undefined || phone === "") {
+  //   return res.json({
+  //     code: 1,
+  //     message: "Please enter your phone",
+  //   });
+  // } else if (!validatePhoneNumber.validate(phone)) {
+  //   return res.json({
+  //     code: 1,
+  //     message: "Phone's form is invalid",
+  //   });
+  // } else if (phone.length > 11 || phone.length < 10) {
+  //   return res.json({
+  //     code: 1,
+  //     message: "Phone must have 10 or 11 number",
+  //   });
+  // } else if (email === undefined || email === "") {
+  //   return res.json({
+  //     code: 1,
+  //     message: "Please enter your email",
+  //   });
+  // } else if (!emailvalidator.validate(email)) {
+  //   return res.json({
+  //     code: 1,
+  //     message: "Email's format is invalid",
+  //   });
+  // } else if (name === undefined || name === "") {
+  //   return res.json({
+  //     code: 1,
+  //     message: "Please enter your name",
+  //   });
+  // } else if (date_of_birth === undefined || date_of_birth === "") {
+  //   return res.json({
+  //     code: 1,
+  //     message: "Please enter your date of birth",
+  //   });
+  // } else if (address === undefined || address === "") {
+  //   return res.json({
+  //     code: 1,
+  //     message: "Please enter your address",
+  //   });
+  // } else {
+  //   // Do mail thầy tui nghĩ đang có vấn đề nền gửi k dc, hôm kia tui có thấy mail gửi dc. Nên t để code dòng từ 287 -> 292 ở đây để tạo dc account và lưu trong db trước để thao tác mấy khác trước á
+  //   // còn nếu muốn chạy đúng (gửi dc accoutn về mail) thì mình đóng code dòng 287 -> 292 lại rồi mở dòng 293 -> 327 để chạy. Thì này nó sẽ báo Something went wrong.
+  //   // T có test thử bên gửi mã OTP nó cũng bị zậy nên t nghĩ là do mail thầy đang trục trặc
+  //   await createAnAccount(
+  //     randomUsername,
+  //     phone,
+  //     email,
+  //     name,
+  //     date_of_birth,
+  //     address
+  //   );
+  //   await putAccCreatedIntoUser(randomUsername, hashPassword);
+  //   console.log(randomPassword);
+  //   console.log(randomUsername);
     return res.json({
       code: 0,
       message:
@@ -393,7 +411,7 @@ const handleRegister = async (req, res) => {
     //     })
     //   }
     // });
-  }
+  // }
 };
 
 // todo POST /users/login
@@ -468,7 +486,6 @@ async function handleLogin(req, res, next) {
         } else if (acc.abnormal === 1) {
           // Khóa tài khoản chờ quản trị viên duyệt
           await updateAbnormal(username, 2);
-          await updateStatusByUsername(username, 4);
           return res.json({
             success: false,
             message:
@@ -640,7 +657,7 @@ const fs = require("fs"); //doi file name
 let path = require("path");
 
 const profilePostCMND = async (req, res) => {
-   console.log(req.files);
+  console.log(req.files);
   // console.log(req.files[1])
   let result = validationResult(req);
   if (result.errors.length === 0) {
@@ -858,6 +875,7 @@ const getRechargeByUser = async (req, res) => {
 };
 
 module.exports = {
+  resetPassGet,
   resetPasswordGet,
   requestOtpToMail,
   sendOtp,

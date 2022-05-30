@@ -28,6 +28,7 @@ async function handleRecharge(req, res) {
 
   const raw = await getCardByNumber(card_number);
 
+  money = +money;
   if (!raw) {
     return res.json({
       success: false,
@@ -50,14 +51,15 @@ async function handleRecharge(req, res) {
       message: "Cvv is not correct.",
     });
   }
-  if (raw.card_number === "222222" && money > 1000000) {
+
+  if (raw.card_number === 222222 && money > 1000000) {
     return res.json({
       success: false,
       message: "Thẻ này chỉ hỗ trợ nạp tiền tối đa là 1 triệu",
     });
   }
 
-  if (raw.card_number === "333333") {
+  if (raw.card_number === 333333) {
     return res.json({
       success: false,
       message: "Thẻ này đã hết tiền",
