@@ -140,7 +140,7 @@ async function getAllDepositsSender() {
    * Output: list of giao dịch
    */
   const sql =
-    "select a.* , b.username from deposit a left join user_detail b on a.phone_sender=b.phone";
+    "select a.* , b.username from deposit a left join user_detail b on a.phone_sender=b.phone order by date desc";
 
   return new Promise((resolve, reject) => {
     connect.query(sql, (err, result) => {
@@ -157,7 +157,7 @@ async function getAllDepositsReceiver() {
    * Output: list of giao dịch
    */
   const sql =
-    "select a.* , b.username from deposit a left join user_detail b on a.phone_receiver=b.phone";
+    "select a.* , b.username from deposit a left join user_detail b on a.phone_receiver=b.phone order by date desc";
 
   return new Promise((resolve, reject) => {
     connect.query(sql, (err, result) => {

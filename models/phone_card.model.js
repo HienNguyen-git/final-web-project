@@ -55,7 +55,7 @@ async function getBillById(id) {
 }
 
 const getPhoneCardListByUser = (username) => new Promise((resolve, reject) => {
-  connect.query("SELECT * from bill where username=?", [username], (err, result) => {
+  connect.query("SELECT * from bill where username=? order by date desc", [username], (err, result) => {
     if (err) reject(err)
     resolve(result)
   })
