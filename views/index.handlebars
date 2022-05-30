@@ -127,7 +127,6 @@
                         <tr>
                             <th>ID</th>
                             <th>Provider</th>
-                            <th>Code</th>
                             <th>Type</th>
                             <th>Quantity</th>
                             <th>Date</th>
@@ -278,10 +277,10 @@
                     <tr>
                         <td>${e.id}</td>
                         <td>${e.provider_number}</td>
-                        <td>${e.code}</td>
                         <td>${e.price}</td>
                         <td>${e.quantity}</td>
                         <td>${e.date}</td>
+                        <td><i data-toggle="modal" data-target="#view1"  onclick="handleView('${e.id}')" class="fa fa-edit action"></i></td>
                     </tr>
                     `
                 ).join("")

@@ -72,10 +72,11 @@ const getPhonecardByUser = async(req,res)=>{
     const userData = req.userClaims
   let data
   try {
+    const providerList = await getNetworkProvider();
     const rawData = await getPhoneCardListByUser(userData.username)
     data = rawData.map(e=>({
       id: e.id,
-      provider_number: e.provider_number,
+      provider_number: providerList.find(a=>a.provider_number==e.provider_number).name,
       code: e.code,
       status: e.status,
       price: e.price,
