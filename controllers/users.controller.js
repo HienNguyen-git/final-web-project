@@ -51,7 +51,7 @@ const {
   formatDateTime,
   formatDate,
 } = require("../config/helper");
-const { validationResult } = require("express-validator");
+const { validationResult, check } = require("express-validator");
 var nodemailer = require("nodemailer"); // khai báo sử dụng module nodemailer
 var smtpTransport = require("nodemailer-smtp-transport");
 const { off } = require("../config/db");
@@ -318,7 +318,9 @@ const handleRegister = async (req, res) => {
       message: err.message,
       });
     }
-    if(await getEmailPhoneExistOrNot(fields.email,fields.phone)){
+    let checkEP = await getEmailPhoneExistOrNot(fields.email,fields.phone)
+    console.log(checkEP !== undefined)
+    if(checkEP !== undefined){
             return res.json({
               code: 1,
               message: 'Email or Phone has exist. Please register another email or phone!',

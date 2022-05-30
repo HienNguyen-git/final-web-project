@@ -379,7 +379,8 @@ const getEmailPhoneExistOrNot = (email,phone)=> new Promise((resolve,reject) =>{
   connect.query('select email,phone from user_detail where email = ? or phone = ?',[email,phone],(err,result) =>{
     if(err) reject(err)
     else{
-      resolve(true)
+      
+      resolve(result[0])
     }
   })
 })
