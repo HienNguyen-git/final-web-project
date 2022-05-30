@@ -32,23 +32,7 @@
     <title>{{title}}</title>
   </head>
   <body>
-    
 
-  
-    {{#if flash}}
-    <div
-      class="text-center fade show alert alert-dismissible alert-{{flash.type}}"
-    >
-      <button
-        type="button"
-        class="close"
-        data-dismiss="alert"
-        aria-hidden="true"
-      >&times;</button>
-      <strong>{{flash.intro}}</strong>
-      {{flash.message}}
-    </div>
-  {{/if}}
   {{#if isAdmin}}
 		<div class="admin-section-header">
 			<div class="admin-logo">
@@ -128,7 +112,21 @@
           </div>
         </li>
       </ul>
-    </nav>
+  </nav>
+   {{#if flash}}
+    <div
+      class="text-center fade show alert alert-dismissible alert-{{flash.type}}"
+    >
+      <button
+        type="button"
+        class="close"
+        data-dismiss="alert"
+        aria-hidden="true"
+      >&times;</button>
+      <strong>{{flash.intro}}</strong>
+      {{flash.message}}
+    </div>
+  {{/if}}
     {{{body}}}
 	{{/if}}
   </body>
