@@ -14,7 +14,7 @@ const {
   updateTotalValue,
   updateTotalValueByDifference,
 } = require("../models/user.model");
-const { formatDateTime } = require("../config/helper");
+const { formatDateTime, encodeStatusCode } = require("../config/helper");
 
 // GET /withdraw
 function renderWithdraw(req, res) {
@@ -143,7 +143,7 @@ const getWithdrawByUser = async(req,res)=>{
       card_number: e.card_number,
       date: formatDateTime(e.date),
       value: e.value,
-      status: e.status,
+      status: encodeStatusCode(e.status),
       fee: e.fee,
       note: e.note,
     }))
