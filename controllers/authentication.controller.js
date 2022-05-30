@@ -52,6 +52,11 @@ class AuthenticationController {
       isAuthNotNeededRoute ? next() : res.redirect("/users/login");
     }
   }
+
+  async authenticateAdmin(req, res, next) {
+    // Chỉ cho admin truy cập vào trang admin
+    req?.userClaims.username === "admin" ? next() : res.redirect("/");
+  }
 }
 
 function getRouteKey(req) {

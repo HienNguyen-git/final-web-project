@@ -266,6 +266,7 @@ async function apiGetTransHistory(req, res) {
 
   data = data.map((currVal) => {
     currVal.status = encodeStatusCode(currVal.status);
+    currVal.date = formatDateTime(currVal.date);
     return currVal;
   });
   return res.json({
@@ -447,6 +448,10 @@ const apiGetWithdrawMore5m = async (req, res) => {
    */
   let withdraws = await getWithdrawAdmin();
 
+  withdraws = withdraws.map((currVal) => {
+    currVal.date = formatDateTime(currVal.date);
+    return currVal;
+  });
   return res.json({
     success: true,
     message: "Lấy withdraws cần duyệt thành công",
