@@ -72,19 +72,43 @@
 </div>
 
 <script>
-  const formCardPhone = document.getElementById('phone-card-form') const myAlert
-  = document.getElementById('my-alert') if(formCardPhone){
-  formCardPhone.addEventListener('submit',async e=>{ e.preventDefault() const
-  formData = new FormData(e.target) const {networkProvider, type, amount} =
-  Object.fromEntries(formData); //if() if(networkProvider===undefined){
-  showAlert("Please select your network provider") }else if(type===undefined){
-  showAlert("Please choose our price type") }else if(amount===undefined){
-  showAlert("Please select amount") }else{ myAlert.innerHTML ="" const myFetch =
-  await fetch(location.href,{ method: "POST", body: JSON.stringify({ name:
-  networkProvider, type, amount }), headers: { 'Content-Type':
-  'application/json' }, }) const res = await myFetch.json() console.log(res)
-  if(!res.code){ alert('Ticket purchase was successful') }else{
-  showAlert(res.message) } } }) } function showAlert(message){ myAlert.innerHTML
-  = "" const content = ` <div class="alert alert-danger" role="alert">
-  ${message} </div> ` myAlert.insertAdjacentHTML('beforeend', content) }
+  const formCardPhone = document.getElementById('phone-card-form')
+  const myAlert = document.getElementById('my-alert')
+
+  if (formCardPhone) {
+      formCardPhone.addEventListener('submit', async e => {
+          e.preventDefault()
+          const formData = new FormData(e.target)
+          const { networkProvider, type, amount } = Object.fromEntries(formData);
+          if (networkProvider === undefined) {
+              showAlert("Please select your network provider")
+          } else if (type === undefined) {
+              showAlert("Please choose our price type")
+          } else if (amount === undefined) {
+              showAlert("Please select amount")
+          } else {
+              myAlert.innerHTML = ""
+              const myFetch = await fetch(location.href, {
+                  method: "POST", 
+                  body: JSON.stringify({
+                      name: networkProvider, type, amount
+                  }), 
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+              })
+              const res = await myFetch.json() 
+              console.log(res)
+              if (!res.code) { 
+                alert('Ticket purchase was successful. Here are your code: '+ res.data+"\nYou can view your code again in Dashbroad") 
+                window.location.reload();
+              } 
+              else showAlert(res.message)
+          }
+      })
+  } function showAlert(message) {
+      myAlert.innerHTML = "" 
+      const content = ` <div class="alert alert-danger" role="alert"> ${message}</div> ` 
+      myAlert.insertAdjacentHTML('beforeend', content)
+  }
 </script>

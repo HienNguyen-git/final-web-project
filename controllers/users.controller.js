@@ -43,6 +43,7 @@ const {
   generateRandomPassword,
   generateUsername,
   encodeStatusCode,
+  formatDateTime,
 } = require("../config/helper");
 const { validationResult } = require("express-validator");
 var nodemailer = require("nodemailer"); // khai báo sử dụng module nodemailer
