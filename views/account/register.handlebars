@@ -68,9 +68,9 @@
             <input type="file" id="font_cmnd" placeholder="Enter avatar" name="font_cmnd" required class="form-control">
           </div> --}}
           <div class="form-group">
-              <label for="customFile">CMND:</label>
+              <label for="customFile">Front CMND:</label>
               <div class="custom-file">
-                <input type="file" class="custom-file-input" id="customFile" name="images" multiple >
+                <input type="file" class="custom-file-input" id="customFile" name="image" >
                 <label class="custom-file-label" for="customFile">Choose pictures</label>
               </div>
             </div>
@@ -80,10 +80,10 @@
               </div>
             </div>
            
-          {{!-- <div class="form-group">
+          <div class="form-group">
               <label for="customFile">Back CMND:</label>
               <div class="custom-file">
-                <input type="file" class="custom-file-input custom-file-input2" id="customFile" name="image" >
+                <input type="file" class="custom-file-input custom-file-input2" id="customFile" name="image2" >
                 <label class="custom-file-label custom-file-label2" for="customFile">Choose picture</label>
               </div>
             </div>
@@ -91,7 +91,7 @@
               <div class="col-sm-12">
                 <div class="preview-images"></div>
               </div>
-            </div> --}}
+            </div>
             
           <div class="form-group" id="my-alert"></div>
           <div class="form-group">
@@ -111,8 +111,9 @@
 
   // Add the following code if you want the name of the file appear on select
   $(".custom-file-input").on("change", function () {
-    var numFiles = $("input:file")[0].files.length;
-    $(this).siblings(".custom-file-label").addClass("selected").html(numFiles + " pictures");
+    //var numFiles = $("input:file")[0].files.length;
+    var fileName = $(this).val().split("\\").pop();
+    $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
     
   });
 
@@ -128,52 +129,56 @@
     if(formRegister){
         formRegister.addEventListener('submit',async e=>{
             e.preventDefault()
-            const formData = new FormData(e.target)
-            const {phone, email, name, date_of_birth, address} = Object.fromEntries(formData);
-            //if()
-            if(phone===undefined){
-              showAlert("Please enter your phone")
-            }else if(email===undefined){
-              showAlert("Please enter your email")
-            }else if(name===undefined){
-              showAlert("Please enter your name")
-            }else if(date_of_birth===undefined){
-              showAlert("Please enter your date of birth")
-            }else if(address===undefined){
-              showAlert("Please enter your address")
-            }else{
-              myAlert.innerHTML =""
-              const myFetch = await fetch(location.href,{
-                method: "POST",
-                body: JSON.stringify({
-                  phone,
-                  email,
-                  name,
-                  date_of_birth,
-                  address
-                }),
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-              })
-              const res =  await myFetch.json()
-              console.log(res)
-              if(!res.code){
-                alert('Create account successful. Please check your email to get your account!')
-              }else{
-                showAlert(res.message)
-              }
-            }
-        })
+            var input = document.querySelector('input[type="file"][ name="image"]')
+            var input2 = document.querySelector('input[type="file"][name="image2"]')
+            var phone = document.getElementById('phone').value;
+            var email = document.getElementById('email').value;
+            var name = document.getElementById('name').value;
+            var date_of_birth = document.getElementById('date_of_birth').value;
+            var address = document.getElementById('address').value;
+            
+            const formData = new FormData()
+            //const {phone, email, name, date_of_birth, address} = Object.fromEntries(formData);
+            //formData.append("phone", phone);
+            //formData.append("email", email);
+            //formData.append("name", name);
+            //formData.append("date_of_birth", date_of_birth);
+            //formData.append("address", address);
+
+            //formData.append("cmndfront", input.files[0]);
+            //formData.append("cmndback", input2.files[0]);
+            console.log(formData)
+            
+            let xhr = new XMLHttpRequest();
+
+            xhr.onload = function() {
+                if (xhr.readyState === xhr.DONE) {
+                    if (xhr.status === 200) {
+                        let response = JSON.parse(xhr.responseText);
+                        if (response.code === 0) {
+                            // SUCCESS
+                            alert(response.message);
+                        }else{
+                            // FAIL
+                            alert(response.message);
+                        }
+                    }
+                }
+            };
+
+            xhr.open("POST", location.href, true);
+            xhr.send(formData);
+            })
     }
 
     function showAlert(message){
-      myAlert.innerHTML = ""
-      const content = `
-        <div class="alert alert-danger" role="alert">
-          ${message}
-        </div>
-      `
-      myAlert.insertAdjacentHTML('beforeend', content)
+      console.log(message)
+      //myAlert.innerHTML = ""
+      //const content = `
+      //  <div class="alert alert-danger" role="alert">
+      //    ${message}
+      //  </div>
+      //`
+      //myAlert.insertAdjacentHTML('beforeend', content)
     }
 </script>

@@ -364,6 +364,15 @@ async function updateStatusAndLastModifiedByUsername(username, status,now) {
   });
 }
 
+const getUsernameByEmail = (email) => new Promise((resolve,reject) =>{
+  connect.query('select username from user_detail where email = ?',[email],(err,result) =>{
+    if(err) reject(err)
+    else{
+      resolve(result[0].username)
+    }
+  })
+})
+
 module.exports = {
   handlePostOTP,
   handleSelectFrontCMND,
@@ -389,4 +398,6 @@ module.exports = {
   getUserNameByPhoneNumber,
   getUserStatusByUserName,
   updateStatusAndLastModifiedByUsername,
+  getUsernameByEmail
+
 };
