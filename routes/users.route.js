@@ -65,10 +65,7 @@ router.get("/logout", logoutGet);
 router.post("/login", loginValidator, handleLogin);
 
 // *POST /register
-router.post("/register",
-            upload.single("image"),
-            upload.single("image2"),
-            handleRegister);
+router.post("/register", handleRegister);
 
 // * GET /change-password
 router.get("/change-password", changePassGet);
@@ -97,7 +94,6 @@ router.post("/account/resetpassword/changepassword", changePassPost);
 router.post("/account/resetpassword/resendOtpPost", resendOtpPost);
 
 router.get("/profile", profileGet);
-
 
 router.post(
   "/profile",

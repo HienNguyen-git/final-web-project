@@ -1,4 +1,4 @@
-
+<div id="view-account-register"></div>
 <h3 class="text-center my-5">Account Registration</h3>
 
 <!-- buộc toàn bộ dòng và cột phải bỏ trong class container -->
@@ -15,63 +15,99 @@
                   <i class="fas fa-user"></i>
                 </span>
               </div>
-              <input id="phone" type="text" name="phone" class="form-control" placeholder="Phone number">
+              <input
+                id="phone"
+                type="text"
+                name="phone"
+                class="form-control"
+                placeholder="Phone number"
+              />
             </div>
 
-          <div class="form-group">
-            <label for="user">Email</label>
-            <div class="input-group mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text">
-                  <i class="fas fa-user"></i>
-                </span>
+            <div class="form-group">
+              <label for="user">Email</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">
+                    <i class="fas fa-user"></i>
+                  </span>
+                </div>
+                <input
+                  id="email"
+                  type="text"
+                  name="email"
+                  class="form-control"
+                  placeholder="Email"
+                />
               </div>
-              <input id="email" type="text" name="email" class="form-control" placeholder="Email">
-            </div>
 
-          </div>
-          <div class="form-group">
-            <label for="pass">Full Name</label>
-            <div class="input-group mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text">
-                  <i class="fas fa-lock"></i>
-                </span>
-              </div>
-              <input type="text" name="name" id="name" class="form-control" placeholder="Full name">
             </div>
-          </div>
-          <div class="form-group">
-            <label for="pass">Date of birth</label>
-            <div class="input-group mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text">
-                  <i class="fas fa-lock"></i>
-                </span>
+            <div class="form-group">
+              <label for="pass">Full Name</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">
+                    <i class="fas fa-lock"></i>
+                  </span>
+                </div>
+                <input
+                  type="text"
+                  name="name"
+                  id="name"
+                  class="form-control"
+                  placeholder="Full name"
+                />
               </div>
-              <input type="date" name="date_of_birth" id="date_of_birth" class="form-control" placeholder="Date of birth">
             </div>
-          </div>
-          <div class="form-group">
-            <label for="pass">Address</label>
-            <div class="input-group mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text">
-                  <i class="fas fa-lock"></i>
-                </span>
+            <div class="form-group">
+              <label for="pass">Date of birth</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">
+                    <i class="fas fa-lock"></i>
+                  </span>
+                </div>
+                <input
+                  type="date"
+                  name="date_of_birth"
+                  id="date_of_birth"
+                  class="form-control"
+                  placeholder="Date of birth"
+                />
               </div>
-              <input type="text" name="address" id="address" class="form-control" placeholder="Address">
             </div>
-          </div>
-          {{!-- <div class="form-group">
+            <div class="form-group">
+              <label for="pass">Address</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">
+                    <i class="fas fa-lock"></i>
+                  </span>
+                </div>
+                <input
+                  type="text"
+                  name="address"
+                  id="address"
+                  class="form-control"
+                  placeholder="Address"
+                />
+              </div>
+            </div>
+            {{! <div class="form-group">
             <label for="pwd">Avatar:</label>
             <input type="file" id="font_cmnd" placeholder="Enter avatar" name="font_cmnd" required class="form-control">
-          </div> --}}
-          <div class="form-group">
+          </div> }}
+            <div class="form-group">
               <label for="customFile">Front CMND:</label>
               <div class="custom-file">
-                <input type="file" class="custom-file-input" id="customFile" name="image" >
-                <label class="custom-file-label" for="customFile">Choose pictures</label>
+                <input
+                  type="file"
+                  class="custom-file-input"
+                  id="file-front-cmnd"
+                  name="image"
+                />
+                <label class="custom-file-label" for="customFile">Choose
+                  pictures</label>
               </div>
             </div>
             <div class="row">
@@ -79,12 +115,20 @@
                 <div class="preview-images"></div>
               </div>
             </div>
-           
-          <div class="form-group">
+
+            <div class="form-group">
               <label for="customFile">Back CMND:</label>
               <div class="custom-file">
-                <input type="file" class="custom-file-input custom-file-input2" id="customFile" name="image2" >
-                <label class="custom-file-label custom-file-label2" for="customFile">Choose picture</label>
+                <input
+                  type="file"
+                  class="custom-file-input custom-file-input2"
+                  id="file-back-cmnd"
+                  name="image2"
+                />
+                <label
+                  class="custom-file-label custom-file-label2"
+                  for="customFile"
+                >Choose picture</label>
               </div>
             </div>
             <div class="row">
@@ -92,93 +136,21 @@
                 <div class="preview-images"></div>
               </div>
             </div>
-            
-          <div class="form-group" id="my-alert"></div>
-          <div class="form-group">
-            <button class="btn btn-success px-5" type="submit">Register</button>
+
+            <div class="form-group" id="my-alert"></div>
+            <div class="form-group">
+              <button
+                class="btn btn-success px-5"
+                type="submit"
+              >Register</button>
+            </div>
+            <div class="form-group">
+              <p>Already have an account?
+                <a href="/users/login">Login now!</a></p>
+            </div>
           </div>
-          <div class="form-group">
-            <p>Already have an account? <a href="/users/login">Login now!</a></p>
-          </div>
-          </div> 
         </form>
       </div>
     </div>
   </div>
 </div>
-
-<script>
-
-  // Add the following code if you want the name of the file appear on select
-  $(".custom-file-input").on("change", function () {
-    //var numFiles = $("input:file")[0].files.length;
-    var fileName = $(this).val().split("\\").pop();
-    $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
-    
-  });
-
-  $(".custom-file-input2").on("change", function () {
-    var fileName = $(this).val().split("\\").pop();
-    $(this).siblings(".custom-file-label2").addClass("selected").html(fileName);
-  });
-</script>
-
-<script>
-    const formRegister = document.getElementById('form-register')
-    const myAlert = document.getElementById('my-alert')
-    if(formRegister){
-        formRegister.addEventListener('submit',async e=>{
-            e.preventDefault()
-            var input = document.querySelector('input[type="file"][ name="image"]')
-            var input2 = document.querySelector('input[type="file"][name="image2"]')
-            var phone = document.getElementById('phone').value;
-            var email = document.getElementById('email').value;
-            var name = document.getElementById('name').value;
-            var date_of_birth = document.getElementById('date_of_birth').value;
-            var address = document.getElementById('address').value;
-            
-            const formData = new FormData()
-            //const {phone, email, name, date_of_birth, address} = Object.fromEntries(formData);
-            //formData.append("phone", phone);
-            //formData.append("email", email);
-            //formData.append("name", name);
-            //formData.append("date_of_birth", date_of_birth);
-            //formData.append("address", address);
-
-            //formData.append("cmndfront", input.files[0]);
-            //formData.append("cmndback", input2.files[0]);
-            console.log(formData)
-            
-            let xhr = new XMLHttpRequest();
-
-            xhr.onload = function() {
-                if (xhr.readyState === xhr.DONE) {
-                    if (xhr.status === 200) {
-                        let response = JSON.parse(xhr.responseText);
-                        if (response.code === 0) {
-                            // SUCCESS
-                            alert(response.message);
-                        }else{
-                            // FAIL
-                            alert(response.message);
-                        }
-                    }
-                }
-            };
-
-            xhr.open("POST", location.href, true);
-            xhr.send(formData);
-            })
-    }
-
-    function showAlert(message){
-      console.log(message)
-      //myAlert.innerHTML = ""
-      //const content = `
-      //  <div class="alert alert-danger" role="alert">
-      //    ${message}
-      //  </div>
-      //`
-      //myAlert.insertAdjacentHTML('beforeend', content)
-    }
-</script>
