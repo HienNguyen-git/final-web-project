@@ -275,6 +275,7 @@ $(document).ready(() => {
         .addClass("selected")
         .html(fileName);
     });
+
     handleUpload();
     function handleUpload() {
       let form = document.getElementById("form-register");
