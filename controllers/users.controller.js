@@ -77,7 +77,8 @@ const requestOtpToMail = (req, res) => {
       },
     });
 
-    // var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
+    // config mail server = mail thầy
+    // var transporter = nodemailer.createTransport(smtpTransport({ 
     //     tls: {
     //         rejectUnauthorized: false
     //     },
@@ -647,7 +648,7 @@ const fs = require("fs"); //doi file name
 let path = require("path");
 
 const profilePostCMND = async (req, res) => {
-  // console.log(req.files);
+   console.log(req.files);
   // console.log(req.files[1])
   let result = validationResult(req);
   if (result.errors.length === 0) {

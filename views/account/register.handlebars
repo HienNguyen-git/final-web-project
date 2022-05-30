@@ -68,10 +68,10 @@
             <input type="file" id="font_cmnd" placeholder="Enter avatar" name="font_cmnd" required class="form-control">
           </div> --}}
           <div class="form-group">
-              <label for="customFile">Front CMND:</label>
+              <label for="customFile">CMND:</label>
               <div class="custom-file">
-                <input type="file" class="custom-file-input" id="customFile" name="image" >
-                <label class="custom-file-label" for="customFile">Choose picture</label>
+                <input type="file" class="custom-file-input" id="customFile" name="images" multiple >
+                <label class="custom-file-label" for="customFile">Choose pictures</label>
               </div>
             </div>
             <div class="row">
@@ -79,19 +79,20 @@
                 <div class="preview-images"></div>
               </div>
             </div>
-          </div> 
-          <div class="form-group">
+           
+          {{!-- <div class="form-group">
               <label for="customFile">Back CMND:</label>
               <div class="custom-file">
-                <input type="file" class="custom-file-input" id="customFile" name="image" >
-                <label class="custom-file-label" for="customFile">Choose picture</label>
+                <input type="file" class="custom-file-input custom-file-input2" id="customFile" name="image" >
+                <label class="custom-file-label custom-file-label2" for="customFile">Choose picture</label>
               </div>
             </div>
             <div class="row">
               <div class="col-sm-12">
                 <div class="preview-images"></div>
               </div>
-            </div>
+            </div> --}}
+            
           <div class="form-group" id="my-alert"></div>
           <div class="form-group">
             <button class="btn btn-success px-5" type="submit">Register</button>
@@ -105,6 +106,21 @@
     </div>
   </div>
 </div>
+
+<script>
+
+  // Add the following code if you want the name of the file appear on select
+  $(".custom-file-input").on("change", function () {
+    var numFiles = $("input:file")[0].files.length;
+    $(this).siblings(".custom-file-label").addClass("selected").html(numFiles + " pictures");
+    
+  });
+
+  $(".custom-file-input2").on("change", function () {
+    var fileName = $(this).val().split("\\").pop();
+    $(this).siblings(".custom-file-label2").addClass("selected").html(fileName);
+  });
+</script>
 
 <script>
     const formRegister = document.getElementById('form-register')

@@ -63,7 +63,10 @@
           Waiting admin approved
           </button>
         {{/checkStatusIs0}}
-        
+        {{#checkStatusIs1 status}}
+          <button class="btn btn-success" data-toggle="modal" data-target="#add-fontcmnd"
+        style="margin:8px">Upload front CMND</button>
+        {{/checkStatusIs1}}
         {{#checkStatusIs3 status}}
           <button class="btn btn-success" data-toggle="modal" data-target="#add-fontcmnd"
         style="margin:8px">Upload front CMND</button>
