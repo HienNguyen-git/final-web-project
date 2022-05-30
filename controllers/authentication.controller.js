@@ -6,6 +6,15 @@ const permissionNotNeededRoutes = [
   "GET /users/register",
   "POST /users/register",
   "GET /users/logout",
+
+  "GET /users/account/resetpassword",
+  "POST /users/account/resetpassword",
+  "GET /users/account/resetpassword/sendOtp",
+  "POST /users/account/resetpassword/sendOtpPost",
+  "GET /users/account/resetpassword/changepassword",
+  "POST /users/account/resetpassword/changepassword",
+  "POST /users/account/resetpassword/resendOtpPost",
+
 ];
 
 class AuthenticationController {

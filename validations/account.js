@@ -182,11 +182,7 @@ const requestOtpToMailValidator = [
     .withMessage("Please enter email")
     .notEmpty()
     .withMessage("Email can not be empty"),
-  check("phone")
-    .exists()
-    .withMessage("Please enter phone number")
-    .notEmpty()
-    .withMessage("Phone number can not be empty"),
+  
 ];
 
 const withdrawValidator = [
