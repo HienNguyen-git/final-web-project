@@ -358,7 +358,7 @@ const getReceiverByUser = async (req,res)=>{
             note: e.note,
             status: encodeTransistionCode(e.status),
             statusCode: e.status,
-            date: encodeTransistionCode(e.date),
+            date: formatDateTime(e.date),
         }))
         return res.json({
             code: 0,

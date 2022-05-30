@@ -36,7 +36,7 @@ const encodeTransistionCode = (status)=>{
         case 2:
             return `<td class="text-success font-weight-bold"><i class="fa fa-check "></i> ${transistionStatusEncode[+status]}</td>`
         default:
-            return `<td class="text-muted font-weight-bold"><i class="fa fa-exclamation"></i> ${transistionStatusEncode[+status]}</td>`
+            return `<td class="text-danger font-weight-bold"><i class="fa fa-exclamation"></i> ${transistionStatusEncode[3]}</td>`
     }
 }
 
