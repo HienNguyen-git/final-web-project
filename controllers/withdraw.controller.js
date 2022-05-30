@@ -133,12 +133,12 @@ function getDataFromToken(req) {
   }
 }
 
-const getWithdrawByUser = async(req,res)=>{
-  const userData = req.userClaims
-  let data
+const getWithdrawByUser = async (req, res) => {
+  const userData = req.userClaims;
+  let data;
   try {
-    const rawData = await getWithdrawListByUsername(userData.username)
-    data = rawData.map(e=>({
+    const rawData = await getWithdrawListByUsername(userData.username);
+    data = rawData.map((e) => ({
       id: e.id,
       card_number: e.card_number,
       date: formatDateTime(e.date),
@@ -147,26 +147,25 @@ const getWithdrawByUser = async(req,res)=>{
       statusCode: e.status,
       fee: e.fee,
       note: e.note,
-    }))
+    }));
 
     return res.json({
       code: 0,
       message: "Get withdraw data successful",
-      data
-    })
+      data,
+    });
   } catch (error) {
     return res.json({
-      code:1,
+      code: 1,
       message: error.message,
-    })
+    });
   }
-  
-}
+};
 
-module.exports = { 
-  renderWithdraw, 
+module.exports = {
+  renderWithdraw,
   handleWithdraw,
-  getWithdrawByUser
+  getWithdrawByUser,
 };
 
 // 78RYZh

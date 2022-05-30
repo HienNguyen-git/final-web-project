@@ -33,9 +33,13 @@ const {
   getWithdrawAdmin,
   updateStatusById,
   getWithdrawById,
+  getAllWithdraws,
 } = require("../models/withdraw.model");
 const { getTranSHistoryByUsername } = require("../models/trans-history.model");
-const { getRechargeById } = require("../models/recharge.model");
+const {
+  getRechargeById,
+  getAllRecharges,
+} = require("../models/recharge.model");
 const { getAllBills, getBillById } = require("../models/phone_card.model");
 const getAdminHome = (req, res) => {
   res.render("admin/home", { title: "Admin", isAdmin: true, routerPath: "" });
@@ -217,6 +221,62 @@ const getTransHistory = async (req, res) => {
   });
 };
 
+// GET /admin/trans-history/:choice
+async function apiGetTransHistory(req, res) {
+  // let userData = req.userClaims;
+
+  // if (userData.username !== "admin") {
+  //   return res.json({
+  //     success: false,
+  //     message: "Phải là admin để sử dụng api này",
+  //   });
+  // }
+  let choice = parseInt(req.params.choice);
+
+  let data = null;
+  switch (choice) {
+    case 1:
+      // Nạp tiền - recharge
+      data = await getAllRecharges();
+
+      break;
+    case 2:
+      // Rút tiền - withdraw
+      data = await getAllWithdraws();
+
+      break;
+    case 3:
+      // Chuyển tiền - deposit
+      data = await getAllDepositsSender();
+      break;
+    case 4:
+      //  Nhận tiền - deposit
+      data = await getAllDepositsReceiver();
+      break;
+    case 5:
+      // Thanh toán dịch vụ - phone_card
+      data = await getAllBills();
+      break;
+    default:
+      return res.json({
+        success: false,
+        message: "Không có option này",
+      });
+  }
+
+  data = data.map((currVal) => {
+    currVal.status = encodeStatusCode(currVal.status);
+    currVal.date = formatDateTime(currVal.date);
+    return currVal;
+  });
+  return res.json({
+    success: true,
+    message: "Lấy lịch sử giao dịch thành công",
+    data: data,
+  });
+}
+
+// GET /admin/trans-history/:choice/:id
 const getTransHistoryDetail = async (req, res) => {
   let choice = req.params.choice;
   let id = req.params.id;
@@ -260,39 +320,18 @@ const getTransHistoryDetail = async (req, res) => {
       });
   }
 
-  let statusMessages = {
-    "-1": "Bị từ chối",
-    0: "Đang chờ duyệt",
-    1: "Thành công",
-    2: "Admin đã duyệt",
-  };
-
-  let statusTypes = {
-    "-1": "danger",
-    0: "warning",
-    1: "success",
-    2: "success",
-  };
-  let statusMessage = "Thành công";
-  let statusType = "success";
-
-  if (data.status !== undefined || data.status !== null) {
-    statusMessage = statusMessages[data.status];
-    statusType = statusTypes[data.status];
-  }
-
   if (data.code) {
     let code = data.code.match(/.{1,5}/g);
     data.code = code.join(" - ");
   }
+
+  data.status = encodeStatusCode(data.status);
   return res.render("admin/trans-history-detail", {
     title: "Transaction History Detail",
     isAdmin: true,
     [type]: true,
     routerPath: "admin/trans-history-detail",
     data,
-    statusMessage,
-    statusType,
   });
 };
 
@@ -409,6 +448,10 @@ const apiGetWithdrawMore5m = async (req, res) => {
    */
   let withdraws = await getWithdrawAdmin();
 
+  withdraws = withdraws.map((currVal) => {
+    currVal.date = formatDateTime(currVal.date);
+    return currVal;
+  });
   return res.json({
     success: true,
     message: "Lấy withdraws cần duyệt thành công",
@@ -499,4 +542,5 @@ module.exports = {
   apiGetWithdrawMore5m,
   getTransHistory,
   getTransHistoryDetail,
+  apiGetTransHistory,
 };

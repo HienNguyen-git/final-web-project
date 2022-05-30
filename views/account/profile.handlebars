@@ -46,21 +46,28 @@
           </div>
         </li>
         <li class="profile-item col-12 col-md-6">
-          <a href="/account/resetpassword">Reset password</a>
+          <div class="profile-icon">
+            <i class="fa-solid fa-circle-question"></i>
+          </div>
+          <div class="profile-body">
+            <span class="profile-body__title">Status </span>
+            <p class="profile-body__content">{{{encodeStatus}}}</p>
+          </div>
         </li>
-
-
       </ul>
     </div>
     <div class="col-12 col-md-12 profile-image-container">
       <div class="text-center">
-        {{#checkStatusIs0 userStatus}}
+        {{#checkStatusIs0 status}}
           <button disabled class="form-btn btn btn-primary " style="margin:8px ">
           Waiting admin approved
           </button>
         {{/checkStatusIs0}}
-        
-        {{#checkStatusIs3 userStatus}}
+        {{#checkStatusIs1 status}}
+          <button class="btn btn-success" data-toggle="modal" data-target="#add-fontcmnd"
+        style="margin:8px">Upload front CMND</button>
+        {{/checkStatusIs1}}
+        {{#checkStatusIs3 status}}
           <button class="btn btn-success" data-toggle="modal" data-target="#add-fontcmnd"
         style="margin:8px">Upload front CMND</button>
         {{/checkStatusIs3}}

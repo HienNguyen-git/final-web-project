@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken");
 
 const permissionNotNeededRoutes = [
-  "GET /",
   "GET /users/login",
   "POST /users/login",
   "GET /users/register",
@@ -52,6 +51,11 @@ class AuthenticationController {
     } else {
       isAuthNotNeededRoute ? next() : res.redirect("/users/login");
     }
+  }
+
+  async authenticateAdmin(req, res, next) {
+    // Chỉ cho admin truy cập vào trang admin
+    req?.userClaims.username === "admin" ? next() : res.redirect("/");
   }
 }
 

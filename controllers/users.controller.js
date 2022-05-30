@@ -42,6 +42,7 @@ const { getAllBills } = require("../models/phone_card.model");
 const {
   generateRandomPassword,
   generateUsername,
+  encodeStatusCode,
 } = require("../config/helper");
 const { validationResult } = require("express-validator");
 var nodemailer = require("nodemailer"); // khai báo sử dụng module nodemailer
@@ -53,7 +54,10 @@ const {
   getAllDepositsSender,
   getAllDepositsReceiver,
 } = require("../models/deposit.model");
-const { getAllRecharges, getRechargeListByUser } = require("../models/recharge.model");
+const {
+  getAllRecharges,
+  getRechargeListByUser,
+} = require("../models/recharge.model");
 
 const resetPasswordGet = (req, res) => {
   res.render("account/resetpassword", { title: "Reset Password" });
@@ -73,7 +77,8 @@ const requestOtpToMail = (req, res) => {
       },
     });
 
-    // var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
+    // config mail server = mail thầy
+    // var transporter = nodemailer.createTransport(smtpTransport({ 
     //     tls: {
     //         rejectUnauthorized: false
     //     },
@@ -416,7 +421,7 @@ async function handleLogin(req, res, next) {
   if (!acc) {
     return res.json({ success: false, message: "Account not exist!" });
   } else {
-    if (acc.status === 3 || acc.abnormal === 2) {
+    if (acc.abnormal === 2) {
       // Không cho tài khoản bị block login
       return res.json({
         success: false,
@@ -481,20 +486,11 @@ async function handleLogin(req, res, next) {
 
       let token = assignDataToCookie(res, assignData);
 
-      const raw = await getTranSHistoryByUsername(acc.username);
-      // console.log(raw.name)
-      const data = raw.map((e) => ({
-        id: e.id,
-        phone: e.phone,
-        name: e.name,
-        date: e.date,
-        value: e.value,
-        note: e.note,
-        fee: e.fee,
-        total_value: e.total_value,
-      }));
-      // return res.redirect('/')
-      // return res.render('users/trans-history', { title: "Transaction History", data,routerPath:'users/trans-history' })
+      req.session.flash = {
+        type: "success",
+        intro: "Congratulation!",
+        message: "Login successfully!",
+      };
 
       return res.json({
         success: true,
@@ -628,22 +624,22 @@ async function profileGet(req, res) {
   let userData = req.userClaims;
 
   let userDetail = await getUserDetailByUserName(userData.username);
-  let userStatus = await getUserStatusByUserName(userData.username);
-  console.log(userStatus.status)
+  let status = (await getUserStatusByUserName(userData.username)).status;
 
+  console.log("status", status);
   res.render("account/profile", {
     title: "Profile",
-    userDetail: userDetail,
-    userStatus: userStatus.status
+    userDetail,
+    encodeStatus: encodeStatusCode(status),
+    status,
   });
 }
-
 
 const fs = require("fs"); //doi file name
 let path = require("path");
 
-const profilePostCMND = async (req,res) => {
-  // console.log(req.files);
+const profilePostCMND = async (req, res) => {
+   console.log(req.files);
   // console.log(req.files[1])
   let result = validationResult(req);
   if (result.errors.length === 0) {
@@ -658,7 +654,8 @@ const profilePostCMND = async (req,res) => {
         req.session.flash = {
           type: "danger",
           intro: "Oops!",
-          message: "You upload not valid, please upload 2 pictures or we will take old picture",
+          message:
+            "You upload not valid, please upload 2 pictures or we will take old picture",
         };
         return res.redirect("/users/profile");
       } catch (error) {
@@ -671,13 +668,20 @@ const profilePostCMND = async (req,res) => {
       // fs.renameSync(image.path, imagePath);
       // imageFileName = pathofimage;
       try {
-        if (await handleUpdateFrontCMND(req.files[0].filename, username) &&
-        await handleUpdateBackCMND(req.files[1].filename,username) &&
-          await updateStatusAndLastModifiedByUsername(username,0,new Date(Date.now()))) {
+        if (
+          (await handleUpdateFrontCMND(req.files[0].filename, username)) &&
+          (await handleUpdateBackCMND(req.files[1].filename, username)) &&
+          (await updateStatusAndLastModifiedByUsername(
+            username,
+            0,
+            new Date(Date.now())
+          ))
+        ) {
           req.session.flash = {
             type: "success",
             intro: "Congratulation!",
-            message: "Upload CMND successfully!!!! Please wait for admin verify",
+            message:
+              "Upload CMND successfully!!!! Please wait for admin verify",
           };
           return res.redirect("/users/profile");
         } else {
@@ -692,7 +696,6 @@ const profilePostCMND = async (req,res) => {
         console.log(error);
       }
     }
-
   } else {
     const errors = result.mapped();
     let errorMessage = errors[Object.keys(errors)[0]].msg;
@@ -703,8 +706,7 @@ const profilePostCMND = async (req,res) => {
     };
     res.redirect("/users/profile");
   }
-}
-
+};
 
 // todo Get /users/card
 async function cardGet(req, res) {
@@ -716,6 +718,8 @@ async function cardGet(req, res) {
     routerPath: "account/card",
     data: raw,
   });
+
+  res.render("account/user-change-pw", { title: "changepassword" });
 }
 
 // todo Post /users/card
@@ -812,54 +816,6 @@ function assignDataToCookie(res, data) {
   }
 }
 
-async function apiGetTransHistory(req, res) {
-  // let userData = req.userClaims;
-
-  // if (userData.username !== "admin") {
-  //   return res.json({
-  //     success: false,
-  //     message: "Phải là admin để sử dụng api này",
-  //   });
-  // }
-  let choice = parseInt(req.params.choice);
-
-  let data = null;
-  switch (choice) {
-    case 1:
-      // Nạp tiền - recharge
-      data = await getAllRecharges();
-
-      break;
-    case 2:
-      // Rút tiền - withdraw
-      data = await getAllWithdraws();
-
-      break;
-    case 3:
-      // Chuyển tiền - deposit
-      data = await getAllDepositsSender();
-      break;
-    case 4:
-      //  Nhận tiền - deposit
-      data = await getAllDepositsReceiver();
-      break;
-    case 5:
-      // Thanh toán dịch vụ - phone_card
-      data = await getAllBills();
-      break;
-    default:
-      return res.json({
-        success: false,
-        message: "Không có option này",
-      });
-  }
-
-  return res.json({
-    success: true,
-    message: "Lấy lịch sử giao dịch thành công",
-    data: data,
-  });
-}
 function getDataFromToken(req) {
   /**
    * Function này sẽ giải mã token và trả về data lấy được từ token
@@ -876,35 +832,29 @@ function getDataFromToken(req) {
   }
 }
 
-function formatDateTime(time) {
-  let change = new Date(time);
-
-  return `${change.getFullYear()}-${change.getMonth()}-${change.getDate()}`;
-}
-
-const getRechargeByUser = async(req,res)=>{
-  const userData = req.userClaims
-    try {
-        const rawData = await getRechargeListByUser(userData.username)
-        console.log(rawData)
-        data = rawData.map(e => ({
-            id: e.id,
-            money: e.money,
-            card_number: e.card_number,
-            recharge_date: formatDateTime(e.recharge_date),
-        }))
-        return res.json({
-            code: 0,
-            message: "Get recharge data successful",
-            data
-        })
-    } catch (error) {
-        return res.json({
-            code: 1,
-            message: error.message,
-        })
-    }
-}
+const getRechargeByUser = async (req, res) => {
+  const userData = req.userClaims;
+  try {
+    const rawData = await getRechargeListByUser(userData.username);
+    console.log(rawData);
+    data = rawData.map((e) => ({
+      id: e.id,
+      money: e.money,
+      card_number: e.card_number,
+      recharge_date: formatDateTime(e.recharge_date),
+    }));
+    return res.json({
+      code: 0,
+      message: "Get recharge data successful",
+      data,
+    });
+  } catch (error) {
+    return res.json({
+      code: 1,
+      message: error.message,
+    });
+  }
+};
 
 module.exports = {
   resetPasswordGet,
@@ -924,6 +874,5 @@ module.exports = {
   profilePostCMND,
   cardGet,
   cardPost,
-  apiGetTransHistory,
-  getRechargeByUser
+  getRechargeByUser,
 };

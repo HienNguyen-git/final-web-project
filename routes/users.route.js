@@ -19,7 +19,6 @@ const {
   cardPost,
   firstLoginGet,
   handleFirstLogin,
-  apiGetTransHistory,
   getRechargeByUser,
   profilePostCMND,
 } = require("../controllers/users.controller");
@@ -85,20 +84,25 @@ router.post("/account/resetpassword/resendOtpPost", resendOtpPost);
 
 router.get("/profile", profileGet);
 
-const multer = require('multer')
+const multer = require("multer");
 const fileStorageEngine = multer.diskStorage({
-  destination: (req,file,cb) =>{
-    cb(null,'public/images');
+  destination: (req, file, cb) => {
+    cb(null, "public/images");
   },
-  filename:(req,file,cb) => {
-    cb(null,Date.now() + "--" + file.originalname);
-  }
-})
-const upload = multer({ storage: fileStorageEngine })
-router.post("/profile",upload.array('images',2),profilePostCMNDValidation, profilePostCMND);
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "--" + file.originalname);
+  },
+});
+const upload = multer({ storage: fileStorageEngine });
+router.post(
+  "/profile",
+  upload.array("images", 2),
+  profilePostCMNDValidation,
+  profilePostCMND
+);
 
 router.get("/card", cardGet);
 router.post("/card", rechargeValidator, cardPost);
-router.get("/card/api", getRechargeByUser)
+router.get("/card/api", getRechargeByUser);
 
 module.exports = router;

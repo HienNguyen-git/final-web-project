@@ -19,7 +19,7 @@ $(document).ready(() => {
         if (response.success) {
           window.location.href = "/";
         } else {
-          alert(response.message);
+          showMessage(response.message, "error");
         }
       });
     };
@@ -46,7 +46,7 @@ $(document).ready(() => {
         if (response.success) {
           window.location.href = "/";
         } else {
-          alert(response.message);
+          showMessage(response.message, "error");
         }
       });
     };
@@ -72,7 +72,7 @@ $(document).ready(() => {
         if (response.success) {
           window.location.href = "/";
         } else {
-          alert(response.message);
+          showMessage(response.message, "error");
         }
       });
     };
@@ -101,13 +101,42 @@ $(document).ready(() => {
 
       $.post("/withdraw", data, (response) => {
         if (response.success) {
-          // ? Redirect về đâu
+          showMessage(response.message);
+        } else {
+          showMessage(response.message, "error");
         }
-        alert(response.message);
       });
     };
   }
 
+  // * Javascript for GET /recharge
+  if (document.getElementById("view-exchange-recharge")) {
+    let form = document.getElementById("form-recharge");
+    form.onsubmit = (e) => {
+      e.preventDefault();
+
+      let card_number = $(`input[name="card-number"]`).val();
+      let expire_date = $(`input[name="expire-date"]`).val();
+      let cvv = $(`input[name="cvv"]`).val();
+
+      let money = $(`input[name="amount"]`).val();
+
+      let data = {
+        card_number,
+        expire_date,
+        cvv,
+        money,
+      };
+
+      $.post("/recharge", data, (response) => {
+        if (response.success) {
+          showMessage(response.message);
+        } else {
+          showMessage(response.message, "error");
+        }
+      });
+    };
+  }
   // * Javascript for GET /admin/withdraw
   if (document.getElementById("view-admin-withdraw")) {
     loadData();
@@ -168,8 +197,10 @@ $(document).ready(() => {
       $.post("/admin/withdraw", data, (response) => {
         if (response.success) {
           loadData();
+          showMessage(response.message);
+        } else {
+          showMessage(response.message, "error");
         }
-        alert(response.message);
       });
     }
   }
@@ -201,29 +232,10 @@ $(document).ready(() => {
        * Output: Data has been append to the table
        */
       let tableBody = $("#tbody");
-      let statusMessage = {
-        "-1": "Bị từ chối",
-        0: "Đang chờ duyệt",
-        1: "Thành công",
-        2: "Admin đã duyệt",
-      };
 
-      let statusType = {
-        "-1": "danger",
-        0: "warning",
-        1: "success",
-        2: "success",
-      };
-
-      let type = statusType[data.status];
-      data.status = statusMessage[data.status];
-      if (choice === "1") {
-        data.status = "Thành công";
-        type = "success";
-      } else if (choice === "5") {
-        data.status = "Thành công";
+      console.log(data);
+      if (choice === "5") {
         data.value = data.price;
-        type = "success";
       }
       let tableContent = `
       <tr>
@@ -231,7 +243,7 @@ $(document).ready(() => {
           <td>${data.username}</td>
           <td>${data.value}</td>
           <td>${data.date}</td>
-          <td class="font-weight-bold text-${type}">${data.status}</td>
+          ${data.status}
           <td>
             <a href="/admin/trans-history/${choice}/${data.id}" class="btn btn-sm btn-primary">
               <i class="fa-solid fa-eye"></i>
@@ -244,3 +256,72 @@ $(document).ready(() => {
     }
   }
 });
+
+function toast_header({
+  title = "",
+  message = "",
+  type = "info",
+  duration = 3000,
+}) {
+  const main = document.getElementById("custom-toast");
+  if (main) {
+    const toast = document.createElement("div");
+
+    const autoRemoveId = setTimeout(function () {
+      main.removeChild(toast);
+    }, duration + 1000);
+
+    toast.onclick = function (e) {
+      if (e.target.closest(".custom-toast__close")) {
+        main.removeChild(toast);
+        clearTimeout(autoRemoveId);
+      }
+    };
+
+    const icons = {
+      success: "fas fa-check-circle",
+      info: "fas fa-info-circle",
+      warning: "fas fa-exclamation-circle",
+      error: "fas fa-exclamation-circle",
+    };
+    const icon = icons[type];
+    const delay = (duration / 1000).toFixed(2);
+
+    toast.classList.add("custom-toast", `custom-toast--${type}`);
+    toast.style.animation = `slideInLeft ease .3s, fadeOut linear 1s ${delay}s forwards`;
+
+    toast.innerHTML = `
+                    <div class="custom-toast__icon">
+                        <i class="${icon}"></i>
+                    </div>
+                    <div class="custom-toast__body">
+                        <h3 class="custom-toast__title">${title}</h3>
+                        <p class="custom-toast__msg">${message}</p>
+                    </div>
+                    <div class="custom-toast__close">
+                        <i class="fas fa-times"></i>
+                    </div>
+                `;
+    main.appendChild(toast);
+  }
+}
+
+function showMessage(message, type = "success") {
+  /**
+   *  Dùng để hiển thị toast, có 4 type: success, info, warning, error
+   *
+   */
+
+  let titles = {
+    success: "Thành công!",
+    error: "Thất bại!",
+    warning: "Cảnh báo!",
+    info: "Thông báo",
+  };
+  toast_header({
+    title: titles[type],
+    message: message,
+    type: type,
+    duration: 5000,
+  });
+}

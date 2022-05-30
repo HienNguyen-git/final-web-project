@@ -1,5 +1,5 @@
-<div class="container w-50">
-    <h1>Phone Card</h1>
+<div class="container w-50 mt-5">
+  <h1>Phone Card</h1>
   <form id="phone-card-form">
     <div class="form-group">
       <label for="networkProvider">Network provider</label>
@@ -9,7 +9,7 @@
           <option value="{{provider_number}}">{{name}}</option>
         {{/each}}
       </select>
-      
+
     </div>
     <div class="form-group">
       <div class="form-check form-check-inline">
@@ -72,51 +72,19 @@
 </div>
 
 <script>
-    const formCardPhone = document.getElementById('phone-card-form')
-    const myAlert = document.getElementById('my-alert')
-    if(formCardPhone){
-        formCardPhone.addEventListener('submit',async e=>{
-            e.preventDefault()
-            const formData = new FormData(e.target)
-            const {networkProvider, type, amount} = Object.fromEntries(formData);
-            //if()
-            if(networkProvider===undefined){
-              showAlert("Please select your network provider")
-            }else if(type===undefined){
-              showAlert("Please choose our price type")
-            }else if(amount===undefined){
-              showAlert("Please select amount")
-            }else{
-              myAlert.innerHTML =""
-              const myFetch = await fetch(location.href,{
-                method: "POST",
-                body: JSON.stringify({
-                  name: networkProvider,
-                  type,
-                  amount
-                }),
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-              })
-              const res =  await myFetch.json()
-              console.log(res)
-              if(!res.code){
-                alert('Ticket purchase was successful')
-              }else{
-                showAlert(res.message)
-              }
-            }
-        })
-    }
-
-    function showAlert(message){
-      myAlert.innerHTML = ""
-      const content = `
-        <div class="alert alert-danger" role="alert">
-          ${message}
-        </div>
-      `
-      myAlert.insertAdjacentHTML('beforeend', content)
-    }
+  const formCardPhone = document.getElementById('phone-card-form') const myAlert
+  = document.getElementById('my-alert') if(formCardPhone){
+  formCardPhone.addEventListener('submit',async e=>{ e.preventDefault() const
+  formData = new FormData(e.target) const {networkProvider, type, amount} =
+  Object.fromEntries(formData); //if() if(networkProvider===undefined){
+  showAlert("Please select your network provider") }else if(type===undefined){
+  showAlert("Please choose our price type") }else if(amount===undefined){
+  showAlert("Please select amount") }else{ myAlert.innerHTML ="" const myFetch =
+  await fetch(location.href,{ method: "POST", body: JSON.stringify({ name:
+  networkProvider, type, amount }), headers: { 'Content-Type':
+  'application/json' }, }) const res = await myFetch.json() console.log(res)
+  if(!res.code){ alert('Ticket purchase was successful') }else{
+  showAlert(res.message) } } }) } function showAlert(message){ myAlert.innerHTML
+  = "" const content = ` <div class="alert alert-danger" role="alert">
+  ${message} </div> ` myAlert.insertAdjacentHTML('beforeend', content) }
 </script>
