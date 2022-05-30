@@ -4,6 +4,11 @@ const {
   addCardByUsername,
 } = require("../models/credit_card.model");
 
+const {
+  updateTotalValue,
+  getUserDetailByUserName,
+} = require("../models/user.model");
+
 // GET /recharge
 function renderRecharge(req, res) {
   res.render("exchange/recharge", { title: "Recharge" });
@@ -73,6 +78,9 @@ async function handleRecharge(req, res) {
     money,
   });
 
+  let userDetail = await getUserDetailByUserName(userData.username);
+
+  await updateTotalValue(userDetail.total_value + money, userData.username);
   return res.json({
     success: true,
     message: "You have recharged your card successfully",
