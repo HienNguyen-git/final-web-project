@@ -925,7 +925,7 @@ nav {
   text-align: center;
 }
 
-@media only screen and (max-width: 992px) {
+@media only screen and (max-width: 1200px) {
   .main-nav.active {
     position: fixed;
     top: 0;
@@ -933,6 +933,7 @@ nav {
     right: 0;
     bottom: 0;
     z-index: 10;
+    overflow: scroll;
   }
   .main-nav__list {
     float: none;
