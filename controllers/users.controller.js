@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const emailvalidator = require("email-validator");
-
+const multiparty = require("multiparty");
 const validatePhoneNumber = require("validate-phone-number-node-js");
 const multer = require("multer");
 
@@ -119,7 +119,7 @@ const requestOtpToMail = (req, res) => {
         //lưu vào db
         let time = Date.now() + 60000;
         let day = new Date(time);
-         req.session.email = email;
+        req.session.email = email;
         handlePostOTP(email, otp, day);
         req.session.flash = {
           type: "success",
@@ -187,10 +187,9 @@ const firstLoginGet = (req, res) => {
 
 const changePassPost = async (req, res) => {
   try {
-    
     let result = validationResult(req);
     let username = await getUsernameByEmail(req.session.email);
-    console.log(username)
+    console.log(username);
     if (result.errors.length === 0) {
       let { newpass, renewpass } = req.body;
       // console.log(password,newpass,renewpass);
@@ -227,7 +226,7 @@ const changePassPost = async (req, res) => {
       res.redirect("/users/account/resetpassword/changepassword");
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.redirect("/users/account/resetpassword/changepassword");
   }
 };
@@ -235,12 +234,13 @@ const changePassPost = async (req, res) => {
 const resendOtpPost = (req, res) => {
   // let { email } = req.body;
   const otp = Math.floor(100000 + Math.random() * 900000);
-  var transporter = nodemailer.createTransport({ // config mail server
-      service: 'Gmail',
-      auth: {
-          user: 'nchdang16012001@gmail.com',
-          pass: 'mlrafbeyqtvtqloe'
-      }
+  var transporter = nodemailer.createTransport({
+    // config mail server
+    service: "Gmail",
+    auth: {
+      user: "nchdang16012001@gmail.com",
+      pass: "mlrafbeyqtvtqloe",
+    },
   });
   //mail thầy
   // var transporter = nodemailer.createTransport(
@@ -305,11 +305,14 @@ function logoutGet(req, res) {
 
 // todo POST /users/register
 const handleRegister = async (req, res) => {
-  console.log('helo')
-  // const { phone, email, name, date_of_birth, address } = req.body;
-  // console.log(phone, email, name, date_of_birth, address)
-  // console.log(req.file.cmndfront)
-  // console.log(req.file.cmndback)
+  const form = new multiparty.Form();
+  form.parse(req, (err, fields, files) => {
+    if (err) return res.status(500).send(err.message);
+    console.log(fields);
+    console.log(files);
+  });
+  // console.log(req.file.front_cmnd);
+  // console.log(req.file.back_cmnd);
 
   // console.log(phone)
   // const randomUsername = generateUsername(1000000000, 9000000000);
@@ -372,46 +375,46 @@ const handleRegister = async (req, res) => {
   //   await putAccCreatedIntoUser(randomUsername, hashPassword);
   //   console.log(randomPassword);
   //   console.log(randomUsername);
-    return res.json({
-      code: 0,
-      message:
-        "Create account successful. Please check your email to get your account!",
-    });
-    // var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
-    //   tls: {
-    //       rejectUnauthorized: false
-    //   },
-    //   // service: 'Gmail',
-    //   host: 'mail.phongdaotao.com',
-    //   port: 25,
-    //   secureConnection: false,
-    //   auth: {
-    //       user: 'sinhvien@phongdaotao.com',
-    //       pass: 'svtdtu'
-    //   }
-    // }));
+  return res.json({
+    code: 0,
+    message:
+      "Create account successful. Please check your email to get your account!",
+  });
+  // var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
+  //   tls: {
+  //       rejectUnauthorized: false
+  //   },
+  //   // service: 'Gmail',
+  //   host: 'mail.phongdaotao.com',
+  //   port: 25,
+  //   secureConnection: false,
+  //   auth: {
+  //       user: 'sinhvien@phongdaotao.com',
+  //       pass: 'svtdtu'
+  //   }
+  // }));
 
-    // var mainOptions = { // thiết lập đối tượng, nội dung gửi mail
-    //   from: 'sinhvien@phongdaotao.com',
-    //   to: email,   //Mail của chính mình
-    //   subject: 'Your account',
-    //   html: '<h2>WELCOME TO OUR BANKING SYSTEM</h2><br></br><p>We send you your account. Now you can log in our system. Do not share this account for someone except you.<br></br></p>Username: '+ randomUsername +' <br></br>Password: '+ randomPassword +'<br></br>To secure you can change your password when you log in successful.</p>'
-    // }
-    // transporter.sendMail(mainOptions, async function  (err, info) {
-    //   if (err) {
-    //     return res.json({
-    //       code: 1,
-    //       message: "Some thing went wrong",
-    //     })
-    //   }else{
-    //     await createAnAccount(randomUsername, phone, email, name, date_of_birth, address)
-    //     await putAccCreatedIntoUser(randomUsername, hashPassword)
-    //     return res.json({
-    //       code: 0,
-    //       message: "Create account successful. Please check your email to get your account!",
-    //     })
-    //   }
-    // });
+  // var mainOptions = { // thiết lập đối tượng, nội dung gửi mail
+  //   from: 'sinhvien@phongdaotao.com',
+  //   to: email,   //Mail của chính mình
+  //   subject: 'Your account',
+  //   html: '<h2>WELCOME TO OUR BANKING SYSTEM</h2><br></br><p>We send you your account. Now you can log in our system. Do not share this account for someone except you.<br></br></p>Username: '+ randomUsername +' <br></br>Password: '+ randomPassword +'<br></br>To secure you can change your password when you log in successful.</p>'
+  // }
+  // transporter.sendMail(mainOptions, async function  (err, info) {
+  //   if (err) {
+  //     return res.json({
+  //       code: 1,
+  //       message: "Some thing went wrong",
+  //     })
+  //   }else{
+  //     await createAnAccount(randomUsername, phone, email, name, date_of_birth, address)
+  //     await putAccCreatedIntoUser(randomUsername, hashPassword)
+  //     return res.json({
+  //       code: 0,
+  //       message: "Create account successful. Please check your email to get your account!",
+  //     })
+  //   }
+  // });
   // }
 };
 

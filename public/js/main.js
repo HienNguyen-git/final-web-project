@@ -255,6 +255,103 @@ $(document).ready(() => {
       tableBody.append(tableContent);
     }
   }
+
+  // * Javascript for GET /users/register
+  if (document.getElementById("view-account-register")) {
+    // Add the following code if you want the name of the file appear on select
+    $(".custom-file-input").on("change", function () {
+      //var numFiles =
+      $("input:file")[0].files.length;
+      var fileName = $(this).val().split("\\").pop();
+      $(this)
+        .siblings(".custom-file-label")
+        .addClass("selected")
+        .html(fileName);
+    });
+    $(".custom-file-input2").on("change", function () {
+      var fileName = $(this).val().split("\\").pop();
+      $(this)
+        .siblings(".custom-file-label2")
+        .addClass("selected")
+        .html(fileName);
+    });
+    handleUpload();
+    function handleUpload() {
+      let form = document.getElementById("form-register");
+
+      form.onsubmit = (e) => {
+        e.preventDefault();
+        const suppported_extensions = ["jpg", "png", "docx", "pdf"];
+
+        let phone = document.getElementById("phone").value;
+        let email = document.getElementById("email").value;
+        let name = document.getElementById("name").value;
+        let date_of_birth = document.getElementById("date_of_birth").value;
+        let address = document.getElementById("address").value;
+
+        let frontCMND = document.getElementById("file-front-cmnd");
+        let backCMND = document.getElementById("file-back-cmnd");
+
+        let data = new FormData();
+
+        data.append("phone", phone);
+        data.append("email", email);
+        data.append("name", name);
+        data.append("date_of_birth", date_of_birth);
+        data.append("address", address);
+
+        if (frontCMND.files[0] && backCMND.files[0]) {
+          // let file = input.files[0];
+          // let extension = getExtension(file.name);
+          // let size = file.size;
+
+          // if (size >= MAX_FILE_SIZE) {
+          //   showError("File size exceeds the maximum size");
+          //   throw new Error("File size exceeds the maximum size");
+          // }
+          // if (!suppported_extensions.includes(extension)) {
+          //   showError("File type is not supported!");
+          //   throw new Error("File type is not supported!");
+          // }
+          // data.append("file_name", file.name);
+          data.append("front_cmnd", frontCMND.files[0]);
+          data.append("back_cmnd", backCMND.files[0]);
+        }
+
+        let xhr = new XMLHttpRequest();
+
+        // xhr.upload.addEventListener("progress", function (e) {
+        //   let loaded = e.loaded;
+        //   let total = e.total;
+        //   let progress = (loaded * 100) / total;
+
+        //   $(".progress-bar").attr("style", "width: " + progress + "%;");
+        // });
+
+        xhr.onload = function () {
+          if (xhr.readyState === xhr.DONE) {
+            if (xhr.status === 200) {
+              let response = JSON.parse(xhr.responseText);
+              if (response.code === 0) {
+                // SUCCESS
+                showMessage(response.message);
+              } else {
+                // FAIL
+                showMessage(response.message, "error");
+              }
+              // RESET PROGRESS BAR
+              // setTimeout(function () {
+              //   $(".progress-bar").attr("style", "width: 0");
+              // }, 2000);
+            }
+          }
+        };
+
+        xhr.open("POST", "/users/register", true);
+        xhr.send(data);
+      };
+    }
+  }
 });
 
 function toast_header({
