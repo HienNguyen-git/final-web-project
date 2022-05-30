@@ -98,7 +98,7 @@ app.use("/users", usersRouter);
 app.use("/deposit", usersDepositRouter);
 app.use("/withdraw", usersWithdrawRouter);
 app.use("/recharge", usersRechargeRouter);
-app.use("/admin", adminRouter);
+app.use("/admin", authController.authenticateAdmin, adminRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
