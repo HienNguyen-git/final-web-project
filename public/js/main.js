@@ -19,7 +19,7 @@ $(document).ready(() => {
         if (response.success) {
           window.location.href = "/";
         } else {
-          alert(response.message);
+          showMessage(response.message, "error");
         }
       });
     };
@@ -46,7 +46,7 @@ $(document).ready(() => {
         if (response.success) {
           window.location.href = "/";
         } else {
-          alert(response.message);
+          showMessage(response.message, "error");
         }
       });
     };
@@ -72,7 +72,7 @@ $(document).ready(() => {
         if (response.success) {
           window.location.href = "/";
         } else {
-          alert(response.message);
+          showMessage(response.message, "error");
         }
       });
     };
@@ -101,9 +101,10 @@ $(document).ready(() => {
 
       $.post("/withdraw", data, (response) => {
         if (response.success) {
-          // ? Redirect về đâu
+          showMessage(response.message);
+        } else {
+          showMessage(response.message, "error");
         }
-        alert(response.message);
       });
     };
   }
@@ -129,9 +130,10 @@ $(document).ready(() => {
 
       $.post("/recharge", data, (response) => {
         if (response.success) {
-          // ? Redirect về đâu
+          showMessage(response.message);
+        } else {
+          showMessage(response.message, "error");
         }
-        alert(response.message);
       });
     };
   }
@@ -195,8 +197,10 @@ $(document).ready(() => {
       $.post("/admin/withdraw", data, (response) => {
         if (response.success) {
           loadData();
+          showMessage(response.message);
+        } else {
+          showMessage(response.message, "error");
         }
-        alert(response.message);
       });
     }
   }
@@ -252,3 +256,72 @@ $(document).ready(() => {
     }
   }
 });
+
+function toast_header({
+  title = "",
+  message = "",
+  type = "info",
+  duration = 3000,
+}) {
+  const main = document.getElementById("custom-toast");
+  if (main) {
+    const toast = document.createElement("div");
+
+    const autoRemoveId = setTimeout(function () {
+      main.removeChild(toast);
+    }, duration + 1000);
+
+    toast.onclick = function (e) {
+      if (e.target.closest(".custom-toast__close")) {
+        main.removeChild(toast);
+        clearTimeout(autoRemoveId);
+      }
+    };
+
+    const icons = {
+      success: "fas fa-check-circle",
+      info: "fas fa-info-circle",
+      warning: "fas fa-exclamation-circle",
+      error: "fas fa-exclamation-circle",
+    };
+    const icon = icons[type];
+    const delay = (duration / 1000).toFixed(2);
+
+    toast.classList.add("custom-toast", `custom-toast--${type}`);
+    toast.style.animation = `slideInLeft ease .3s, fadeOut linear 1s ${delay}s forwards`;
+
+    toast.innerHTML = `
+                    <div class="custom-toast__icon">
+                        <i class="${icon}"></i>
+                    </div>
+                    <div class="custom-toast__body">
+                        <h3 class="custom-toast__title">${title}</h3>
+                        <p class="custom-toast__msg">${message}</p>
+                    </div>
+                    <div class="custom-toast__close">
+                        <i class="fas fa-times"></i>
+                    </div>
+                `;
+    main.appendChild(toast);
+  }
+}
+
+function showMessage(message, type = "success") {
+  /**
+   *  Dùng để hiển thị toast, có 4 type: success, info, warning, error
+   *
+   */
+
+  let titles = {
+    success: "Thành công!",
+    error: "Thất bại!",
+    warning: "Cảnh báo!",
+    info: "Thông báo",
+  };
+  toast_header({
+    title: titles[type],
+    message: message,
+    type: type,
+    duration: 5000,
+  });
+}
