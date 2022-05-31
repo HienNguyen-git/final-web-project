@@ -772,7 +772,7 @@ $(document).ready(() => {
                     <tr>
                         <td>${e.id}</td>
                         <td>${e.card_number}</td>
-                        <td>${e.money}</td>
+                        <td>${e.value}</td>
                         <td>${e.date}</td>
                     </tr>
                     `
@@ -945,7 +945,7 @@ $(document).ready(() => {
                 <tr>
                     <td>${e.id}</td>
                     <td>${e.card_number}</td>
-                    <td>${e.money}</td>
+                    <td>${e.value}</td>
                     <td>${e.date}</td>
                 </tr>
                 `

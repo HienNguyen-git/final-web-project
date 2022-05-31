@@ -26,8 +26,9 @@ async function handleRecharge(req, res) {
     });
   }
 
-  var recharge_date = formatDateTimeToCompare(new Date());
+  var recharge_date = Date.now();
 
+  console.log(recharge_date)
   let userData = req.userClaims;
   let { money, card_number, expire_date, cvv } = req.body;
 
@@ -74,7 +75,6 @@ async function handleRecharge(req, res) {
   await addCardByUsername({
     username: userData.username,
     card_number,
-    recharge_date,
     money,
   });
 

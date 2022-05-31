@@ -910,13 +910,13 @@ const getRechargeByUser = async (req, res) => {
   try {
     const rawData = await getRechargeListByUser(username);
     console.log(rawData);
-    console.log("")
     data = rawData.map((e) => ({
       id: e.id,
       value: formatMoney(e.value),
       card_number: e.card_number,
       date: formatDateTime(e.date),
     }));
+    console.log(data)
     return res.json({
       code: 0,
       message: "Get recharge data successful",

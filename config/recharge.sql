@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 29, 2022 at 08:19 AM
+-- Generation Time: May 31, 2022 at 10:03 AM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
 
@@ -31,7 +31,7 @@ CREATE TABLE `recharge` (
   `id` int(11) NOT NULL,
   `username` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `card_number` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
-  `date` date NOT NULL,
+  `date` datetime NOT NULL DEFAULT current_timestamp(),
   `value` int(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -40,13 +40,10 @@ CREATE TABLE `recharge` (
 --
 
 INSERT INTO `recharge` (`id`, `username`, `card_number`, `date`, `value`) VALUES
-(1, 'haidang', '111111', '2022-07-05', 10000),
-(2, 'haidang', '222222', '2022-05-04', 500000),
-(3, '1234', '111111', '2022-04-29', 400000),
-(4, '1234', '111111', '2022-04-29', 400000),
-(5, '1234', '111111', '2022-04-29', 400000),
-(6, '1234', '111111', '2022-04-29', 400000),
-(7, '1234', '111111', '2022-04-29', 400000);
+(31, '1234', '111111', '2022-05-31 14:59:09', 123123),
+(32, '1234', '111111', '2022-05-31 14:59:47', 231312),
+(33, '1234', '111111', '2022-05-31 15:00:45', 231312),
+(34, '1234', '111111', '2022-05-31 15:01:18', 231312);
 
 --
 -- Indexes for dumped tables
@@ -66,7 +63,7 @@ ALTER TABLE `recharge`
 -- AUTO_INCREMENT for table `recharge`
 --
 ALTER TABLE `recharge`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
