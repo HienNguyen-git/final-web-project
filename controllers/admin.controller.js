@@ -203,7 +203,7 @@ const handleAccountApi = async (req, res) => {
 
 const handleAccountStatus = async (req, res) => {
   const { username, action } = req.body;
-
+  console.log(username, action)
   if (username === undefined || action === undefined) {
     return res.json({
       code: 1,

@@ -51,6 +51,7 @@ const {
   encodeStatusCode,
   formatDateTime,
   formatDate,
+  formatMoney,
 } = require("../config/helper");
 const { validationResult, check } = require("express-validator");
 var nodemailer = require("nodemailer"); // khai báo sử dụng module nodemailer
@@ -912,7 +913,7 @@ const getRechargeByUser = async (req, res) => {
     console.log("")
     data = rawData.map((e) => ({
       id: e.id,
-      money: e.money,
+      value: formatMoney(e.value),
       card_number: e.card_number,
       date: formatDateTime(e.date),
     }));

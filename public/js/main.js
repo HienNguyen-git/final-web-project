@@ -642,10 +642,8 @@ $(document).ready(() => {
 
     if (handleBox) {
       // Get origin and pathname
-      const myURL = location.origin + location.pathname
+      const myURL = location.origin + "/admin/account"
       const actionList = ['verify', 'cancel', 'request', 'unclock']
-      const urlParams = new URLSearchParams(window.location.search);
-      const username = urlParams.get('username');
       console.log(username)
       handleBox.addEventListener('click', async (e) => {
         const myID = e.target.id
