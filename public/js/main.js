@@ -171,7 +171,7 @@ $(document).ready(() => {
     }
   }
 
-  //
+  // view-admin-account
   // * Javascript for GET /phone-card
   if (document.getElementById("view-exchange-phone-card")) {
     const formCardPhone = document.getElementById("phone-card-form");
@@ -263,6 +263,13 @@ $(document).ready(() => {
       });
     };
   }
+
+  // view-admin-account
+  // * Javascript for GET /admin/account
+  if (document.getElementById("view-admin-account")) {
+
+  }
+
   // * Javascript for GET /admin/withdraw
   if (document.getElementById("view-admin-withdraw")) {
     loadData();
@@ -275,7 +282,7 @@ $(document).ready(() => {
             renderData(currVal);
           });
 
-          $(".btn.btn-sm").click(onClickButton);
+          $(".btn").click(onClickButton);
         }
       });
     }
