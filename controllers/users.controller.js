@@ -6,6 +6,7 @@ const validatePhoneNumber = require("validate-phone-number-node-js");
 const multer = require("multer");
 const fs = require("fs"); //doi file name
 let path = require("path");
+var nodemailer = require("nodemailer"); // khai báo sử dụng module nodemailer
 
 const {
   handlePostOTP,
@@ -65,6 +66,7 @@ const {
   getAllRecharges,
   getRechargeListByUser,
 } = require("../models/recharge.model");
+const { transporterEmail } = require("../config/email_setup");
 
 const resetPasswordGet = (req, res) => {
   res.render("account/resetpassword", { title: "Reset Password" });
@@ -74,15 +76,15 @@ const requestOtpToMail = (req, res) => {
   if (result.errors.length === 0) {
     let { email } = req.body;
     const otp = Math.floor(100000 + Math.random() * 900000);
-
-    var transporter = nodemailer.createTransport({
-      // config mail server
-      service: "Gmail",
-      auth: {
-        user: "nchdang16012001@gmail.com",
-        pass: "mlrafbeyqtvtqloe",
-      },
-    });
+    var transporter = transporterEmail();
+    // var transporter = nodemailer.createTransport({
+    //   // config mail server
+    //   service: "Gmail",
+    //   auth: {
+    //     user: "nchdang16012001@gmail.com",
+    //     pass: "mlrafbeyqtvtqloe",
+    //   },
+    // });
 
     // config mail server = mail thầy
     // var transporter = nodemailer.createTransport(smtpTransport({
@@ -238,14 +240,15 @@ const changePassPost = async (req, res) => {
 const resendOtpPost = (req, res) => {
   // let { email } = req.body;
   const otp = Math.floor(100000 + Math.random() * 900000);
-  var transporter = nodemailer.createTransport({
-    // config mail server
-    service: "Gmail",
-    auth: {
-      user: "nchdang16012001@gmail.com",
-      pass: "mlrafbeyqtvtqloe",
-    },
-  });
+  var transporter = transporterEmail();
+  // var transporter = nodemailer.createTransport({
+  //   // config mail server
+  //   service: "Gmail",
+  //   auth: {
+  //     user: "nchdang16012001@gmail.com",
+  //     pass: "mlrafbeyqtvtqloe",
+  //   },
+  // });
   //mail thầy
   // var transporter = nodemailer.createTransport(
   //   smtpTransport({
@@ -319,6 +322,7 @@ const handleRegister = async (req, res) => {
       });
     }
     let checkEP = await getEmailPhoneExistOrNot(fields.email, fields.phone);
+    console.log(checkEP !== undefined);
     if (checkEP !== undefined) {
       return res.json({
         code: 1,
@@ -331,6 +335,8 @@ const handleRegister = async (req, res) => {
       const salt = await bcrypt.genSalt(10);
       const hashPassword = await bcrypt.hash(randomPassword.toString(), salt);
 
+      console.log(fields);
+      console.log(files);
       let pathofimage1 =
         Date.now() + "--" + files.front_cmnd[0].originalFilename;
       let imagePath1 = path.join("public", "images", pathofimage1);
@@ -340,14 +346,15 @@ const handleRegister = async (req, res) => {
       fs.renameSync(files.front_cmnd[0].path, imagePath1);
       fs.renameSync(files.back_cmnd[0].path, imagePath2);
 
-      var transporter = nodemailer.createTransport({
-        // config mail server
-        service: "Gmail",
-        auth: {
-          user: "nchdang16012001@gmail.com",
-          pass: "mlrafbeyqtvtqloe",
-        },
-      });
+      var transporter = transporterEmail();
+      // var transporter = nodemailer.createTransport({
+      //   // config mail server
+      //   service: "Gmail",
+      //   auth: {
+      //     user: "nchdang16012001@gmail.com",
+      //     pass: "mlrafbeyqtvtqloe",
+      //   },
+      // });
 
       // config mail server = mail thầy
       // var transporter = nodemailer.createTransport(smtpTransport({
@@ -395,6 +402,8 @@ const handleRegister = async (req, res) => {
             pathofimage2
           );
           await putAccCreatedIntoUser(randomUsername, hashPassword);
+          console.log(randomPassword);
+          console.log(randomUsername);
           return res.json({
             code: 0,
             message:
@@ -645,74 +654,122 @@ async function profileGet(req, res) {
   });
 }
 
+// const profilePostCMND = async (req, res) => {
+//   console.log(req.files);
+//   // console.log(req.files[1])
+//   let result = validationResult(req);
+//   if (result.errors.length === 0) {
+//     let image = req.file;
+//     let username = req.userClaims.username;
+//     let imageFileName;
+//     if (req.files.length != 2) {
+//       try {
+//         // const FrontCMND = await handleSelectFrontCMND(username);
+//         // const BackCMND = await handleSelectBackCMND(username);
+//         // imageFileName = FrontCMND;
+//         req.session.flash = {
+//           type: "danger",
+//           intro: "Oops!",
+//           message:
+//             "You upload not valid, please upload 2 pictures or we will take old picture",
+//         };
+//         return res.redirect("/users/profile");
+//       } catch (error) {
+//         console.log(error);
+//       }
+//     } else {
+//       // let pathofimage = image.filename + ".png";
+//       // let imagePath = path.join("public", "images", pathofimage);
+//       // console.log(imagePath);
+//       // fs.renameSync(image.path, imagePath);
+//       // imageFileName = pathofimage;
+//       try {
+//         if (
+//           (await handleUpdateFrontCMND(req.files[0].filename, username)) &&
+//           (await handleUpdateBackCMND(req.files[1].filename, username)) &&
+//           (await updateStatusAndLastModifiedByUsername(
+//             username,
+//             0,
+//             new Date(Date.now())
+//           ))
+//         ) {
+//           req.session.flash = {
+//             type: "success",
+//             intro: "Congratulation!",
+//             message:
+//               "Upload CMND successfully!!!! Please wait for admin verify",
+//           };
+//           return res.redirect("/users/profile");
+//         } else {
+//           req.session.flash = {
+//             type: "danger",
+//             intro: "Oops!",
+//             message: "Some thing went wrong",
+//           };
+//           return res.redirect("/users/profile");
+//         }
+//       } catch (error) {
+//         console.log(error);
+//       }
+//     }
+//   } else {
+//     const errors = result.mapped();
+//     let errorMessage = errors[Object.keys(errors)[0]].msg;
+//     req.session.flash = {
+//       type: "danger",
+//       intro: "Oops!",
+//       message: errorMessage,
+//     };
+//     res.redirect("/users/profile");
+//   }
+// };
+
 const profilePostCMND = async (req, res) => {
-  console.log(req.files);
+  // console.log(req.files);
   // console.log(req.files[1])
-  let result = validationResult(req);
-  if (result.errors.length === 0) {
-    let image = req.file;
-    let username = req.userClaims.username;
-    let imageFileName;
-    if (req.files.length != 2) {
-      try {
-        // const FrontCMND = await handleSelectFrontCMND(username);
-        // const BackCMND = await handleSelectBackCMND(username);
-        // imageFileName = FrontCMND;
-        req.session.flash = {
-          type: "danger",
-          intro: "Oops!",
-          message:
-            "You upload not valid, please upload 2 pictures or we will take old picture",
-        };
-        return res.redirect("/users/profile");
-      } catch (error) {
-        console.log(error);
-      }
+  const form = new multiparty.Form();
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      return res.json({
+        code: 1,
+        message: err.message,
+      });
     } else {
-      // let pathofimage = image.filename + ".png";
-      // let imagePath = path.join("public", "images", pathofimage);
-      // console.log(imagePath);
-      // fs.renameSync(image.path, imagePath);
-      // imageFileName = pathofimage;
+      let pathofimage1 =
+        Date.now() + "--" + files.front_cmnd[0].originalFilename;
+      let imagePath1 = path.join("public", "images", pathofimage1);
+      let pathofimage2 =
+        Date.now() + "--" + files.back_cmnd[0].originalFilename;
+      let imagePath2 = path.join("public", "images", pathofimage2);
+      fs.renameSync(files.front_cmnd[0].path, imagePath1);
+      fs.renameSync(files.back_cmnd[0].path, imagePath2);
+      let username = req.userClaims.username;
       try {
         if (
-          (await handleUpdateFrontCMND(req.files[0].filename, username)) &&
-          (await handleUpdateBackCMND(req.files[1].filename, username)) &&
+          (await handleUpdateFrontCMND(pathofimage1, username)) &&
+          (await handleUpdateBackCMND(pathofimage2, username)) &&
           (await updateStatusAndLastModifiedByUsername(
             username,
             0,
             new Date(Date.now())
           ))
         ) {
-          req.session.flash = {
-            type: "success",
-            intro: "Congratulation!",
+          return res.json({
+            code: 0,
             message:
               "Upload CMND successfully!!!! Please wait for admin verify",
-          };
-          return res.redirect("/users/profile");
+          });
         } else {
-          req.session.flash = {
-            type: "danger",
-            intro: "Oops!",
+          return res.json({
+            code: 1,
             message: "Some thing went wrong",
-          };
-          return res.redirect("/users/profile");
+          });
         }
       } catch (error) {
         console.log(error);
       }
     }
-  } else {
-    const errors = result.mapped();
-    let errorMessage = errors[Object.keys(errors)[0]].msg;
-    req.session.flash = {
-      type: "danger",
-      intro: "Oops!",
-      message: errorMessage,
-    };
-    res.redirect("/users/profile");
-  }
+  });
 };
 
 // todo Get /users/card
