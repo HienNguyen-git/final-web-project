@@ -48,10 +48,16 @@ router.get("/", function (req, res, next) {
 });
 
 router.get("/login", function (req, res, next) {
+  if(req.userClaims){
+     res.redirect("/")
+  }
   res.render("account/login", { title: "Login" });
 });
 
 router.get("/register", function (req, res, next) {
+  if(req.userClaims){
+     res.redirect("/")
+  }
   res.render("account/register", { title: "Register" });
 });
 
