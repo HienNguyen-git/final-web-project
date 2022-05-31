@@ -55,7 +55,6 @@ async function getCardByUsername(username) {
 async function addCardByUsername({
   username,
   card_number,
-  recharge_date,
   money,
 }) {
   /**
@@ -64,8 +63,8 @@ async function addCardByUsername({
    */
 
   const sql =
-    "INSERT INTO recharge (username, card_number, date, value) VALUES (?,?,?,?)";
-  const value = [username, card_number, recharge_date, money];
+    "INSERT INTO recharge (username, card_number, value) VALUES (?,?,?)";
+  const value = [username, card_number, money];
 
   return new Promise((resolve, reject) => {
     connect.query(sql, value, async (err, result) => {
