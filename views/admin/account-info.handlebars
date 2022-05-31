@@ -74,7 +74,7 @@
                                 <th>Cost bearer</th>
                                 <th>Status</th>
                                 <th>Date</th>
-                                <th></th>
+                                
                             </tr>
                         </thead>
                         <tbody id="receive-body">
@@ -98,7 +98,7 @@
                                 <th>Status</th>
                                 <th>Cost bearer</th>
                                 <th>Date</th>
-                                <th></th>
+                                
                             </tr>
                         </thead>
                         <tbody id="deposit-body">
@@ -120,7 +120,7 @@
                                 <th>Value</th>
                                 <th>Status</th>
                                 <th>Date</th>
-                                <th></th>
+                                
                             </tr>
                         </thead>
                         <tbody id="withdraw-body">
@@ -142,7 +142,7 @@
                                 <th>Type</th>
                                 <th>Quantity</th>
                                 <th>Date</th>
-                                <th></th>
+                                
                             </tr>
                         </thead>
                         <tbody id="phonecard-body">
@@ -242,7 +242,6 @@
                         <td>${e.value}</td>
                         ${e.status}
                         <td>${e.date}</td>
-                        <td><i data-toggle="modal" data-target="#view1"  onclick="handleView('${e.id}','${e.statusCode}')" class="fa fa-edit action"></i></td>
                     </tr>
                     `
                 ).join("")
@@ -266,7 +265,6 @@
                         ${e.status}
                         <td>${e.feeperson}</td>
                         <td>${e.date}</td>
-                        <td><i data-toggle="modal" data-target="#view1"  onclick="handleView('${e.id}','${e.statusCode}')" class="fa fa-edit action"></i></td>
                     </tr>
                     `
                 ).join("")
@@ -292,7 +290,6 @@
                         <td>${e.feeperson}</td>
                         ${e.status}
                         <td>${e.date}</td>
-                        <td><i data-toggle="modal" data-target="#view1"  onclick="handleView('${e.id}','${e.statusCode}')" class="fa fa-edit action"></i></td>
                     </tr>
                     `
                 ).join("")
@@ -315,7 +312,6 @@
                         <td>${e.price}</td>
                         <td>${e.quantity}</td>
                         <td>${e.date}</td>
-                        <td><i data-toggle="modal" data-target="#view1"  onclick="handleView('${e.id}','${e.statusCode}')" class="fa-solid fa-eye"></i></td>
                     </tr>
                     `
                 ).join("")
@@ -336,7 +332,7 @@
                         <td>${e.id}</td>
                         <td>${e.card_number}</td>
                         <td>${e.money}</td>
-                        <td>${e.recharge_date}</td>
+                        <td>${e.date}</td>
                     </tr>
                     `
                 ).join("")

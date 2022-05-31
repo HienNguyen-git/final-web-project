@@ -844,6 +844,7 @@ const getRechargeByUser = async (req, res) => {
   try {
     const rawData = await getRechargeListByUser(userData.username);
     console.log(rawData);
+    console.log("")
     data = rawData.map((e) => ({
       id: e.id,
       money: e.money,
