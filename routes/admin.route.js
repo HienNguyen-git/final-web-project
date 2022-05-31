@@ -28,8 +28,8 @@ router.get("/account", handleAdminUserAccount);
 router.get("/account/api", handleAccountApi);
 router.get("/account/:username", handleAdminUserAccountDetail);
 
-
 router.put("/account", handleAccountStatus);
+
 
 router.get("/deposit", getDepositMore5m);
 router.get("/deposit/:id", getDepositDetail);
