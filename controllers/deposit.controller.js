@@ -316,9 +316,16 @@ const getUserInfo = async (req, res) => {
 }
 
 const getSenderByUser = async (req, res) => {
-    const userData = req.userClaims
+    const myUsername = req.query["username"]
+    let username
+    if(myUsername!==undefined){
+        username = myUsername
+    }else{
+        const userData = req.userClaims
+        username = userData.username;
+    }
     try {
-        const rawData = await getSenderListByUser(userData.username)
+        const rawData = await getSenderListByUser(username)
         console.log(rawData)
         data = rawData.map(e => ({
             id: e.id,
@@ -345,9 +352,16 @@ const getSenderByUser = async (req, res) => {
 }
 
 const getReceiverByUser = async (req,res)=>{
-    const userData = req.userClaims
+    const myUsername = req.query["username"]
+    let username
+    if(myUsername!==undefined){
+        username = myUsername
+    }else{
+        const userData = req.userClaims
+        username = userData.username;
+    }
     try {
-        const rawData = await getRecieverListByUser(userData.username)
+        const rawData = await getRecieverListByUser(username)
         console.log(rawData)
         data = rawData.map(e => ({
             id: e.id,
