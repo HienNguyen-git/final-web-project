@@ -1,26 +1,19 @@
-const {
-  handlePostDeposit,
-  getUserDepositInfo,
-  handleSelectDepositByPhone,
-  handleUpdateTotalValueOfSender,
-  handleUpdateTotalValueOfReceiver,
-  selectReceiverValue,
-  selectReceiverName,
-  handleUpdateStatusDeposit5m,
-  handleSelectUserDetail,
-  getSenderListByUser,
-  getRecieverListByUser,
-} = require("../models/deposit.model");
-const { handlePostOTP, handleSelectOTP } = require("../models/user.model");
-const { validationResult } = require("express-validator");
-var nodemailer = require("nodemailer"); // khai báo sử dụng module nodemailer
-var smtpTransport = require("nodemailer-smtp-transport");
-const {
-  dataProcess,
-  formatDateTime,
-  encodeStatusCode,
-  encodeTransistionCode,
-} = require("../config/helper");
+const { handlePostDeposit,
+    getUserDepositInfo,
+    handleSelectDepositByPhone,
+    handleUpdateTotalValueOfSender,
+    handleUpdateTotalValueOfReceiver,
+    selectReceiverValue, selectReceiverName,
+    handleUpdateStatusDeposit5m,
+    handleSelectUserDetail, 
+    getSenderListByUser,
+    getRecieverListByUser} = require('../models/deposit.model');
+const { handlePostOTP, handleSelectOTP } = require('../models/user.model');
+const { validationResult } = require('express-validator');
+var nodemailer = require('nodemailer'); // khai báo sử dụng module nodemailer
+var smtpTransport = require('nodemailer-smtp-transport');
+const { dataProcess, formatDateTime, encodeStatusCode, encodeTransistionCode } = require('../config/helper');
+const { transporterEmail } = require('../config/email_setup');
 
 // handleSelectUserDetail(req.userClaims);
 
@@ -42,27 +35,15 @@ const PostDeposit = async (req, res) => {
     const email = (await getUserDepositInfo(username)).email;
     const otp = Math.floor(100000 + Math.random() * 900000);
 
-    var transporter = nodemailer.createTransport({
-      // config mail server
-      service: "Gmail",
-      auth: {
-        user: "nchdang16012001@gmail.com",
-        pass: "mlrafbeyqtvtqloe",
-      },
-    });
-
-    // var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
-    //     tls: {
-    //         rejectUnauthorized: false
-    //     },
-    //     host: 'mail.phongdaotao.com',
-    //     port: 25,
-    //     secureConnection: false,
-    //     auth: {
-    //         user: 'sinhvien@phongdaotao.com',
-    //         pass: 'svtdtu'
-    //     }
-    // }));
+        var transporter = transporterEmail();
+        // var transporter = nodemailer.createTransport({
+        //     // config mail server
+        //     service: "Gmail",
+        //     auth: {
+        //         user: "nchdang16012001@gmail.com",
+        //         pass: "mlrafbeyqtvtqloe",
+        //     },
+        // });
 
     var mainOptions = {
       // thiết lập đối tượng, nội dung gửi mail
@@ -171,15 +152,16 @@ const sendOtpPost = async (req, res) => {
         depositByPhone.phone_receiver
       );
 
-      //email to receiver
-      var transporter = nodemailer.createTransport({
-        // config mail server
-        service: "Gmail",
-        auth: {
-          user: "nchdang16012001@gmail.com",
-          pass: "mlrafbeyqtvtqloe",
-        },
-      });
+            //email to receiver
+            var transporter = transporterEmail();
+            // var transporter = nodemailer.createTransport({
+            //     // config mail server
+            //     service: "Gmail",
+            //     auth: {
+            //         user: "nchdang16012001@gmail.com",
+            //         pass: "mlrafbeyqtvtqloe",
+            //     },
+            // });
 
       // var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
       //     tls: {
@@ -322,62 +304,76 @@ const getUserInfo = async (req, res) => {
 };
 
 const getSenderByUser = async (req, res) => {
-  const userData = req.userClaims;
-  try {
-    const rawData = await getSenderListByUser(userData.username);
-    console.log(rawData);
-    data = rawData.map((e) => ({
-      id: e.id,
-      phone_receiver: e.phone_receiver,
-      value: e.value,
-      fee: e.fee,
-      feeperson: e.feeperson,
-      note: e.note,
-      status: encodeTransistionCode(e.status),
-      statusCode: e.status,
-      date: formatDateTime(e.date),
-    }));
-    return res.json({
-      code: 0,
-      message: "Get sender data successful",
-      data,
-    });
-  } catch (error) {
-    return res.json({
-      code: 1,
-      message: error.message,
-    });
-  }
-};
+    const myUsername = req.query["username"]
+    let username
+    if(myUsername!==undefined){
+        username = myUsername
+    }else{
+        const userData = req.userClaims
+        username = userData.username;
+    }
+    try {
+        const rawData = await getSenderListByUser(username)
+        console.log(rawData)
+        data = rawData.map(e => ({
+            id: e.id,
+            phone_receiver: e.phone_receiver,
+            value: e.value,
+            fee: e.fee,
+            feeperson: e.feeperson,
+            note: e.note,
+            status: encodeTransistionCode(e.status),
+            statusCode: e.status,
+            date: formatDateTime(e.date),
+        }))
+        return res.json({
+            code: 0,
+            message: "Get sender data successful",
+            data
+        })
+    } catch (error) {
+        return res.json({
+            code: 1,
+            message: error.message,
+        })
+    }
+}
 
-const getReceiverByUser = async (req, res) => {
-  const userData = req.userClaims;
-  try {
-    const rawData = await getRecieverListByUser(userData.username);
-    console.log(rawData);
-    data = rawData.map((e) => ({
-      id: e.id,
-      phone_sender: e.phone_sender,
-      value: e.value,
-      fee: e.fee,
-      feeperson: e.feeperson,
-      note: e.note,
-      status: encodeTransistionCode(e.status),
-      statusCode: e.status,
-      date: formatDateTime(e.date),
-    }));
-    return res.json({
-      code: 0,
-      message: "Get receiver data successful",
-      data,
-    });
-  } catch (error) {
-    return res.json({
-      code: 1,
-      message: error.message,
-    });
-  }
-};
+const getReceiverByUser = async (req,res)=>{
+    const myUsername = req.query["username"]
+    let username
+    if(myUsername!==undefined){
+        username = myUsername
+    }else{
+        const userData = req.userClaims
+        username = userData.username;
+    }
+    try {
+        const rawData = await getRecieverListByUser(username)
+        console.log(rawData)
+        data = rawData.map(e => ({
+            id: e.id,
+            phone_sender: e.phone_sender,
+            value: e.value,
+            fee: e.fee,
+            feeperson: e.feeperson,
+            note: e.note,
+            status: encodeTransistionCode(e.status),
+            statusCode: e.status,
+            date: formatDateTime(e.date),
+        }))
+        return res.json({
+            code: 0,
+            message: "Get receiver data successful",
+            data
+        })
+    } catch (error) {
+        return res.json({
+            code: 1,
+            message: error.message,
+        })
+    }
+}
 
 module.exports = {
   PostDeposit,

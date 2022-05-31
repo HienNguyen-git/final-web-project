@@ -185,14 +185,14 @@ async function getAllDeposits() {
 
 
 const getSenderListByUser = (username)=> new Promise((resolve,reject)=>{
-    connect.query("SELECT b.* FROM user_detail a, deposit b where a.phone=b.phone_sender and a.username=?",[username],(err,result)=>{
+    connect.query("SELECT b.* FROM user_detail a, deposit b where a.phone=b.phone_sender and a.username=? order by date desc",[username],(err,result)=>{
         if(err) reject(err)
         resolve(result)
     })
 })
 
 const getRecieverListByUser = (username)=> new Promise((resolve,reject)=>{
-    connect.query("SELECT b.* FROM user_detail a, deposit b where a.phone=b.phone_receiver and a.username=?",[username],(err,result)=>{
+    connect.query("SELECT b.* FROM user_detail a, deposit b where a.phone=b.phone_receiver and a.username=? order by date desc",[username],(err,result)=>{
         if(err) reject(err)
         resolve(result)
     })

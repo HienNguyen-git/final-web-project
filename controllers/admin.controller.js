@@ -43,6 +43,7 @@ const {
   getAllRecharges,
 } = require("../models/recharge.model");
 const { getAllBills, getBillById } = require("../models/phone_card.model");
+const { transporterEmail } = require("../config/email_setup");
 const getAdminHome = (req, res) => {
   res.render("admin/home", { title: "Admin", isAdmin: true, routerPath: "" });
 };
@@ -406,14 +407,15 @@ const postDepositMore5m = async (req, res) => {
     console.log(email);
 
     //email to receiver
-    var transporter = nodemailer.createTransport({
-      // config mail server
-      service: "Gmail",
-      auth: {
-        user: "nchdang16012001@gmail.com",
-        pass: "mlrafbeyqtvtqloe",
-      },
-    });
+    var transporter = transporterEmail();
+    // var transporter = nodemailer.createTransport({
+    //   // config mail server
+    //   service: "Gmail",
+    //   auth: {
+    //     user: "nchdang16012001@gmail.com",
+    //     pass: "mlrafbeyqtvtqloe",
+    //   },
+    // });
 
     // var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
     //     tls: {

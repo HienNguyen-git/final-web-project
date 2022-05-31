@@ -363,6 +363,81 @@ $(document).ready(() => {
       };
     }
   }
+
+  // * Javascript for GET /users/register
+  if (document.getElementById("view-account-detail")) {
+    // Add the following code if you want the name of the file appear on select
+    $(".custom-file-input").on("change", function () {
+      //var numFiles =
+      $("input:file")[0].files.length;
+      var fileName = $(this).val().split("\\").pop();
+      $(this)
+        .siblings(".custom-file-label")
+        .addClass("selected")
+        .html(fileName);
+    });
+    $(".custom-file-input2").on("change", function () {
+      var fileName = $(this).val().split("\\").pop();
+      $(this)
+        .siblings(".custom-file-label2")
+        .addClass("selected")
+        .html(fileName);
+    });
+
+    handleUpload();
+    function handleUpload() {
+      let form = document.getElementById("form-cmnd");
+
+      form.onsubmit = (e) => {
+        e.preventDefault();
+        const suppported_extensions = ["jpg", "png"];
+
+        let frontCMND = document.getElementById("file-front-cmnd");
+        let backCMND = document.getElementById("file-back-cmnd");
+        if(frontCMND.files[0] == undefined){
+          showMessage("Please enter front CMND", "error")
+        }else if(backCMND.files[0] == undefined){
+          showMessage("Please enter back CMND", "error")
+        }else {
+          //console.log(frontCMND.files[0].name.split('.').pop().toLowerCase())
+          let extensionFrontCMND = frontCMND.files[0].name.split('.').pop().toLowerCase()
+          let extensionBackCMND = backCMND.files[0].name.split('.').pop().toLowerCase()
+          
+          if (!suppported_extensions.includes(extensionFrontCMND) || 
+          !suppported_extensions.includes(extensionBackCMND)) {
+            showMessage("File type is not supported! Only allow image png or jpg","error");
+          }
+          else{
+            let data = new FormData();
+    
+            data.append("front_cmnd", frontCMND.files[0]);
+            data.append("back_cmnd", backCMND.files[0]);
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "/users/profile", true);
+            xhr.send(data);
+            xhr.onload = function () {
+              if (xhr.readyState === xhr.DONE) {
+                if (xhr.status === 200) {
+                  let response = JSON.parse(xhr.responseText);
+                  if (response.code === 0) {
+                    console.log(response.code)
+                    // SUCCESS
+                    showMessage(response.message);
+                    window.location.reload()
+                  } else {
+                    // FAIL
+                    showMessage(response.message, "error");
+                    window.location.reload()
+                  }
+                  
+                }
+              }
+            };
+          }
+        }
+      };
+    }
+  }
 });
 
 function toast_header({
