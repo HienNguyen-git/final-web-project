@@ -15,3 +15,14 @@ Các thông tin đăng nhập:
 		username: admin
 		password: 123456
 	Người dùng:
+		1/Username: 3092696746
+		Pasword: 123456
+
+		2/Username: 7453666461
+		Pasword: 123456 
+
+Thầy có thể dùng mail mà em chuẩn bị sẵn:
+	nghaing2001@gmail.com
+	Nghai@2001
+*Config mail gửi mã OTP: (Trong folder config, file: email_setup.js)
+Nếu thầy không gửi được mail bằng mail thầy thì thầy dùng mail mà em viết sẵn (em đang comment lại)
