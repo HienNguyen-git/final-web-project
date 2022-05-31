@@ -55,6 +55,7 @@ class AuthenticationController {
             "POST /users/change-password",
             "GET /users/logout",
             "GET /users/profile",
+            "POST /users/profile",
           ];
 
           const isNotConfirmLoginRoute =

@@ -109,6 +109,132 @@ $(document).ready(() => {
     };
   }
 
+  // * Javascript for GET /deposit
+  if (document.getElementById("view-exchange-deposit")) {
+    const myAlert = document.getElementById("my-alert");
+    const money = document.getElementById("money");
+    const feeDeposit = document.getElementById("feeDeposit");
+    if (money) {
+      money.addEventListener("input", async (e) => {
+        //xu ly nếu nhập số tiền chuyển hơn số dư
+
+        const myFetch = await fetch(location.href + "/info");
+        const res = await myFetch.json();
+        if (!res.code) {
+          const data = res.data;
+          const rest = data.total_value;
+
+          if (rest < e.target.value) {
+            showAlert("Your money not enough");
+          } else {
+            myAlert.innerHTML = "";
+          }
+          //xu ly fee 5%
+          let fee = e.target.value * 0.05;
+          feeDeposit.innerHTML = fee;
+        }
+        //console.log(res)
+      });
+    }
+    //auto hiện tên ghi nhập đúng sdt
+    const phone_receiver = document.getElementById("phone_receiver");
+    const name_receiver = document.getElementById("name");
+
+    phone_receiver.addEventListener("blur", async (e) => {
+      let phone = phone_receiver.value;
+      //console.log(phone);
+      const myFetch = await fetch(location.href + "/info", {
+        method: "POST",
+        body: JSON.stringify({ phone }),
+        headers: { "Content-Type": "application/json" },
+      });
+      const res = await myFetch.json();
+      if (!res.code) {
+        const data = res.data;
+        const name = data.name;
+        name_receiver.value = name;
+        myAlert.innerHTML = "";
+      } else {
+        showAlert(res.message);
+        name_receiver.value = "";
+      }
+    });
+
+    function showAlert(message) {
+      myAlert.innerHTML = "";
+      const content = `
+        <div class="alert alert-danger" role="alert">
+          ${message}
+        </div>
+      `;
+      myAlert.insertAdjacentHTML("beforeend", content);
+    }
+  }
+
+  // view-admin-account
+  // * Javascript for GET /phone-card
+  if (document.getElementById("view-exchange-phone-card")) {
+    const formCardPhone = document.getElementById("phone-card-form");
+    const networkProviderBox = document.getElementById("networkProvider");
+    const myAlert = document.getElementById("my-alert");
+    let myFee;
+
+    if (networkProviderBox) {
+      networkProviderBox.addEventListener("change", async (e) => {
+        const myFetch = await fetch(
+          location.href + "/fee?code=" + e.target.value
+        );
+        const res = await myFetch.json();
+        myFee = res.data[0].fee;
+        document.querySelector("#fee").innerHTML = res.data[0].fee;
+      });
+    }
+
+    if (formCardPhone) {
+      formCardPhone.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const { networkProvider, type, amount } = Object.fromEntries(formData);
+        if (networkProvider === undefined) {
+          showMessage("Please select your network provider", "error");
+        } else if (type === undefined) {
+          showMessage("Please choose our price type", "error");
+        } else if (amount === undefined) {
+          showMessage("Please select amount", "error");
+        } else {
+          myAlert.innerHTML = "";
+          const myFetch = await fetch(location.href, {
+            method: "POST",
+            body: JSON.stringify({
+              name: networkProvider,
+              type,
+              amount,
+              fee: myFee,
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          const res = await myFetch.json();
+          console.log(res);
+          if (!res.code) {
+            alert(
+              "Ticket purchase was successful. Here are your code: " +
+                res.data +
+                "\nYou can view your code again in Dashbroad"
+            );
+            window.location.reload();
+          } else showMessage(res.message, "error");
+        }
+      });
+    }
+    function showAlert(message) {
+      myAlert.innerHTML = "";
+      const content = ` <div class="alert alert-danger" role="alert"> ${message}</div> `;
+      myAlert.insertAdjacentHTML("beforeend", content);
+    }
+  }
+
   // * Javascript for GET /recharge
   if (document.getElementById("view-exchange-recharge")) {
     let form = document.getElementById("form-recharge");
@@ -137,6 +263,13 @@ $(document).ready(() => {
       });
     };
   }
+
+  // view-admin-account
+  // * Javascript for GET /admin/account
+  if (document.getElementById("view-admin-account")) {
+
+  }
+
   // * Javascript for GET /admin/withdraw
   if (document.getElementById("view-admin-withdraw")) {
     loadData();
@@ -149,7 +282,7 @@ $(document).ready(() => {
             renderData(currVal);
           });
 
-          $(".btn.btn-sm").click(onClickButton);
+          $(".btn").click(onClickButton);
         }
       });
     }
@@ -428,7 +561,7 @@ $(document).ready(() => {
             xhr.onload = function () {
               if (xhr.readyState === xhr.DONE) {
                 if (xhr.status === 200) {
-                  console.log((xhr.responseText));
+                  console.log(xhr.responseText);
 
                   let response = JSON.parse(xhr.responseText);
                   if (response.code === 0) {
