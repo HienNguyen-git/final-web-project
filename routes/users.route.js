@@ -95,10 +95,15 @@ router.post("/account/resetpassword/resendOtpPost", resendOtpPost);
 
 router.get("/profile", profileGet);
 
+// router.post(
+//   "/profile",
+//   upload.array("images", 2),
+//   profilePostCMNDValidation,
+//   profilePostCMND
+// );
+
 router.post(
   "/profile",
-  upload.array("images", 2),
-  profilePostCMNDValidation,
   profilePostCMND
 );
 

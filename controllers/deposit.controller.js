@@ -13,6 +13,7 @@ const { validationResult } = require('express-validator');
 var nodemailer = require('nodemailer'); // khai báo sử dụng module nodemailer
 var smtpTransport = require('nodemailer-smtp-transport');
 const { dataProcess, formatDateTime, encodeStatusCode, encodeTransistionCode } = require('../config/helper');
+const { transporterEmail } = require('../config/email_setup');
 
 // handleSelectUserDetail(req.userClaims);
 
@@ -35,15 +36,15 @@ const PostDeposit = async (req, res) => {
         const email = (await getUserDepositInfo(username)).email
         const otp = Math.floor(100000 + Math.random() * 900000);
 
-
-        var transporter = nodemailer.createTransport({
-            // config mail server
-            service: "Gmail",
-            auth: {
-                user: "nchdang16012001@gmail.com",
-                pass: "mlrafbeyqtvtqloe",
-            },
-        });
+        var transporter = transporterEmail();
+        // var transporter = nodemailer.createTransport({
+        //     // config mail server
+        //     service: "Gmail",
+        //     auth: {
+        //         user: "nchdang16012001@gmail.com",
+        //         pass: "mlrafbeyqtvtqloe",
+        //     },
+        // });
 
         // var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
         //     tls: {
@@ -166,14 +167,15 @@ const sendOtpPost = async (req, res) => {
             );
 
             //email to receiver
-            var transporter = nodemailer.createTransport({
-                // config mail server
-                service: "Gmail",
-                auth: {
-                    user: "nchdang16012001@gmail.com",
-                    pass: "mlrafbeyqtvtqloe",
-                },
-            });
+            var transporter = transporterEmail();
+            // var transporter = nodemailer.createTransport({
+            //     // config mail server
+            //     service: "Gmail",
+            //     auth: {
+            //         user: "nchdang16012001@gmail.com",
+            //         pass: "mlrafbeyqtvtqloe",
+            //     },
+            // });
 
             // var transporter = nodemailer.createTransport(smtpTransport({ // config mail server
             //     tls: {
