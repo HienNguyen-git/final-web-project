@@ -1,4 +1,4 @@
-const { dataProcess, generateCode, formatDate } = require("../config/helper")
+const { dataProcess, generateCode, formatDate, formatMoney } = require("../config/helper")
 const { getNetworkProvider, createBill, getPhoneCardListByUser, getNetworkFeeByCode } = require("../models/phone_card.model")
 const { getUserDetailByUserName, updateTotalValue } = require("../models/user.model")
 
@@ -101,7 +101,7 @@ const getPhonecardByUser = async (req, res) => {
             provider_number: providerList.find(a => a.provider_number == e.provider_number).name,
             code: e.code,
             status: e.status,
-            price: e.price,
+            price: formatMoney(e.price),
             quantity: e.quantity,
             date: formatDate(e.date),
         }))

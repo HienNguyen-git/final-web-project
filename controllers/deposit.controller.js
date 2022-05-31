@@ -12,7 +12,7 @@ const { handlePostOTP, handleSelectOTP } = require('../models/user.model');
 const { validationResult } = require('express-validator');
 var nodemailer = require('nodemailer'); // khai báo sử dụng module nodemailer
 var smtpTransport = require('nodemailer-smtp-transport');
-const { dataProcess, formatDateTime, encodeStatusCode, encodeTransistionCode } = require('../config/helper');
+const { dataProcess, formatDateTime, encodeStatusCode, encodeTransistionCode, formatMoney } = require('../config/helper');
 const { transporterEmail } = require('../config/email_setup');
 
 // handleSelectUserDetail(req.userClaims);
@@ -318,7 +318,7 @@ const getSenderByUser = async (req, res) => {
         data = rawData.map(e => ({
             id: e.id,
             phone_receiver: e.phone_receiver,
-            value: e.value,
+            value: formatMoney(e.value),
             fee: e.fee,
             feeperson: e.feeperson,
             note: e.note,
@@ -354,7 +354,7 @@ const getReceiverByUser = async (req,res)=>{
         data = rawData.map(e => ({
             id: e.id,
             phone_sender: e.phone_sender,
-            value: e.value,
+            value: formatMoney(e.value),
             fee: e.fee,
             feeperson: e.feeperson,
             note: e.note,
