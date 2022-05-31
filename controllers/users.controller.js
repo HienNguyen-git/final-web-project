@@ -644,6 +644,7 @@ async function profileGet(req, res) {
   let userDetail = await getUserDetailByUserName(userData.username);
   console.log(userDetail);
   userDetail.date_of_birth = formatDate(userDetail.date_of_birth);
+  userDetail.total_value = formatMoney(userDetail.total_value)
   let status = (await getUserStatusByUserName(userData.username)).status;
 
   console.log("status", status);

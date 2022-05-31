@@ -920,7 +920,7 @@ $(document).ready(() => {
       const res = await myFetch.json()
       if (res.code == 0) {
         const context = res.data.map(e => `
-                <tr>
+                <tr>view-admin-account-home
                     <td>${e.id}</td>
                     <td>${e.provider_number}</td>
                     <td>${e.price}</td>
