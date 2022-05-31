@@ -40,7 +40,6 @@
         
       try{
         const myURL = location.href+"/api?status="+e.target.value
-        console.log(myURL)
         const fetchURL = await fetch(myURL)
         const res = await fetchURL.json()
         if(res.code){

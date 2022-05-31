@@ -25,9 +25,9 @@ var router = express.Router();
 router.get("/", getAdminHome);
 
 router.get("/account", handleAdminUserAccount);
+router.get("/account/api", handleAccountApi);
 router.get("/account/:username", handleAdminUserAccountDetail);
 
-router.get("/account/api", handleAccountApi);
 
 router.put("/account", handleAccountStatus);
 

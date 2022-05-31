@@ -161,6 +161,7 @@ const handleAdminUserAccountDetail = async (req, res) => {
 };
 
 const handleAccountApi = async (req, res) => {
+  console.log("REceive")
   const statusArr = [0, 1, 2, 3, 4];
   let status = req.query["status"];
   console.log(status);

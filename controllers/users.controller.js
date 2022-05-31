@@ -848,7 +848,7 @@ const getRechargeByUser = async (req, res) => {
       id: e.id,
       money: e.money,
       card_number: e.card_number,
-      recharge_date: formatDateTime(e.recharge_date),
+      date: formatDateTime(e.date),
     }));
     return res.json({
       code: 0,
