@@ -418,6 +418,8 @@ $(document).ready(() => {
             xhr.onload = function () {
               if (xhr.readyState === xhr.DONE) {
                 if (xhr.status === 200) {
+                  console.log((xhr.responseText));
+
                   let response = JSON.parse(xhr.responseText);
                   if (response.code === 0) {
                     console.log(response.code)
