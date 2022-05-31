@@ -166,14 +166,15 @@ $(document).ready(() => {
           <td>${withdraw.username}</td>
           <td>${withdraw.card_number}</td>
           <td>${withdraw.value}</td>
-          <td>${withdraw.fee}</td>
           <td>${withdraw.date}</td>
-          <td>${withdraw.note}</td>
-          <td>
-            <button class="btn btn-sm btn-success" data-approve="true"  data-id="${withdraw.id}" >
+          <td>        
+            <a href="/admin/withdraw/${withdraw.id}" class="btn btn-primary">
+              <i class="fa-solid fa-eye"></i>
+            </a>
+            <button class="btn btn-success" data-approve="true"  data-id="${withdraw.id}" >
               <i class="fa-solid fa-check"></i>
             </button>
-            <button class="btn btn-sm btn-danger" data-approve="false" data-id="${withdraw.id}">
+            <button class="btn btn-danger" data-approve="false" data-id="${withdraw.id}">
               <i class="fa-solid fa-xmark"></i>
             </button>
           </td>
@@ -203,6 +204,10 @@ $(document).ready(() => {
         }
       });
     }
+  }
+
+  // * Javascript for GET /admin/deposit
+  if (document.getElementById("view-admin-deposit")) {
   }
 
   // * Javascript for GET /admin/trans-history
@@ -291,36 +296,43 @@ $(document).ready(() => {
         let address = document.getElementById("address").value;
         let frontCMND = document.getElementById("file-front-cmnd");
         let backCMND = document.getElementById("file-back-cmnd");
-        if(phone.length === 0){
-          console.log(phone.length)
-          showMessage("Please enter your phone", "error")
-        }else if(email.length === 0){
-          showMessage("Please enter your email", "error")
-          
-        }else if(name.length === 0){
-          showMessage("Please enter your name", "error")
-
-        }else if(date_of_birth.length === 0){
-          showMessage("Please enter your date of birth", "error")
-
-        }else if(address.length === 0){
-          showMessage("Please enter your address", "error")
-        }else if(frontCMND.files[0] == undefined){
-          showMessage("Please enter front CMND", "error")
-        }else if(backCMND.files[0] == undefined){
-          showMessage("Please enter back CMND", "error")
-        }else {
+        if (phone.length === 0) {
+          console.log(phone.length);
+          showMessage("Please enter your phone", "error");
+        } else if (email.length === 0) {
+          showMessage("Please enter your email", "error");
+        } else if (name.length === 0) {
+          showMessage("Please enter your name", "error");
+        } else if (date_of_birth.length === 0) {
+          showMessage("Please enter your date of birth", "error");
+        } else if (address.length === 0) {
+          showMessage("Please enter your address", "error");
+        } else if (frontCMND.files[0] == undefined) {
+          showMessage("Please enter front CMND", "error");
+        } else if (backCMND.files[0] == undefined) {
+          showMessage("Please enter back CMND", "error");
+        } else {
           //console.log(frontCMND.files[0].name.split('.').pop().toLowerCase())
-          let extensionFrontCMND = frontCMND.files[0].name.split('.').pop().toLowerCase()
-          let extensionBackCMND = backCMND.files[0].name.split('.').pop().toLowerCase()
-          
-          if (!suppported_extensions.includes(extensionFrontCMND) || 
-          !suppported_extensions.includes(extensionBackCMND)) {
-            showMessage("File type is not supported! Only allow image png or jpg","error");
-          }
-          else{
+          let extensionFrontCMND = frontCMND.files[0].name
+            .split(".")
+            .pop()
+            .toLowerCase();
+          let extensionBackCMND = backCMND.files[0].name
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+          if (
+            !suppported_extensions.includes(extensionFrontCMND) ||
+            !suppported_extensions.includes(extensionBackCMND)
+          ) {
+            showMessage(
+              "File type is not supported! Only allow image png or jpg",
+              "error"
+            );
+          } else {
             let data = new FormData();
-    
+
             data.append("phone", phone);
             data.append("email", email);
             data.append("name", name);
@@ -336,14 +348,13 @@ $(document).ready(() => {
                 if (xhr.status === 200) {
                   let response = JSON.parse(xhr.responseText);
                   if (response.code === 0) {
-                    console.log(response.code)
+                    console.log(response.code);
                     // SUCCESS
                     showMessage(response.message);
                   } else {
                     // FAIL
                     showMessage(response.message, "error");
                   }
-                  
                 }
               }
             };
@@ -496,4 +507,50 @@ function showMessage(message, type = "success") {
     type: type,
     duration: 5000,
   });
+}
+
+// admin deposit javascript
+async function checkClick(
+  id,
+  phone_sender,
+  phone_receiver,
+  value,
+  fee,
+  feeperson
+) {
+  const myURL = location.origin + location.pathname;
+  //console.log(myURL)
+  const myFetch = await fetch(myURL, {
+    method: "POST",
+    body: JSON.stringify({
+      id,
+      phone_sender,
+      phone_receiver,
+      value,
+      fee,
+      feeperson,
+    }),
+    headers: { "Content-Type": "application/json" },
+  });
+  const res = await myFetch.json();
+  if (!res.code) {
+    alert("Approved this deposit succesfully");
+    window.location.reload();
+  }
+}
+
+async function rejectClick(id) {
+  console.log(id);
+  const myURL = location.origin + location.pathname + 2;
+  const myFetch = await fetch(myURL, {
+    method: "POST",
+    body: JSON.stringify({ id }),
+    headers: { "Content-Type": "application/json" },
+  });
+  console.log(myFetch);
+  const res = await myFetch.json();
+  if (!res.code) {
+    alert("Reject this deposit ");
+    window.location.reload();
+  }
 }
