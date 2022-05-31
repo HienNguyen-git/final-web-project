@@ -16,6 +16,7 @@ const {
   getWithdrawDetail,
   getDepositDetail,
   handleAdminUserAccountDetail,
+  handleAdminLogout,
 } = require("../controllers/admin.controller");
 const { adminWithdrawValidator } = require("../validations/account");
 var router = express.Router();
@@ -43,6 +44,8 @@ router.get("/withdraw/api", apiGetWithdrawMore5m);
 router.get("/withdraw", getWithdrawMore5m);
 router.post("/withdraw", adminWithdrawValidator, postWithdrawMore5m);
 router.get("/withdraw/:id", getWithdrawDetail);
+
+router.get("/logout", handleAdminLogout)
 
 // * withdraw detail
 module.exports = router;

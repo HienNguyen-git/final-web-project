@@ -633,6 +633,12 @@ function getDataFromToken(req) {
     return null;
   }
 }
+
+const handleAdminLogout = (req,res)=>{
+  res.clearCookie("accessToken");
+  res.redirect("/users/login");
+}
+
 module.exports = {
   getAdminHome,
   handleAdminUserAccount,
@@ -649,5 +655,6 @@ module.exports = {
   apiGetTransHistory,
   getWithdrawDetail,
   getDepositDetail,
-  handleAdminUserAccountDetail
+  handleAdminUserAccountDetail,
+  handleAdminLogout
 };
