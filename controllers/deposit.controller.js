@@ -105,7 +105,20 @@ const PostDeposit = async (req, res) => {
 const getDeposit = async (req, res) => {
   // const username = req.session.username
   const username = req.userClaims.username;
-  const data = await getUserDepositInfo(username);
+  let data = await getUserDepositInfo(username);
+  data = {
+    id: data.id,
+    username: data.username,
+    phone: data.phone,
+    email: data.email,
+    name: data.name,
+    date_of_birth: formatDateTime(data.date_of_birth),
+    address: data.address,
+    front_cmnd: data.front_cmnd,
+    back_cmnd: data.back_cmnd,
+    total_value: formatMoney(data.total_value)
+  }
+  console.log(data)
   //console.log(data)
   res.render("exchange/deposit", { title: "Deposit", data });
 };
@@ -319,7 +332,7 @@ const getSenderByUser = async (req, res) => {
             id: e.id,
             phone_receiver: e.phone_receiver,
             value: formatMoney(e.value),
-            fee: e.fee,
+            fee: formatMoney(e.fee),
             feeperson: e.feeperson,
             note: e.note,
             status: encodeTransistionCode(e.status),
@@ -355,7 +368,7 @@ const getReceiverByUser = async (req,res)=>{
             id: e.id,
             phone_sender: e.phone_sender,
             value: formatMoney(e.value),
-            fee: e.fee,
+            fee: formatMoney(e.fee),
             feeperson: e.feeperson,
             note: e.note,
             status: encodeTransistionCode(e.status),
