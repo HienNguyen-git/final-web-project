@@ -12,7 +12,7 @@ const { handlePostOTP, handleSelectOTP } = require('../models/user.model');
 const { validationResult } = require('express-validator');
 var nodemailer = require('nodemailer'); // khai báo sử dụng module nodemailer
 var smtpTransport = require('nodemailer-smtp-transport');
-const { dataProcess, formatDateTime, encodeStatusCode, encodeTransistionCode } = require('../config/helper');
+const { dataProcess, formatDateTime, encodeStatusCode, encodeTransistionCode, formatMoney } = require('../config/helper');
 const { transporterEmail } = require('../config/email_setup');
 
 // handleSelectUserDetail(req.userClaims);
@@ -105,7 +105,20 @@ const PostDeposit = async (req, res) => {
 const getDeposit = async (req, res) => {
   // const username = req.session.username
   const username = req.userClaims.username;
-  const data = await getUserDepositInfo(username);
+  let data = await getUserDepositInfo(username);
+  data = {
+    id: data.id,
+    username: data.username,
+    phone: data.phone,
+    email: data.email,
+    name: data.name,
+    date_of_birth: formatDateTime(data.date_of_birth),
+    address: data.address,
+    front_cmnd: data.front_cmnd,
+    back_cmnd: data.back_cmnd,
+    total_value: formatMoney(data.total_value)
+  }
+  console.log(data)
   //console.log(data)
   res.render("exchange/deposit", { title: "Deposit", data });
 };
@@ -318,8 +331,8 @@ const getSenderByUser = async (req, res) => {
         data = rawData.map(e => ({
             id: e.id,
             phone_receiver: e.phone_receiver,
-            value: e.value,
-            fee: e.fee,
+            value: formatMoney(e.value),
+            fee: formatMoney(e.fee),
             feeperson: e.feeperson,
             note: e.note,
             status: encodeTransistionCode(e.status),
@@ -354,8 +367,8 @@ const getReceiverByUser = async (req,res)=>{
         data = rawData.map(e => ({
             id: e.id,
             phone_sender: e.phone_sender,
-            value: e.value,
-            fee: e.fee,
+            value: formatMoney(e.value),
+            fee: formatMoney(e.fee),
             feeperson: e.feeperson,
             note: e.note,
             status: encodeTransistionCode(e.status),
