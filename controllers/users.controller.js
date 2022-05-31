@@ -6,7 +6,7 @@ const validatePhoneNumber = require("validate-phone-number-node-js");
 const multer = require("multer");
 const fs = require("fs"); //doi file name
 let path = require("path");
-var nodemailer = require('nodemailer'); // khai báo sử dụng module nodemailer
+var nodemailer = require("nodemailer"); // khai báo sử dụng module nodemailer
 
 const {
   handlePostOTP,
@@ -317,19 +317,19 @@ const handleRegister = async (req, res) => {
     // if (err) return res.status(500).send(err.message);
     if (err) {
       return res.json({
-      code: 1,
-      message: err.message,
+        code: 1,
+        message: err.message,
       });
     }
-    let checkEP = await getEmailPhoneExistOrNot(fields.email,fields.phone)
-    console.log(checkEP !== undefined)
-    if(checkEP !== undefined){
-            return res.json({
-              code: 1,
-              message: 'Email or Phone has exist. Please register another email or phone!',
-              });
-    }
-    else{
+    let checkEP = await getEmailPhoneExistOrNot(fields.email, fields.phone);
+    console.log(checkEP !== undefined);
+    if (checkEP !== undefined) {
+      return res.json({
+        code: 1,
+        message:
+          "Email or Phone has exist. Please register another email or phone!",
+      });
+    } else {
       const randomUsername = generateUsername(1000000000, 9000000000);
       const randomPassword = generateRandomPassword(6);
       const salt = await bcrypt.genSalt(10);
@@ -337,13 +337,15 @@ const handleRegister = async (req, res) => {
 
       console.log(fields);
       console.log(files);
-      let pathofimage1 = Date.now() + "--" + files.front_cmnd[0].originalFilename ;
+      let pathofimage1 =
+        Date.now() + "--" + files.front_cmnd[0].originalFilename;
       let imagePath1 = path.join("public", "images", pathofimage1);
-      let pathofimage2 = Date.now() + "--" + files.back_cmnd[0].originalFilename ;
+      let pathofimage2 =
+        Date.now() + "--" + files.back_cmnd[0].originalFilename;
       let imagePath2 = path.join("public", "images", pathofimage2);
       fs.renameSync(files.front_cmnd[0].path, imagePath1);
       fs.renameSync(files.back_cmnd[0].path, imagePath2);
-      
+
       var transporter = transporterEmail();
       // var transporter = nodemailer.createTransport({
       //   // config mail server
@@ -353,7 +355,7 @@ const handleRegister = async (req, res) => {
       //     pass: "mlrafbeyqtvtqloe",
       //   },
       // });
-  
+
       // config mail server = mail thầy
       // var transporter = nodemailer.createTransport(smtpTransport({
       //     tls: {
@@ -367,47 +369,49 @@ const handleRegister = async (req, res) => {
       //         pass: 'svtdtu'
       //     }
       // }));
-  
+
       var mainOptions = {
         // thiết lập đối tượng, nội dung gửi mail
         from: "sinhvien@phongdaotao.com",
         to: fields.email,
-        subject: 'Your account',
-        html: '<h2>WELCOME TO OUR BANKING SYSTEM</h2><br></br><p>Your account:<br></br></p>Username: '
-        + randomUsername +' <br></br>Password: '+ randomPassword +'</p>'
-   
+        subject: "Your account",
+        html:
+          "<h2>WELCOME TO OUR BANKING SYSTEM</h2><br></br><p>Your account:<br></br></p>Username: " +
+          randomUsername +
+          " <br></br>Password: " +
+          randomPassword +
+          "</p>",
       };
-  
+
       transporter.sendMail(mainOptions, async function (err, info) {
         if (err) {
           return res.json({
             code: 1,
             message: err.message,
-            });
+          });
         } else {
-              //lưu vào db
-              await createAnAccount(
-                randomUsername,
-                fields.phone,
-                fields.email,
-                fields.name,
-                fields.date_of_birth,
-                fields.address,
-                pathofimage1,
-                pathofimage2
-              );
-              await putAccCreatedIntoUser(randomUsername, hashPassword);
-              console.log(randomPassword);
-              console.log(randomUsername);
-            return res.json({
-              code: 0,
-              message:
-                "Create account successful. Please check your email to get your account!",
-            });
-            }
-          
+          //lưu vào db
+          await createAnAccount(
+            randomUsername,
+            fields.phone,
+            fields.email,
+            fields.name,
+            fields.date_of_birth,
+            fields.address,
+            pathofimage1,
+            pathofimage2
+          );
+          await putAccCreatedIntoUser(randomUsername, hashPassword);
+          console.log(randomPassword);
+          console.log(randomUsername);
+          return res.json({
+            code: 0,
+            message:
+              "Create account successful. Please check your email to get your account!",
+          });
+        }
       });
-    };
+    }
   });
 };
 
@@ -650,8 +654,6 @@ async function profileGet(req, res) {
   });
 }
 
-
-
 // const profilePostCMND = async (req, res) => {
 //   console.log(req.files);
 //   // console.log(req.files[1])
@@ -722,7 +724,6 @@ async function profileGet(req, res) {
 //   }
 // };
 
-
 const profilePostCMND = async (req, res) => {
   // console.log(req.files);
   // console.log(req.files[1])
@@ -730,13 +731,15 @@ const profilePostCMND = async (req, res) => {
   form.parse(req, async (err, fields, files) => {
     if (err) {
       return res.json({
-      code: 1,
-      message: err.message,
+        code: 1,
+        message: err.message,
       });
-    }else{
-      let pathofimage1 = Date.now() + "--" + files.front_cmnd[0].originalFilename ;
+    } else {
+      let pathofimage1 =
+        Date.now() + "--" + files.front_cmnd[0].originalFilename;
       let imagePath1 = path.join("public", "images", pathofimage1);
-      let pathofimage2 = Date.now() + "--" + files.back_cmnd[0].originalFilename ;
+      let pathofimage2 =
+        Date.now() + "--" + files.back_cmnd[0].originalFilename;
       let imagePath2 = path.join("public", "images", pathofimage2);
       fs.renameSync(files.front_cmnd[0].path, imagePath1);
       fs.renameSync(files.back_cmnd[0].path, imagePath2);
@@ -751,24 +754,22 @@ const profilePostCMND = async (req, res) => {
             new Date(Date.now())
           ))
         ) {
-         
           return res.json({
             code: 0,
-            message: "Upload CMND successfully!!!! Please wait for admin verify",
-            });
+            message:
+              "Upload CMND successfully!!!! Please wait for admin verify",
+          });
         } else {
-          
           return res.json({
             code: 1,
             message: "Some thing went wrong",
-            });
+          });
         }
       } catch (error) {
         console.log(error);
       }
     }
-  })
-  
+  });
 };
 
 // todo Get /users/card
