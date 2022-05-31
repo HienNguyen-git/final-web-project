@@ -394,22 +394,32 @@ $(document).ready(() => {
 
         let frontCMND = document.getElementById("file-front-cmnd");
         let backCMND = document.getElementById("file-back-cmnd");
-        if(frontCMND.files[0] == undefined){
-          showMessage("Please enter front CMND", "error")
-        }else if(backCMND.files[0] == undefined){
-          showMessage("Please enter back CMND", "error")
-        }else {
+        if (frontCMND.files[0] == undefined) {
+          showMessage("Please enter front CMND", "error");
+        } else if (backCMND.files[0] == undefined) {
+          showMessage("Please enter back CMND", "error");
+        } else {
           //console.log(frontCMND.files[0].name.split('.').pop().toLowerCase())
-          let extensionFrontCMND = frontCMND.files[0].name.split('.').pop().toLowerCase()
-          let extensionBackCMND = backCMND.files[0].name.split('.').pop().toLowerCase()
-          
-          if (!suppported_extensions.includes(extensionFrontCMND) || 
-          !suppported_extensions.includes(extensionBackCMND)) {
-            showMessage("File type is not supported! Only allow image png or jpg","error");
-          }
-          else{
+          let extensionFrontCMND = frontCMND.files[0].name
+            .split(".")
+            .pop()
+            .toLowerCase();
+          let extensionBackCMND = backCMND.files[0].name
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+          if (
+            !suppported_extensions.includes(extensionFrontCMND) ||
+            !suppported_extensions.includes(extensionBackCMND)
+          ) {
+            showMessage(
+              "File type is not supported! Only allow image png or jpg",
+              "error"
+            );
+          } else {
             let data = new FormData();
-    
+
             data.append("front_cmnd", frontCMND.files[0]);
             data.append("back_cmnd", backCMND.files[0]);
             let xhr = new XMLHttpRequest();
@@ -422,16 +432,15 @@ $(document).ready(() => {
 
                   let response = JSON.parse(xhr.responseText);
                   if (response.code === 0) {
-                    console.log(response.code)
+                    console.log(response.code);
                     // SUCCESS
                     showMessage(response.message);
-                    window.location.reload()
+                    window.location.reload();
                   } else {
                     // FAIL
                     showMessage(response.message, "error");
-                    window.location.reload()
+                    window.location.reload();
                   }
-                  
                 }
               }
             };
