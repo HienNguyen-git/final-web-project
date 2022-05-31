@@ -48,8 +48,74 @@ const getAdminHome = (req, res) => {
   res.render("admin/home", { title: "Admin", isAdmin: true, routerPath: "" });
 };
 
+// const handleAdminUserAccount = async (req, res) => {
+//   const username = req.query["username"];
+//   console.log(username);
+//   if (username === undefined) {
+//     const raw = await getUserAccountByStatus(0);
+//     const data = raw.map((e) => ({
+//       id: e.id,
+//       username: e.username,
+//       status: e.status,
+//       last_modified: formatDateTime(e.last_modified),
+//     }));
+
+//     return res.render("admin/account", {
+//       title: "Account",
+//       isAdmin: true,
+//       data,
+//       routerPath: "admin/account",
+//     });
+//   } else {
+//     const raw = await getUserDetailByUsername(username);
+//     console.log(raw);
+//     const data = raw.map((e) => ({
+//       id: e.id,
+//       username: e.username,
+//       status:
+//         e.abnormal == 2 ? encodeStatusCode(4) : encodeStatusCode(e.status),
+//       statusCode: e.abnormal == 2 ? 4 : e.status,
+//       login_attempts: e.login_attempts,
+//       phone: e.phone,
+//       email: e.email,
+//       name: e.name,
+//       date_of_birth: formatDate(e.date_of_birth),
+//       address: e.address,
+//       front_cmnd: e.font_cmnd,
+//       back_cmnd: e.back_cmnd,
+//       total_value: e.total_value,
+//     }));
+//     console.log(data);
+//     return res.render("admin/account-info", {
+//       title: "Account",
+//       isAdmin: true,
+//       data,
+//     });
+//   }
+// };
+
+
 const handleAdminUserAccount = async (req, res) => {
-  const username = req.query["username"];
+  const raw = await getUserAccountByStatus(0);
+  const data = raw.map((e) => ({
+    id: e.id,
+    username: e.username,
+    status: e.status,
+    last_modified: formatDateTime(e.last_modified),
+  }));
+
+  return res.render("admin/account", {
+    title: "Account",
+    isAdmin: true,
+    data,
+    routerPath: "admin/account",
+  });
+
+};
+
+
+const handleAdminUserAccountDetail = async (req, res) => {
+  const username = req.params.username;
   console.log(username);
   if (username === undefined) {
     const raw = await getUserAccountByStatus(0);
@@ -583,4 +649,5 @@ module.exports = {
   apiGetTransHistory,
   getWithdrawDetail,
   getDepositDetail,
+  handleAdminUserAccountDetail
 };

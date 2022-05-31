@@ -15,6 +15,7 @@ const {
   postRejectDeposit5m,
   getWithdrawDetail,
   getDepositDetail,
+  handleAdminUserAccountDetail,
 } = require("../controllers/admin.controller");
 const { adminWithdrawValidator } = require("../validations/account");
 var router = express.Router();
@@ -23,6 +24,7 @@ var router = express.Router();
 router.get("/", getAdminHome);
 
 router.get("/account", handleAdminUserAccount);
+router.get("/account/:username", handleAdminUserAccountDetail);
 
 router.get("/account/api", handleAccountApi);
 
