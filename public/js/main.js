@@ -1,4 +1,11 @@
 $(document).ready(() => {
+
+  // Main
+  $("#login-menu-btn").click((e) => { $(".drop-down").toggle("active"); });
+  $(".toggle-menu .toggle-btn").click((e) => {
+  $(".main-nav__list").toggleClass("active");
+  $(".main-nav").toggleClass("active"); });
+
   // * Javascript for GET users/login
   if (document.getElementById("view-account-login")) {
     let form = document.getElementById("form-login");
@@ -220,8 +227,8 @@ $(document).ready(() => {
           if (!res.code) {
             alert(
               "Ticket purchase was successful. Here are your code: " +
-                res.data +
-                "\nYou can view your code again in Dashbroad"
+              res.data +
+              "\nYou can view your code again in Dashbroad"
             );
             window.location.reload();
           } else showMessage(res.message, "error");
@@ -581,6 +588,373 @@ $(document).ready(() => {
         }
       };
     }
+  }
+
+  if (document.getElementById("view-account-sendOpt")) {
+
+    let btnResendOTP = document.getElementById('btnResendOTP');
+    btnResendOTP.addEventListener('submit', function () {
+      intervalResend();
+    })
+
+    function intervalResend() {
+      btnResendOTP.disabled = true;
+      let count = 60;
+      let resendtime = setInterval(() => {
+        btnResendOTP.innerHTML = "Resend OTP in: " + count + " seconds";
+        //console.log(count)
+        count--;
+        if (count < 0) {
+          clearInterval(resendtime);
+          btnResendOTP.disabled = false;
+          btnResendOTP.innerHTML = "Resend OTP";
+
+        }
+      }, 1000)
+    }
+    intervalResend()
+
+  }
+
+  if (document.getElementById("view-admin-account-info")) {
+    const myUrl = location.origin + "/"
+    let withdrawContent
+    let depositContent
+    let phonecardContent
+    let rechargeContent
+    let data
+
+    const queryString = window.location.search;
+    const parameters = new URLSearchParams(queryString);
+    const username = parameters.get('username');
+
+    const withdrawBody = document.querySelector('#withdraw-body')
+    const depositBody = document.querySelector('#deposit-body')
+    const phonecardBody = document.querySelector('#phonecard-body')
+    const rechargeBody = document.querySelector('#recharge-body');
+    const receiveBody = document.querySelector('#receive-body');
+
+    const handleBox = document.getElementById('handle-box')
+
+
+    if (handleBox) {
+      // Get origin and pathname
+      const myURL = location.origin + location.pathname
+      const actionList = ['verify', 'cancel', 'request', 'unclock']
+      const urlParams = new URLSearchParams(window.location.search);
+      const username = urlParams.get('username');
+      console.log(username)
+      handleBox.addEventListener('click', async (e) => {
+        const myID = e.target.id
+        if (actionList.includes(myID)) {
+          console.log(myID)
+          if (confirm(`Are you sure want to ${myID} ${username}`) == true) {
+            const myFetch = await fetch(myURL, {
+              method: "PUT",
+              body: JSON.stringify({
+                username,
+                action: myID
+              }),
+              headers: {
+                'Content-Type': 'application/json'
+              },
+            })
+            const res = await myFetch.json()
+            if (!res.code) {
+              alert("Update successful!")
+              window.location.reload();
+            }
+          }
+        }
+      })
+    }
+
+
+    // Get withdraw 
+    (async () => {
+      const myFetch = await fetch(myUrl + "withdraw/api?username=" + username)
+      const res = await myFetch.json()
+      if (res.code == 0) {
+        const context = res.data.map(e => `
+                    <tr>
+                        <td>${e.id}</td>
+                        <td>${e.card_number}</td>
+                        <td>${e.value}</td>
+                        ${e.status}
+                        <td>${e.date}</td>
+                    </tr>
+                    `
+        ).join("")
+
+        withdrawBody.insertAdjacentHTML('beforeend', context)
+      }
+      console.log(res)
+    })();
+
+    // Get deposit
+    (async () => {
+      const myFetch = await fetch(myUrl + "deposit/api/sender?username=" + username)
+      const res = await myFetch.json()
+      if (res.code == 0) {
+        const context = res.data.map(e => `
+                    <tr>
+                        <td>${e.id}</td>
+                        <td>${e.phone_receiver}</td>
+                        <td>${e.value}</td>
+                        <td>${e.fee}</td>
+                        ${e.status}
+                        <td>${e.feeperson}</td>
+                        <td>${e.date}</td>
+                    </tr>
+                    `
+        ).join("")
+
+        depositBody.insertAdjacentHTML('beforeend', context)
+      }
+      else console.error(res.message)
+      console.log(res)
+    })();
+
+
+    // Get receive
+    (async () => {
+      const myFetch = await fetch(myUrl + "deposit/api/receiver?username=" + username)
+      const res = await myFetch.json()
+      if (res.code == 0) {
+        const context = res.data.map(e => `
+                    <tr>
+                        <td>${e.id}</td>
+                        <td>${e.phone_sender}</td>
+                        <td>${e.value}</td>
+                        <td>${e.fee}</td>
+                        <td>${e.feeperson}</td>
+                        ${e.status}
+                        <td>${e.date}</td>
+                    </tr>
+                    `
+        ).join("")
+        receiveBody.insertAdjacentHTML('beforeend', context)
+      }
+      else console.error(res.message)
+      console.log(res)
+    })();
+
+
+    // Get phone card
+    (async () => {
+      const myFetch = await fetch(myUrl + "phonecard/api?username=" + username)
+      const res = await myFetch.json()
+      if (res.code == 0) {
+        const context = res.data.map(e => `
+                    <tr>
+                        <td>${e.id}</td>
+                        <td>${e.provider_number}</td>
+                        <td>${e.price}</td>
+                        <td>${e.quantity}</td>
+                        <td>${e.date}</td>
+                    </tr>
+                    `
+        ).join("")
+
+        phonecardBody.insertAdjacentHTML('beforeend', context)
+      }
+      else console.error(res.message)
+      console.log(res)
+    })();
+
+    // Get recharge
+    (async () => {
+      const myFetch = await fetch(myUrl + "users/card/api?username=" + username)
+      const res = await myFetch.json()
+      if (res.code == 0) {
+        const context = res.data.map(e => `
+                    <tr>
+                        <td>${e.id}</td>
+                        <td>${e.card_number}</td>
+                        <td>${e.money}</td>
+                        <td>${e.date}</td>
+                    </tr>
+                    `
+        ).join("")
+        rechargeBody.insertAdjacentHTML('beforeend', context)
+      }
+      else console.error(res.message)
+      console.log(res)
+    })();
+  }
+
+  if (document.getElementById("view-admin-account-home")) {
+
+    const accountStatus = document.getElementById('account-type');
+    const myTbody = document.getElementById('tbody')
+    if (accountStatus && myTbody) {
+      accountStatus.addEventListener('change', async (e) => {
+
+        try {
+          const myURL = location.href + "/api?status=" + e.target.value
+          const fetchURL = await fetch(myURL)
+          const res = await fetchURL.json()
+          if (res.code) {
+            throw new Error(res.message)
+          }
+          const data = res.data
+          let context = data.map(e => `
+            <tr class="item">
+              <td>${e.id}</td>
+              <td><a href="account/${e.username}">${e.username}</a></td>
+              <td>${e.last_modified}</td>
+            </tr>
+        `).join("")
+          console.log(data.length)
+          if (!data.length) {
+            context = `
+          <td colspan="4" class="text-center">Data is empty</td>
+          `
+          }
+          myTbody.innerHTML = ""
+          myTbody.insertAdjacentHTML('beforeend', context)
+        } catch (err) {
+          console.error(err.message)
+        }
+
+      })
+    }
+
+  }
+
+  if (document.getElementById("view-index")) {
+
+    const myUrl = location.href
+    let withdrawContent
+    let depositContent
+    let phonecardContent
+    let rechargeContent
+    let data
+
+    const withdrawBody = document.querySelector('#withdraw-body')
+    const depositBody = document.querySelector('#deposit-body')
+    const phonecardBody = document.querySelector('#phonecard-body')
+    const rechargeBody = document.querySelector('#recharge-body');
+    const receiveBody = document.querySelector('#receive-body');
+
+
+    function handleView(id, status) {
+      console.log(id, status)
+    }
+
+
+    // Get withdraw 
+    (async () => {
+      const myFetch = await fetch(myUrl + "withdraw/api")
+      const res = await myFetch.json()
+      if (res.code == 0) {
+        const context = res.data.map(e => `
+                <tr>
+                    <td>${e.id}</td>
+                    <td>${e.card_number}</td>
+                    <td>${e.value}</td>
+                    ${e.status}
+                    <td>${e.date}</td>
+                </tr>
+                `
+        ).join("")
+
+        withdrawBody.insertAdjacentHTML('beforeend', context)
+      }
+      console.log(res)
+    })();
+
+    // Get deposit
+    (async () => {
+      const myFetch = await fetch(myUrl + "deposit/api/sender")
+      const res = await myFetch.json()
+      if (res.code == 0) {
+        const context = res.data.map(e => `
+                <tr>
+                    <td>${e.id}</td>
+                    <td>${e.phone_receiver}</td>
+                    <td>${e.value}</td>
+                    <td>${e.fee}</td>
+                    ${e.status}
+                    <td>${e.feeperson}</td>
+                    <td>${e.date}</td>
+                </tr>
+                `
+        ).join("")
+
+        depositBody.insertAdjacentHTML('beforeend', context)
+      }
+      else console.error(res.message)
+      console.log(res)
+    })();
+
+
+    // Get receive
+    (async () => {
+      const myFetch = await fetch(myUrl + "deposit/api/receiver")
+      const res = await myFetch.json()
+      if (res.code == 0) {
+        const context = res.data.map(e => `
+                <tr>
+                    <td>${e.id}</td>
+                    <td>${e.phone_sender}</td>
+                    <td>${e.value}</td>
+                    <td>${e.fee}</td>
+                    <td>${e.feeperson}</td>
+                    ${e.status}
+                    <td>${e.date}</td>
+                </tr>
+                `
+        ).join("")
+        receiveBody.insertAdjacentHTML('beforeend', context)
+      }
+      else console.error(res.message)
+      console.log(res)
+    })();
+
+
+    // Get phone card
+    (async () => {
+      const myFetch = await fetch(myUrl + "phonecard/api")
+      const res = await myFetch.json()
+      if (res.code == 0) {
+        const context = res.data.map(e => `
+                <tr>
+                    <td>${e.id}</td>
+                    <td>${e.provider_number}</td>
+                    <td>${e.price}</td>
+                    <td>${e.quantity}</td>
+                    <td>${e.date}</td>
+                </tr>
+                `
+        ).join("")
+
+        phonecardBody.insertAdjacentHTML('beforeend', context)
+      }
+      else console.error(res.message)
+      console.log(res)
+    })();
+
+    // Get recharge
+    (async () => {
+      const myFetch = await fetch(myUrl + "users/card/api")
+      const res = await myFetch.json()
+      if (res.code == 0) {
+        const context = res.data.map(e => `
+                <tr>
+                    <td>${e.id}</td>
+                    <td>${e.card_number}</td>
+                    <td>${e.money}</td>
+                    <td>${e.date}</td>
+                </tr>
+                `
+        ).join("")
+        rechargeBody.insertAdjacentHTML('beforeend', context)
+      }
+      else console.error(res.message)
+      console.log(res)
+    })();
+
   }
 });
 

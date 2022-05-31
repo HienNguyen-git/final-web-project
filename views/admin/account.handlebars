@@ -1,3 +1,4 @@
+<div id="view-admin-account-home"></div>
 <div class="admin-section admin-section2">
   <div class="admin-section-panel admin-section-panel4">
     <div class="admin-panel-section-header">
@@ -31,41 +32,3 @@
     </table>
   </div>
 </div>
-<script>
-
-  const accountStatus = document.getElementById('account-type');
-  const myTbody = document.getElementById('tbody')
-  if(accountStatus&&myTbody){
-    accountStatus.addEventListener('change',async (e)=>{
-        
-      try{
-        const myURL = location.href+"/api?status="+e.target.value
-        const fetchURL = await fetch(myURL)
-        const res = await fetchURL.json()
-        if(res.code){
-          throw new Error(res.message)
-        }
-        const data = res.data
-        let context = data.map(e=>`
-            <tr class="item">
-              <td>${e.id}</td>
-              <td><a href="account/${e.username}">${e.username}</a></td>
-              <td>${e.last_modified}</td>
-            </tr>
-        `).join("")
-        console.log(data.length)
-        if(!data.length){
-          context = `
-          <td colspan="4" class="text-center">Data is empty</td>
-          `
-        }
-        myTbody.innerHTML = ""
-        myTbody.insertAdjacentHTML('beforeend', context)
-      }catch(err){
-        console.error(err.message)
-      }
-      
-    })
-  }
-
-</script>
