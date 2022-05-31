@@ -8,6 +8,8 @@ const {
   formatDate,
   encodeStatusCode,
   formatDateTime2,
+  encodeTransistionCode,
+  formatCash,
 } = require("../config/helper");
 const {
   getUserAccountByStatus,
@@ -206,9 +208,43 @@ const getWithdrawMore5m = async (req, res) => {
   }));
   // console.log(data);
   res.render("admin/withdraw", {
-    title: "Deposit",
+    title: "Withdraw",
     isAdmin: true,
     routerPath: "admin/withdraw",
+    data,
+  });
+};
+
+const getWithdrawDetail = async (req, res) => {
+  let id = req.params.id;
+
+  let data = await getWithdrawById(id);
+
+  data.status = encodeTransistionCode(data.status);
+  data.date = formatDateTime(data.date);
+  data.value = formatCash("" + data.value);
+  data.fee = formatCash("" + data.fee);
+
+  return res.render("admin/withdraw-detail", {
+    title: "Withdraw detail",
+    isAdmin: true,
+    routerPath: "admin/withdraw",
+    data,
+  });
+};
+
+const getDepositDetail = async (req, res) => {
+  let id = req.params.id;
+
+  let data = await getDepositById(id);
+
+  data.status = encodeTransistionCode(data.status);
+  data.date = formatDateTime(data.date);
+
+  return res.render("admin/deposit-detail", {
+    title: "Deposit detail",
+    isAdmin: true,
+    routerPath: "admin/deposit",
     data,
   });
 };
@@ -543,4 +579,6 @@ module.exports = {
   getTransHistory,
   getTransHistoryDetail,
   apiGetTransHistory,
+  getWithdrawDetail,
+  getDepositDetail,
 };
