@@ -897,9 +897,17 @@ function getDataFromToken(req) {
 }
 
 const getRechargeByUser = async (req, res) => {
-  const userData = req.userClaims;
+  const myUsername = req.query["username"]
+  console.log(myUsername)
+  let username
+  if(myUsername!==undefined){
+      username = myUsername
+  }else{
+      const userData = req.userClaims
+      username = userData.username;
+  }
   try {
-    const rawData = await getRechargeListByUser(userData.username);
+    const rawData = await getRechargeListByUser(username);
     console.log(rawData);
     console.log("")
     data = rawData.map((e) => ({

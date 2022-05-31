@@ -618,6 +618,9 @@ $(document).ready(() => {
 
   if (document.getElementById("view-admin-account-info")) {
     const myUrl = location.origin + "/"
+    let tmp = location.href
+    tmp = tmp.split('/')
+    
     let withdrawContent
     let depositContent
     let phonecardContent
@@ -626,7 +629,7 @@ $(document).ready(() => {
 
     const queryString = window.location.search;
     const parameters = new URLSearchParams(queryString);
-    const username = parameters.get('username');
+    const username = tmp[tmp.length-1]
 
     const withdrawBody = document.querySelector('#withdraw-body')
     const depositBody = document.querySelector('#deposit-body')
