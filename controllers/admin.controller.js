@@ -288,7 +288,6 @@ const getWithdrawDetail = async (req, res) => {
 
   let data = await getWithdrawById(id);
 
-  data.status = encodeTransistionCode(data.status);
   data.date = formatDateTime(data.date);
   data.value = formatCash("" + data.value);
   data.fee = formatCash("" + data.fee);
@@ -369,7 +368,11 @@ async function apiGetTransHistory(req, res) {
   }
 
   data = data.map((currVal) => {
-    currVal.status = encodeStatusCode(currVal.status);
+    if(currVal.status){
+      currVal.status = encodeTransistionCode(currVal.status);
+    }else{
+       currVal.status = encodeTransistionCode(1);
+    }
     currVal.date = formatDateTime(currVal.date);
     return currVal;
   });
@@ -429,7 +432,7 @@ const getTransHistoryDetail = async (req, res) => {
     data.code = code.join(" - ");
   }
 
-  data.status = encodeStatusCode(data.status);
+  data.status = encodeTransistionCode(data.status);
   return res.render("admin/trans-history-detail", {
     title: "Transaction History Detail",
     isAdmin: true,
