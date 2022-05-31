@@ -1053,7 +1053,7 @@ async function checkClick(
   });
   const res = await myFetch.json();
   if (!res.code) {
-    alert("Approved this deposit succesfully");
+    showMessage("Approved this deposit succesfully");
     window.location.reload();
   }
 }
@@ -1069,7 +1069,7 @@ async function rejectClick(id) {
   console.log(myFetch);
   const res = await myFetch.json();
   if (!res.code) {
-    alert("Reject this deposit ");
+    showMessage("Reject this deposit ","error");
     window.location.reload();
   }
 }
