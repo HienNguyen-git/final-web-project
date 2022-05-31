@@ -28,8 +28,9 @@ class AuthenticationController {
       req.userClaims = jwt.verify(token, process.env.TOKEN_KEY);
 
       if (req.userClaims.username === "admin") {
-        let regex = /admin/;
-        if (regex.test(routeKey)) {
+        let regex1 = /admin/;
+        let regex2 = /api/;
+        if (regex1.test(routeKey) || regex2.test(routeKey)) {
           next();
         } else {
           res.redirect("/admin");
