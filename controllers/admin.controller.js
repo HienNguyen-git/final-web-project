@@ -10,6 +10,7 @@ const {
   formatDateTime2,
   encodeTransistionCode,
   formatCash,
+  formatMoney,
 } = require("../config/helper");
 const {
   getUserAccountByStatus,
@@ -149,7 +150,7 @@ const handleAdminUserAccountDetail = async (req, res) => {
       address: e.address,
       front_cmnd: e.font_cmnd,
       back_cmnd: e.back_cmnd,
-      total_value: e.total_value,
+      total_value: formatMoney(e.total_value),
     }));
     console.log(data);
     return res.render("admin/account-info", {
