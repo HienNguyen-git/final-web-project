@@ -27,7 +27,6 @@ async function handleWithdraw(req, res) {
   let errors = validationResult(req).errors;
   let error = errors[0];
 
-  console.log(error);
   if (error) {
     return res.json({
       succes: false,
@@ -37,7 +36,7 @@ async function handleWithdraw(req, res) {
 
   let { cardNumber, expireDate, cvv, amount, note } = req.body;
 
-  let userData = await getDataFromToken(req);
+  let userData = req.userClaims;
 
   if (!userData) {
     return res.json({
@@ -100,6 +99,7 @@ async function handleWithdraw(req, res) {
     note: note,
   };
 
+  console.log(withdraw);
   await createWithdraw(withdraw);
   if (status) {
     // Thành công
@@ -138,12 +138,14 @@ const getWithdrawByUser = async (req, res) => {
   const myUsername = req.query["username"]
   console.log(myUsername)
   let username
+
   if(myUsername!==undefined){
       username = myUsername
   }else{
       const userData = req.userClaims
       username = userData.username;
   }
+
   let data;
   try {
     console.log(username)

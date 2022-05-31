@@ -67,6 +67,8 @@ async function createWithdraw(withdraw) {
     Input: withdraw object {username, date, status, fee}
     Output: Đã tạo thành công
     */
+
+    console.log(withdraw);
   const sql =
     "INSERT INTO withdraw(username,card_number,date,value,status,fee,note) values(?,?,?,?,?,?,?)";
   const value = [...Object.values(withdraw)];
