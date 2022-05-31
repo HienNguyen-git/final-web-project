@@ -106,6 +106,8 @@ function sleep(ms) {
   });
 }
 
+const formatMoney = (money)=> new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'VND' }).format(money)
+
 module.exports = {
   formatDateTime,
   formatDateTime2,
@@ -118,4 +120,5 @@ module.exports = {
   sleep,
   encodeTransistionCode,
   formatCash,
+  formatMoney
 };

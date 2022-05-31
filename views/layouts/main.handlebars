@@ -32,6 +32,7 @@
     <title>{{title}}</title>
   </head>
   <body>
+    <div id="view-main"></div>
 
   <div id="custom-toast"></div>
   {{#if isAdmin}}
@@ -133,10 +134,4 @@
     {{{body}}}
 	{{/if}}
   </body>
-  <script>
-    $("#login-menu-btn").click((e) => { $(".drop-down").toggle("active"); });
-    $(".toggle-menu .toggle-btn").click((e) => {
-    $(".main-nav__list").toggleClass("active");
-    $(".main-nav").toggleClass("active"); });
-  </script>
 </html>

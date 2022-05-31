@@ -1,3 +1,4 @@
+  <div id="view-account-sendOpt"></div>
   <h3 class="text-center my-5">OTP</h3>
 
   <!-- buộc toàn bộ dòng và cột phải bỏ trong class container -->
@@ -33,27 +34,3 @@
       </div>
     </div>
   </div>
-<script>
-  let btnResendOTP = document.getElementById('btnResendOTP');
-  btnResendOTP.addEventListener('submit', function(){
-      intervalResend();
-  })
-
-  function intervalResend(){
-    btnResendOTP.disabled = true;
-    let count = 60;
-    let resendtime = setInterval(() =>{
-      btnResendOTP.innerHTML = "Resend OTP in: "+ count + " seconds";
-      //console.log(count)
-      count--;
-      if(count < 0){
-        clearInterval(resendtime);
-        btnResendOTP.disabled = false;
-        btnResendOTP.innerHTML = "Resend OTP" ;
-
-      }
-    },1000)
-  }
-  intervalResend()
-  
-</script>
